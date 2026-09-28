@@ -1,0 +1,7 @@
+com\yanzong\service\ActivityService.class
+com\yanzong\controller\AuthController.class
+com\yanzong\GovernanceApplication.class
+com\yanzong\config\WebConfig.class
+com\yanzong\controller\CitizenController.class
+com\yanzong\controller\PlatformController.class
+com\yanzong\controller\WorkOrderController.class
