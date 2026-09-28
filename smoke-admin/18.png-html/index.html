@@ -1,0 +1,323 @@
+<!doctype html>
+<html lang="zh-CN"><head><meta charset="UTF-8">
+  
+  <title>烟踪智治 - 审计日志</title>
+  
+<meta name="viewport" content="width=device-width, initial-scale=1"><link rel="stylesheet" href="./styles.css"></head>
+<body>
+  <div class="fit-shell">
+    <div class="fit-box">
+      <main class="screen export-inline-style-1">
+        <header class="top-header">
+          <img class="brand-logo export-reference-asset-1" src="./assets/smoke_control_platform_logo.png" alt="smoke_control_platform_logo">
+
+          <nav class="header-menu" aria-label="主导航">
+            <div class="header-menu-item">态势总览</div>
+            <div class="header-menu-item">事件中心</div>
+            <div class="header-menu-item">调度中心</div>
+            <div class="header-menu-item">全域地图</div>
+            <div class="header-menu-item">资源管理</div>
+            <div class="header-menu-item">AI治理</div>
+            <div class="header-menu-item active">系统管理</div>
+          </nav>
+
+          <div class="header-time">2026-08-24 18:48:16</div>
+
+          <svg class="notification-icon" viewBox="0 0 25 28" aria-hidden="true">
+            <path d="M5 20h15M7 20V11a5.5 5.5 0 0 1 11 0v9M4 20h17l-2 3H6l-2-3ZM11 25h3" stroke-width="1.7"></path>
+          </svg>
+
+          <img class="super-avatar export-reference-asset-2" src="./assets/super_admin_avatar.png" alt="super_admin_avatar">
+
+          <div class="admin-name">超级管理员</div>
+          <button class="logout-button">退出</button>
+
+          <div class="system-dropdown">
+            <div class="dropdown-option">权限与账号</div>
+            <div class="dropdown-option">系统配置</div>
+            <div class="dropdown-option selected">审计日志</div>
+          </div>
+        </header>
+
+        <section class="summary-card" aria-label="日志统计">
+          <div class="summary-stat stat-1">
+            <div class="stat-label">今日日志</div>
+            <div class="stat-value blue">1,286</div>
+          </div>
+          <div class="summary-stat stat-2">
+            <div class="stat-label">异常操作</div>
+            <div class="stat-value red">3</div>
+          </div>
+          <div class="summary-stat stat-3">
+            <div class="stat-label">登录记录</div>
+            <div class="stat-value green">326</div>
+          </div>
+          <div class="summary-stat stat-4">
+            <div class="stat-label">权限变更</div>
+            <div class="stat-value orange">18</div>
+          </div>
+
+          <button class="export-log-button">
+            <svg viewBox="0 0 24 24" width="20" height="20" class="export-inline-style-2">
+              <path d="M12 3v12M7 10l5 5 5-5M5 19h14" stroke-width="1.8"></path>
+            </svg>
+            导出审计日志
+          </button>
+        </section>
+
+        <section class="filter-card" aria-label="审计日志筛选">
+          <h2 class="section-title">审计日志筛选</h2>
+
+          <div class="filter-label label-account">操作账号</div>
+          <div class="field account-field">
+            请输入账号或用户名
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <circle cx="10" cy="8" r="3.3" stroke-width="1.7"></circle>
+              <path d="M4.8 18.5c.5-3 2.2-4.7 5.2-4.7s4.7 1.7 5.2 4.7M16.5 10.5a2.7 2.7 0 1 1 2.5 3.7M17.5 16.5c1.5.2 2.3.9 2.7 2.3" stroke-width="1.5"></path>
+            </svg>
+          </div>
+
+          <div class="filter-label label-time">操作时间</div>
+          <div class="field time-field">
+            2026-08-18 00:00&nbsp;&nbsp;至&nbsp;&nbsp;2026-08-24 23:59
+            <svg class="calendar-icon" viewBox="0 0 24 24" aria-hidden="true">
+              <rect x="4" y="5.5" width="16" height="15" rx="2" stroke-width="1.6"></rect>
+              <path d="M8 3.5v4M16 3.5v4M4 10h16" stroke-width="1.6"></path>
+            </svg>
+          </div>
+
+          <div class="filter-label label-type">操作类型</div>
+          <div class="field type-field">
+            全部类型
+            <svg class="chevron" viewBox="0 0 16 16" aria-hidden="true">
+              <path d="m3.5 6 4.5 4 4.5-4" stroke-width="1.6"></path>
+            </svg>
+          </div>
+          <div class="type-support">支持：登录、数据操作、权限变更、系统配置</div>
+
+          <button class="filter-button reset-button">重置</button>
+          <button class="filter-button query-button">查询</button>
+          <button class="refresh-button" aria-label="刷新">
+            <svg viewBox="0 0 24 24">
+              <path d="M19 8.5V4.5h-4M19 4.8a8 8 0 1 0 1.2 8.1" stroke-width="1.8"></path>
+            </svg>
+          </button>
+        </section>
+
+        <section class="audit-card" aria-label="审计日志列表">
+          <div class="audit-heading">
+            <span class="main">审计日志列表</span>
+            <span class="sub">共 36,528 条不可删除审计记录</span>
+          </div>
+
+          <div class="readonly-label">
+            <svg viewBox="0 0 24 24">
+              <path d="M12 3 19 6v5.5c0 4.5-2.9 7.8-7 9.5-4.1-1.7-7-5-7-9.5V6l7-3Z" stroke-width="1.7"></path>
+              <path d="m9 12 2 2 4-4" stroke-width="1.7"></path>
+            </svg>
+            日志只读 · 不可删除
+          </div>
+
+          <button class="result-export">
+            <svg viewBox="0 0 24 24" width="19" height="19" class="export-inline-style-3">
+              <path d="M12 3v12M7 10l5 5 5-5M5 19h14" stroke-width="1.8"></path>
+            </svg>
+            导出当前结果
+          </button>
+
+          <button class="small-tool settings-tool" aria-label="设置">
+            <svg viewBox="0 0 24 24">
+              <circle cx="12" cy="12" r="3" stroke-width="1.7"></circle>
+              <path d="M19 13.5v-3l-2-.7a6 6 0 0 0-.7-1.6l.9-1.9-2.1-2.1-1.9.9a6 6 0 0 0-1.6-.7l-.7-2h-3l-.7 2a6 6 0 0 0-1.6.7l-1.9-.9-2.1 2.1.9 1.9a6 6 0 0 0-.7 1.6l-2 .7v3l2 .7a6 6 0 0 0 .7 1.6l-.9 1.9 2.1 2.1 1.9-.9a6 6 0 0 0 1.6.7l.7 2h3l.7-2a6 6 0 0 0 1.6-.7l1.9.9 2.1-2.1-.9-1.9a6 6 0 0 0 .7-1.6l2-.7Z" stroke-width="1.35"></path>
+            </svg>
+          </button>
+
+          <button class="small-tool table-refresh-tool" aria-label="刷新">
+            <svg viewBox="0 0 24 24">
+              <path d="M19 8.5V4.5h-4M19 4.8a8 8 0 1 0 1.2 8.1" stroke-width="1.8"></path>
+            </svg>
+          </button>
+
+          <div class="audit-table">
+            <div class="table-row header">
+              <div class="cell checkbox-cell"><span class="checkbox"></span></div>
+              <div class="cell id-cell">日志编号</div>
+              <div class="cell account-cell">操作账号</div>
+              <div class="cell content-cell">操作内容</div>
+              <div class="cell ip-cell">操作IP</div>
+              <div class="cell time-cell">操作时间</div>
+              <div class="cell"></div>
+            </div>
+
+            <div class="table-row highlight">
+              <div class="cell checkbox-cell"><span class="checkbox"></span></div>
+              <div class="cell id-cell">LOG202608240001</div>
+              <div class="cell account-cell">admin</div>
+              <div class="cell content-cell">
+                <span class="action-badge badge-login">登录</span>
+                <span class="detail-text">登录超级管理员控制台</span>
+              </div>
+              <div class="cell ip-cell">192.168.1.10</div>
+              <div class="cell time-cell">2026-08-24 18:47:51</div>
+              <div class="cell row-arrow">
+                <svg viewBox="0 0 20 20"><path d="m7 4 5 6-5 6" stroke-width="1.8"></path></svg>
+              </div>
+            </div>
+
+            <div class="table-row">
+              <div class="cell checkbox-cell"><span class="checkbox"></span></div>
+              <div class="cell id-cell">LOG202608240002</div>
+              <div class="cell account-cell">zhangwei</div>
+              <div class="cell content-cell">
+                <span class="action-badge badge-data">数据操作</span>
+                <span class="detail-text">修改设备 CAM-037 在线状态</span>
+              </div>
+              <div class="cell ip-cell">10.20.3.18</div>
+              <div class="cell time-cell">2026-08-24 18:32:14</div>
+              <div class="cell row-arrow">
+                <svg viewBox="0 0 20 20"><path d="m7 4 5 6-5 6" stroke-width="1.8"></path></svg>
+              </div>
+            </div>
+
+            <div class="table-row">
+              <div class="cell checkbox-cell"><span class="checkbox"></span></div>
+              <div class="cell id-cell">LOG202608240003</div>
+              <div class="cell account-cell">lisi</div>
+              <div class="cell content-cell">
+                <span class="action-badge badge-data">数据操作</span>
+                <span class="detail-text">导出事件报表 PDF</span>
+              </div>
+              <div class="cell ip-cell">10.20.3.18</div>
+              <div class="cell time-cell">2026-08-24 18:15:33</div>
+              <div class="cell row-arrow">
+                <svg viewBox="0 0 20 20"><path d="m7 4 5 6-5 6" stroke-width="1.8"></path></svg>
+              </div>
+            </div>
+
+            <div class="table-row">
+              <div class="cell checkbox-cell"><span class="checkbox"></span></div>
+              <div class="cell id-cell">LOG202608240004</div>
+              <div class="cell account-cell">wangmin</div>
+              <div class="cell content-cell">
+                <span class="action-badge badge-permission">权限变更</span>
+                <span class="detail-text">为区域管理员分配资源管理权限</span>
+              </div>
+              <div class="cell ip-cell">172.16.5.21</div>
+              <div class="cell time-cell">2026-08-24 17:58:07</div>
+              <div class="cell row-arrow">
+                <svg viewBox="0 0 20 20"><path d="m7 4 5 6-5 6" stroke-width="1.8"></path></svg>
+              </div>
+            </div>
+
+            <div class="table-row">
+              <div class="cell checkbox-cell"><span class="checkbox"></span></div>
+              <div class="cell id-cell">LOG202608240005</div>
+              <div class="cell account-cell">chenliang</div>
+              <div class="cell content-cell">
+                <span class="action-badge badge-system">系统配置</span>
+                <span class="detail-text">更新AI识别置信度阈值</span>
+              </div>
+              <div class="cell ip-cell">10.20.3.18</div>
+              <div class="cell time-cell">2026-08-24 17:36:22</div>
+              <div class="cell row-arrow">
+                <svg viewBox="0 0 20 20"><path d="m7 4 5 6-5 6" stroke-width="1.8"></path></svg>
+              </div>
+            </div>
+
+            <div class="table-row">
+              <div class="cell checkbox-cell"><span class="checkbox"></span></div>
+              <div class="cell id-cell">LOG202608240006</div>
+              <div class="cell account-cell">admin</div>
+              <div class="cell content-cell">
+                <span class="action-badge badge-data">数据操作</span>
+                <span class="detail-text">新增环境资源路段</span>
+              </div>
+              <div class="cell ip-cell">192.168.1.10</div>
+              <div class="cell time-cell">2026-08-24 17:20:41</div>
+              <div class="cell row-arrow">
+                <svg viewBox="0 0 20 20"><path d="m7 4 5 6-5 6" stroke-width="1.8"></path></svg>
+              </div>
+            </div>
+
+            <div class="table-row">
+              <div class="cell checkbox-cell"><span class="checkbox"></span></div>
+              <div class="cell id-cell">LOG202608240007</div>
+              <div class="cell account-cell">zhangwei</div>
+              <div class="cell content-cell">
+                <span class="action-badge badge-data">数据操作</span>
+                <span class="detail-text">批量派发环卫工作务</span>
+              </div>
+              <div class="cell ip-cell">10.20.3.18</div>
+              <div class="cell time-cell">2026-08-24 16:55:18</div>
+              <div class="cell row-arrow">
+                <svg viewBox="0 0 20 20"><path d="m7 4 5 6-5 6" stroke-width="1.8"></path></svg>
+              </div>
+            </div>
+
+            <div class="table-row">
+              <div class="cell checkbox-cell"><span class="checkbox"></span></div>
+              <div class="cell id-cell">LOG202608240008</div>
+              <div class="cell account-cell">lisi</div>
+              <div class="cell content-cell">
+                <span class="action-badge badge-system">系统配置</span>
+                <span class="detail-text">修改系统登录安全策略</span>
+              </div>
+              <div class="cell ip-cell">10.20.3.18</div>
+              <div class="cell time-cell">2026-08-24 16:22:09</div>
+              <div class="cell row-arrow">
+                <svg viewBox="0 0 20 20"><path d="m7 4 5 6-5 6" stroke-width="1.8"></path></svg>
+              </div>
+            </div>
+
+            <div class="table-row">
+              <div class="cell checkbox-cell"><span class="checkbox"></span></div>
+              <div class="cell id-cell">LOG202608240009</div>
+              <div class="cell account-cell">wangmin</div>
+              <div class="cell content-cell">
+                <span class="action-badge badge-login">登录</span>
+                <span class="detail-text">查看审计日志详情</span>
+              </div>
+              <div class="cell ip-cell">172.16.5.21</div>
+              <div class="cell time-cell">2026-08-24 16:10:32</div>
+              <div class="cell row-arrow">
+                <svg viewBox="0 0 20 20"><path d="m7 4 5 6-5 6" stroke-width="1.8"></path></svg>
+              </div>
+            </div>
+          </div>
+
+          <footer class="table-footer">
+            <div class="total-count">共 36,528 条</div>
+
+            <button class="page-size">
+              10条/页
+              <svg viewBox="0 0 16 16"><path d="m3.5 6 4.5 4 4.5-4" stroke-width="1.6"></path></svg>
+            </button>
+
+            <div class="pagination">
+              <button class="page-button" aria-label="上一页">
+                <svg viewBox="0 0 20 20"><path d="m12.5 4-5 6 5 6" stroke-width="1.8"></path></svg>
+              </button>
+              <span class="page-number current">1</span>
+              <span class="page-number">2</span>
+              <span class="page-number">3</span>
+              <span class="page-number">4</span>
+              <span class="page-number">5</span>
+              <span class="page-number ellipsis">···</span>
+              <span class="page-number">3653</span>
+              <button class="page-button" aria-label="下一页">
+                <svg viewBox="0 0 20 20"><path d="m7.5 4 5 6-5 6" stroke-width="1.8"></path></svg>
+              </button>
+            </div>
+
+            <span class="jump-label">前往</span>
+            <input class="jump-input" value="1" readonly="" aria-label="页码">
+            <span class="jump-suffix">页</span>
+          </footer>
+
+          <div class="tip">点击查看完整日志详情</div>
+        </section>
+      </main>
+    </div>
+  </div>
+
+<script src="./script.js"></script><script src="../shared/product-nav.js?v=4.1"></script></body></html>

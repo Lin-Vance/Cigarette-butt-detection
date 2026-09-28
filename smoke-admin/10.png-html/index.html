@@ -1,0 +1,207 @@
+<!doctype html>
+<html lang="zh-CN"><head><meta charset="UTF-8">
+
+<title>全域治理 GIS 地图</title>
+
+<meta name="viewport" content="width=device-width, initial-scale=1"><link rel="stylesheet" href="./styles.css"></head>
+<body>
+<div class="fit-shell">
+  <div class="fit-box">
+    <main class="screen export-inline-style-1">
+      <header class="topbar">
+        <img class="governance-logo export-reference-asset-1" src="./assets/governance_platform_logo.png" alt="governance_platform_logo">
+
+        <nav class="main-nav" aria-label="主导航">
+          <div class="nav-item">态势总览</div>
+          <div class="nav-item">事件中心</div>
+          <div class="nav-item">调度中心</div>
+          <div class="nav-item active">全域地图</div>
+          <div class="nav-item">资源管理</div>
+          <div class="nav-item">AI治理</div>
+          <div class="nav-item">系统管理</div>
+        </nav>
+
+        <div class="nav-popover">
+          <div class="nav-popover-label">GIS全屏地图</div>
+        </div>
+
+        <div class="top-actions">
+          <div class="clock">2026-08-24 15:42:18</div>
+          <svg class="bell" viewBox="0 0 26 26" fill="none" aria-hidden="true">
+            <path d="M6 18.5h14M7.5 18.5V11a5.5 5.5 0 0 1 11 0v7.5M10.5 21.5h5M13 3.5v2" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"></path>
+          </svg>
+          <img class="administrator-avatar export-reference-asset-2" src="./assets/administrator_avatar.png" alt="administrator_avatar">
+          <div class="administrator-name">超级管理员</div>
+          <button class="logout">退出</button>
+        </div>
+      </header>
+
+      <section class="layer-panel" aria-label="地图图层">
+        <h1 class="layer-title">地图图层</h1>
+
+        <div class="switch-group devices">
+          <span>设备点位图层</span><span class="toggle"></span>
+        </div>
+        <div class="switch-group incidents">
+          <span>违规事件点位图层</span><span class="toggle"></span>
+        </div>
+        <div class="switch-group heat">
+          <span>风险热力图层</span><span class="toggle"></span>
+        </div>
+
+        <div class="legend">
+          <div class="legend-entry"><span class="map-pin pin-green"></span><span>在线设备</span></div>
+          <div class="legend-entry"><span class="map-pin pin-gray"></span><span>离线设备</span></div>
+          <div class="legend-entry"><span class="map-pin pin-red"></span><span>高风险事件</span></div>
+          <div class="legend-entry"><span class="map-pin pin-orange"></span><span>中风险事件</span></div>
+          <div class="legend-entry"><span class="selection-symbol"></span><span>框选区域</span></div>
+        </div>
+
+        <div class="layer-actions">
+          <button class="control-button">
+            <span class="dashed-square"></span><span>框选统计</span>
+          </button>
+          <button class="control-button">
+            <svg class="trash-icon" viewBox="0 0 24 24" fill="none">
+              <path d="M5 7h14M9 7V4h6v3M7 7l1 14h8l1-14M10 11v6M14 11v6" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"></path>
+            </svg>
+            <span>清除选择</span>
+          </button>
+          <button class="control-button">
+            <svg class="refresh-icon" viewBox="0 0 24 24" fill="none">
+              <path d="M20 10a8 8 0 0 0-14.7-2L4 10M4 10V5.5M4 10h4.5M4 14a8 8 0 0 0 14.7 2L20 14m0 0v4.5M20 14h-4.5" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"></path>
+            </svg>
+            <span>刷新地图</span>
+          </button>
+        </div>
+      </section>
+
+      <section class="map-frame" aria-label="全域治理GIS地图">
+        <h2 class="map-heading">全域治理GIS地图</h2>
+        <div class="map-toolbar">
+          <div class="city-select"><span>全市</span>
+            <svg class="chevron" viewBox="0 0 12 8" fill="none">
+              <path d="m1 1 5 5 5-5" stroke="#344563" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"></path>
+            </svg>
+          </div>
+          <div class="live-update"><span class="live-dot"></span><span>实时更新</span></div>
+        </div>
+
+        <img class="map-art-original export-reference-asset-6" src="./assets/citywide_governance_map_background_ai_original.png" alt="citywide_governance_map_background_ai_original">
+        <img class="map-art export-reference-asset-5" src="./assets/citywide_governance_map_background_local_composite.png" alt="citywide_governance_map_background_local_composite">
+
+        <div class="district-label label-yonghe">涌河区</div>
+        <div class="district-label label-pingqiao">平桥区</div>
+        <div class="district-label label-luoshan">罗山县</div>
+        <div class="district-label label-yangshan">羊山新区</div>
+        <div class="district-label label-gaoxin">高新区</div>
+
+        <div class="heat-point h1"></div>
+        <div class="heat-point h2"></div>
+        <div class="heat-point h3"></div>
+        <div class="heat-point h4"></div>
+        <div class="heat-point h5"></div>
+        <div class="heat-point h6"></div>
+
+        <div class="marker green m1"></div>
+        <div class="marker red m2"></div>
+        <div class="marker orange m3"></div>
+        <div class="marker green m4"></div>
+        <div class="marker gray m5"></div>
+        <div class="marker green m6"></div>
+        <div class="marker green m7"></div>
+        <div class="marker green m8"></div>
+        <div class="marker gray m9"></div>
+        <div class="marker green m10"></div>
+        <div class="marker green m11"></div>
+        <div class="marker gray m12"></div>
+        <div class="marker gray m13"></div>
+        <div class="marker green m14"></div>
+        <div class="marker green m15"></div>
+        <div class="marker green m16"></div>
+        <div class="marker green m17"></div>
+        <div class="marker orange m18"></div>
+
+        <article class="incident-card">
+          <span class="card-close">×</span>
+          <h3 class="incident-title">违规事件</h3>
+          <div class="detail-row"><span class="detail-label">事件编号</span><span class="detail-value">EVT202608240036</span></div>
+          <div class="detail-row"><span class="detail-label">发生时间</span><span class="detail-value">15:36:24</span></div>
+          <div class="detail-row"><span class="detail-label">风险等级</span><span class="risk-badge">高风险</span></div>
+          <img class="incident-photo export-reference-asset-3" src="./assets/incident_cigarette_photo.png" alt="incident_cigarette_photo">
+          <p class="incident-note">建议派发附近环卫人员处置</p>
+          <button class="outline-action">查看事件</button>
+        </article>
+
+        <article class="camera-card">
+          <span class="card-close">×</span>
+          <h3 class="camera-title">CAM-037 民权路点位</h3>
+          <div class="detail-row"><span class="detail-label">设备类型</span><span class="detail-value">高清摄像头</span></div>
+          <div class="detail-row"><span class="detail-label">所属区域</span><span class="detail-value">涌河区</span></div>
+          <div class="detail-row"><span class="detail-label">运行状态</span><span class="online-badge">在线</span></div>
+          <div class="detail-row"><span class="detail-label">最后上报</span><span class="detail-value">2026-08-24 15:41:52</span></div>
+          <img class="camera-photo export-reference-asset-4" src="./assets/urban_traffic_camera_photo.png" alt="urban_traffic_camera_photo">
+          <div class="camera-actions">
+            <button class="secondary">查看设备</button>
+            <button class="primary">打开实时监控</button>
+          </div>
+        </article>
+
+        <div class="selection-area" aria-label="框选区域">
+          <span class="selection-handle handle-tl"></span>
+          <span class="selection-handle handle-tm"></span>
+          <span class="selection-handle handle-tr"></span>
+          <span class="selection-handle handle-bl"></span>
+          <span class="selection-handle handle-bm"></span>
+          <span class="selection-handle handle-br"></span>
+        </div>
+
+        <article class="selection-card">
+          <span class="selection-close">×</span>
+          <h3 class="selection-card-title">框选区域统计</h3>
+          <div class="selection-metrics">
+            <div><div class="metric-label">事件总数</div><div class="metric-value metric-red">128</div></div>
+            <div><div class="metric-label">待处置</div><div class="metric-value metric-orange">23</div></div>
+            <div><div class="metric-label">在线设备</div><div class="metric-value metric-green">46</div></div>
+            <div><div class="metric-label">平均闭环率</div><div class="metric-value metric-blue">92.6%</div></div>
+          </div>
+          <button class="selection-detail">查看区域详情</button>
+        </article>
+
+        <div class="zoom-controls">
+          <button class="zoom-button">+</button>
+          <button class="zoom-button">−</button>
+        </div>
+        <button class="locate-button" aria-label="定位">
+          <svg class="simple-icon" viewBox="0 0 24 24" fill="none">
+            <circle cx="12" cy="12" r="5" stroke="currentColor" stroke-width="1.7"></circle>
+            <circle cx="12" cy="12" r="1.5" fill="currentColor"></circle>
+            <path d="M12 3v3M12 18v3M3 12h3M18 12h3" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"></path>
+          </svg>
+        </button>
+        <button class="layers-button" aria-label="图层">
+          <svg class="simple-icon" viewBox="0 0 24 24" fill="none">
+            <path d="m12 4 8 4-8 4-8-4 8-4Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"></path>
+            <path d="m4 12 8 4 8-4M4 16l8 4 8-4" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"></path>
+          </svg>
+        </button>
+        <button class="fullscreen-button" aria-label="全屏">
+          <svg class="simple-icon" viewBox="0 0 24 24" fill="none">
+            <path d="M9 4H4v5M15 4h5v5M9 20H4v-5M20 15v5h-5" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"></path>
+            <path d="m4 4 5 5M20 4l-5 5M4 20l5-5M20 20l-5-5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"></path>
+          </svg>
+        </button>
+
+        <div class="scale-bar">
+          <div class="scale-labels"><span>0</span><span>500</span><span>1000</span><span>1500</span></div>
+          <div class="scale-line"></div>
+        </div>
+        <div class="risk-legend">
+          <span>风险值</span><span>低</span><span class="risk-gradient"></span><span>高</span>
+        </div>
+      </section>
+    </main>
+  </div>
+</div>
+
+<script src="./script.js"></script><script src="../shared/product-nav.js?v=4.1"></script></body></html>

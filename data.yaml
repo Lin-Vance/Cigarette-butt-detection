@@ -1,0 +1,8 @@
+# 吸烟检测数据集配置（已修复路径）
+path: G:/科研数据集/datasets   # 数据集根目录（绝对路径，最稳）
+train: train/images             # 训练集图片（标签自动对应 train/labels）
+val: val/images                 # 验证集图片（标签自动对应 val/labels）
+
+# 类别数量与名称（编号 0/1/2 与标签文件一致）
+nc: 3
+names: ['cigarette', 'hand', 'person']

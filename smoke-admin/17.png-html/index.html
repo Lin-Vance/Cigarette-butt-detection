@@ -1,0 +1,311 @@
+<!doctype html>
+<html lang="zh-CN"><head><meta charset="UTF-8">
+  
+  <title>烟踪智治全平台基础配置</title>
+  
+<meta name="viewport" content="width=device-width, initial-scale=1"><link rel="stylesheet" href="./styles.css"></head>
+<body>
+  <div class="fit-shell">
+    <div class="fit-box">
+      <main class="screen export-inline-style-1">
+        <header class="topbar">
+          <img class="platform-logo export-reference-asset-1" src="./assets/yanzong_admin_platform_logo.png" alt="yanzong_admin_platform_logo">
+
+          <nav class="primary-nav" aria-label="主导航">
+            <div class="nav-item">态势总览</div>
+            <div class="nav-item">事件中心</div>
+            <div class="nav-item">调度中心</div>
+            <div class="nav-item">全域地图</div>
+            <div class="nav-item">资源管理</div>
+            <div class="nav-item">AI治理</div>
+            <div class="nav-item active">系统管理</div>
+          </nav>
+
+          <div class="header-time">2026-08-24 19:06:28</div>
+
+          <svg class="bell-icon svg-stroke" viewBox="0 0 25 25" aria-hidden="true">
+            <path d="M7 18h11"></path>
+            <path d="M8.3 17.5V10a4.2 4.2 0 0 1 8.4 0v7.5"></path>
+            <path d="M6.4 18.3h12.2"></path>
+            <path d="M10.5 21a2 2 0 0 0 4 0"></path>
+          </svg>
+
+          <div class="user-area">
+            <img class="admin-avatar export-reference-asset-3" src="./assets/super_admin_avatar.png" alt="super_admin_avatar">
+            <span>超级管理员</span>
+            <button class="logout-button">退出</button>
+          </div>
+
+          <div class="system-menu" aria-label="系统管理菜单">
+            <div class="system-menu-item">权限与账号</div>
+            <div class="system-menu-item selected">系统配置</div>
+            <div class="system-menu-item">审计日志</div>
+          </div>
+        </header>
+
+        <section class="content-panel configuration-panel" aria-labelledby="configuration-title">
+          <div class="panel-heading">
+            <h1 id="configuration-title">全平台基础配置</h1>
+            <p>统一控制“超级管理员后台、区域管理员后台、市民前端”三端的基础配置</p>
+          </div>
+          <div class="panel-divider"></div>
+
+          <label class="field-label system-name-label">系统名称</label>
+          <input class="text-input system-name-input" value="烟踪智治超级管理员平台主管" readonly="">
+
+          <label class="field-label ai-switch-label">全局AI告警总开关</label>
+          <div class="switch" aria-label="开启">
+            <span>ON</span>
+          </div>
+
+          <label class="field-label push-label">告警消息推送</label>
+          <div class="checkbox-group">
+            <div class="check-item">
+              <span class="check-box"></span>
+              <span>站内通知</span>
+            </div>
+            <div class="check-item">
+              <span class="check-box"></span>
+              <span>浏览器通知</span>
+            </div>
+          </div>
+
+          <div class="logo-upload">
+            <img class="uploaded-logo export-reference-asset-2" src="./assets/uploaded_platform_logo_preview.png" alt="uploaded_platform_logo_preview">
+            <span class="logo-filename">yanzong-logo.svg</span>
+            <span class="logo-help">支持 SVG、PNG，建议 256×256</span>
+            <button class="outline-button choose-file">选择文件</button>
+            <button class="outline-button remove-file">移除</button>
+          </div>
+
+          <label class="pagination-label admin-page-label">管理员后台表格默认分页条数</label>
+          <div class="select-field admin-page-select">
+            <span>10条/页</span>
+            <svg class="select-chevron svg-stroke" viewBox="0 0 12 12" aria-hidden="true">
+              <path d="m2.5 4.5 3.5 3 3.5-3"></path>
+            </svg>
+          </div>
+
+          <label class="pagination-label citizen-page-label">市民前端列表分页条数</label>
+          <div class="select-field citizen-page-select">
+            <span>10条/页</span>
+            <svg class="select-chevron svg-stroke" viewBox="0 0 12 12" aria-hidden="true">
+              <path d="m2.5 4.5 3.5 3 3.5-3"></path>
+            </svg>
+          </div>
+
+          <button class="outline-button restore-button">恢复默认</button>
+          <button class="primary-button save-system">保存系统设置</button>
+        </section>
+
+        <section class="content-panel feedback-panel" aria-labelledby="feedback-title">
+          <div class="panel-heading feedback-heading">
+            <h2 id="feedback-title">用户反馈管理</h2>
+          </div>
+
+          <div class="status-tabs">
+            <button class="status-tab active">全部状态</button>
+            <button class="status-tab">待处理</button>
+            <button class="status-tab">已处理</button>
+          </div>
+
+          <div class="feedback-search">
+            <span>请输入反馈内容或提交人</span>
+            <svg class="svg-stroke" viewBox="0 0 18 18" aria-hidden="true">
+              <circle cx="7.7" cy="7.7" r="4.3"></circle>
+              <path d="m11 11 3.8 3.8"></path>
+            </svg>
+          </div>
+          <button class="outline-button search-button">查询</button>
+          <button class="outline-button reset-button">重置</button>
+
+          <table class="feedback-table">
+            <thead>
+              <tr>
+                <th>提交时间</th>
+                <th>提交人</th>
+                <th>反馈内容</th>
+                <th>所属区域</th>
+                <th>反馈状态</th>
+                <th>操作</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>2026-08-24 18:42:15</td>
+                <td>张女士</td>
+                <td>地图加载较慢，部分区域数据未显示</td>
+                <td>芝罘区</td>
+                <td><span class="status-badge pending">待处理</span></td>
+                <td>
+                  <button class="table-action">查看详情</button>
+                  <button class="table-action">填写处理备注</button>
+                  <button class="table-action mark">标记已处理</button>
+                </td>
+              </tr>
+              <tr>
+                <td>2026-08-24 17:21:09</td>
+                <td>李先生</td>
+                <td>事件上报后没有收到处理反馈</td>
+                <td>莱山区</td>
+                <td><span class="status-badge done">已处理</span></td>
+                <td>
+                  <button class="table-action">查看详情</button>
+                  <button class="table-action">填写处理备注</button>
+                  <button class="table-action mark">标记已处理</button>
+                </td>
+              </tr>
+              <tr>
+                <td>2026-08-24 16:05:33</td>
+                <td>王女士</td>
+                <td>移动端页面显示异常，按钮无法点击</td>
+                <td>牟平区</td>
+                <td><span class="status-badge pending">待处理</span></td>
+                <td>
+                  <button class="table-action">查看详情</button>
+                  <button class="table-action">填写处理备注</button>
+                  <button class="table-action mark">标记已处理</button>
+                </td>
+              </tr>
+              <tr>
+                <td>2026-08-24 15:12:47</td>
+                <td>赵先生</td>
+                <td>建议增加夜间模式，优化用户体验</td>
+                <td>福山区</td>
+                <td><span class="status-badge done">已处理</span></td>
+                <td>
+                  <button class="table-action">查看详情</button>
+                  <button class="table-action">填写处理备注</button>
+                  <button class="table-action mark">标记已处理</button>
+                </td>
+              </tr>
+              <tr>
+                <td>2026-08-24 14:33:58</td>
+                <td>孙女士</td>
+                <td>报表导出格式错乱，无法正常查看</td>
+                <td>开发区</td>
+                <td><span class="status-badge pending">待处理</span></td>
+                <td>
+                  <button class="table-action">查看详情</button>
+                  <button class="table-action">填写处理备注</button>
+                  <button class="table-action mark">标记已处理</button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+
+          <div class="feedback-pagination">
+            <span>共 23 条</span>
+            <span class="page-arrow">
+              <svg class="svg-stroke" viewBox="0 0 12 12" width="12" height="12">
+                <path d="m7.5 2.5-3 3.5 3 3.5"></path>
+              </svg>
+            </span>
+            <span class="page-box current">1</span>
+            <span class="page-box">2</span>
+            <span class="page-box">3</span>
+            <span class="page-arrow">
+              <svg class="svg-stroke" viewBox="0 0 12 12" width="12" height="12">
+                <path d="m4.5 2.5 3 3.5-3 3.5"></path>
+              </svg>
+            </span>
+            <span class="page-size">
+              <span>10条/页</span>
+              <svg class="select-chevron svg-stroke" viewBox="0 0 12 12">
+                <path d="m2.5 4.5 3.5 3 3.5-3"></path>
+              </svg>
+            </span>
+            <span>跳至</span>
+            <span class="jump-input">1</span>
+            <span>页</span>
+          </div>
+        </section>
+
+        <section class="content-panel public-content-panel" aria-labelledby="public-content-title">
+          <div class="panel-heading public-heading">
+            <h2 id="public-content-title">全平台公共内容配置</h2>
+            <p>配置后台系统与市民前端共享的提示文案与报表模板文字</p>
+          </div>
+          <div class="panel-divider"></div>
+
+          <div class="editor-label backend-label">后台系统提示文案</div>
+          <div class="editor-label citizen-label">市民前端提示文案</div>
+          <div class="editor-label report-label">报表导出模板文字</div>
+
+          <div class="editor backend-editor">
+            <div class="editor-toolbar">
+              <strong>B</strong>
+              <span class="toolbar-italic">I</span>
+              <span class="toolbar-underline">U</span>
+              <span class="toolbar-divider"></span>
+              <span>☷</span>
+              <span>≡</span>
+              <span class="toolbar-divider"></span>
+              <span>↗</span>
+              <span class="toolbar-divider"></span>
+              <span>↶</span>
+              <span class="export-inline-style-2">↷</span>
+            </div>
+            <div class="editor-body">
+              文明吸烟，共建清洁城市。请及时关注高风险事件与待处置任务。
+              <span class="editor-counter">32/200</span>
+            </div>
+          </div>
+
+          <div class="editor citizen-editor">
+            <div class="editor-toolbar">
+              <strong>B</strong>
+              <span class="toolbar-italic">I</span>
+              <span class="toolbar-underline">U</span>
+              <span class="toolbar-divider"></span>
+              <span>☷</span>
+              <span>≡</span>
+              <span class="toolbar-divider"></span>
+              <span>↗</span>
+              <span class="toolbar-divider"></span>
+              <span>↶</span>
+              <span class="export-inline-style-3">↷</span>
+            </div>
+            <div class="editor-body">
+              共建无烟环境，守护健康生活。感谢您的理解与支持！
+              <span class="editor-counter">26/200</span>
+            </div>
+          </div>
+
+          <div class="editor report-editor">
+            <div class="editor-toolbar">
+              <strong>B</strong>
+              <span class="toolbar-italic">I</span>
+              <span class="toolbar-underline">U</span>
+              <span class="toolbar-divider"></span>
+              <span>☷</span>
+              <span>≡</span>
+              <span class="toolbar-divider"></span>
+              <span>↗</span>
+              <span class="toolbar-divider"></span>
+              <span class="export-inline-style-4">↶</span>
+              <span class="export-inline-style-5">↷</span>
+            </div>
+            <div class="editor-body">
+              烟踪智治城市无烟治理分析报告｜统计周期：{date_range}｜<br>
+              生成单位：{organization}
+              <div class="token-line">
+                可用变量：
+                <span class="token">{date_range}</span>
+                <span class="token">{organization}</span>
+                <span class="token">{operator}</span>
+              </div>
+            </div>
+          </div>
+
+          <label class="copyright-label">页脚版权信息</label>
+          <input class="text-input copyright-input" value="© 2026 烟踪智治城市治理平台" readonly="">
+
+          <button class="outline-button preview-public">预览公共内容</button>
+          <button class="primary-button save-public">保存公共内容</button>
+        </section>
+      </main>
+    </div>
+  </div>
+
+<script src="./script.js"></script><script src="../shared/product-nav.js?v=4.1"></script></body></html>

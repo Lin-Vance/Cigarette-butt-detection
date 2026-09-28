@@ -1,0 +1,273 @@
+<!doctype html>
+<html lang="zh-CN"><head><meta charset="UTF-8">
+
+<title>调度记录管理</title>
+
+<meta name="viewport" content="width=device-width, initial-scale=1"><link rel="stylesheet" href="./styles.css"></head>
+<body>
+<div class="fit-shell">
+  <div class="fit-box">
+    <main class="screen export-inline-style-1">
+      <header class="topbar">
+        <img class="brand-logo export-reference-asset-1" src="./assets/yanlian_zhizhi_logo.png" alt="yanlian_zhizhi_logo">
+        <nav class="main-nav">
+          <div class="nav-item">态势总览</div>
+          <div class="nav-item">事件中心</div>
+          <div class="nav-item active">调度中心</div>
+          <div class="nav-item">全域地图</div>
+          <div class="nav-item">资源管理</div>
+          <div class="nav-item">AI治理</div>
+          <div class="nav-item">系统管理</div>
+        </nav>
+
+        <div class="dispatch-menu">
+          <div class="dispatch-menu-item">任务池</div>
+          <div class="dispatch-menu-item selected">调度记录</div>
+        </div>
+
+        <div class="header-time">2026-08-24 15:08:36</div>
+        <svg class="notification-icon" viewBox="0 0 26 27" fill="none" stroke="#14234c" stroke-width="1.8">
+          <path d="M5 19.5h16c-1.8-1.6-2.2-3.8-2.2-7.1 0-4.1-2.1-6.7-5.8-6.7S7.2 8.3 7.2 12.4c0 3.3-.4 5.5-2.2 7.1Z"></path>
+          <path d="M10.5 22c.5 1.3 1.4 2 2.5 2s2-.7 2.5-2M13 2v3.7"></path>
+        </svg>
+        <img class="user-avatar export-reference-asset-2" src="./assets/super_admin_avatar.png" alt="super_admin_avatar">
+        <div class="user-name">超级管理员</div>
+        <button class="logout-btn">退出</button>
+      </header>
+
+      <section class="overview">
+        <div class="metric metric-history">
+          <span class="metric-label">历史记录</span><span class="metric-value">12,568</span>
+        </div>
+        <div class="metric metric-today">
+          <span class="metric-label">今日完成</span><span class="metric-value">126</span>
+        </div>
+        <div class="metric metric-success">
+          <span class="metric-label">处置成功率</span><span class="metric-value">96.8%</span>
+        </div>
+        <button class="export-all">
+          <svg width="22" height="22" viewBox="0 0 22 22" fill="none" stroke="#06aeb5" stroke-width="1.8">
+            <path d="M11 3v11M6.5 10l4.5 4.5 4.5-4.5M4 12.5v5h14v-5"></path>
+          </svg>
+          导出全部历史调度记录
+        </button>
+      </section>
+
+      <section class="filter-panel">
+        <h2 class="panel-title">调度记录筛选</h2>
+
+        <div class="field date-field">
+          <label class="field-label">时间区间</label>
+          <div class="field-box date-box">
+            <span>2026-08-18</span>
+            <span class="date-separator">至</span>
+            <span>2026-08-24</span>
+            <svg class="calendar-icon" viewBox="0 0 20 20" fill="none" stroke="#506589" stroke-width="1.5">
+              <rect x="2.5" y="4.5" width="15" height="13" rx="1.5"></rect>
+              <path d="M5.5 2.5v4M14.5 2.5v4M2.5 8h15"></path>
+            </svg>
+          </div>
+        </div>
+
+        <div class="field region-field">
+          <label class="field-label">所属区域</label>
+          <div class="field-box region-box">
+            全部区域
+            <svg class="field-chevron" viewBox="0 0 13 8" fill="none" stroke="#53688e" stroke-width="1.5">
+              <path d="m1.5 1.5 5 5 5-5"></path>
+            </svg>
+          </div>
+        </div>
+
+        <div class="field status-field">
+          <label class="field-label">处置状态</label>
+          <div class="field-box status-box">
+            全部状态
+            <svg class="field-chevron" viewBox="0 0 13 8" fill="none" stroke="#53688e" stroke-width="1.5">
+              <path d="m1.5 1.5 5 5 5-5"></path>
+            </svg>
+          </div>
+        </div>
+
+        <div class="status-tip">支持 已完成、处置失败、已取消</div>
+
+        <div class="field search-field">
+          <div class="field-box search-box">
+            <span>请输入记录编号或任务编号</span>
+            <svg class="search-icon" viewBox="0 0 20 20" fill="none" stroke="#53688e" stroke-width="1.5">
+              <circle cx="8.7" cy="8.7" r="5.8"></circle>
+              <path d="m13 13 4.2 4.2"></path>
+            </svg>
+          </div>
+        </div>
+
+        <button class="reset-button">重置</button>
+        <button class="query-button">查询</button>
+        <button class="refresh-button">
+          <svg width="23" height="23" viewBox="0 0 23 23" fill="none" stroke="#14234c" stroke-width="1.7">
+            <path d="M18.7 9.4A7.6 7.6 0 1 0 19 14"></path>
+            <path d="M18.7 4.8v5.1h-5"></path>
+          </svg>
+        </button>
+      </section>
+
+      <section class="history-panel">
+        <div class="history-heading">
+          <strong>历史调度记录</strong>
+          <span>共 12,568 条记录</span>
+        </div>
+
+        <div class="table-actions">
+          <button class="table-export">
+            <svg width="21" height="21" viewBox="0 0 21 21" fill="none" stroke="#1467e9" stroke-width="1.7">
+              <path d="M10.5 2.5v10.7M6.2 9.2l4.3 4.3 4.3-4.3M3.5 11.5v5h14v-5"></path>
+            </svg>
+            导出记录
+          </button>
+          <button class="square-action">
+            <svg width="22" height="22" viewBox="0 0 22 22" fill="none" stroke="#14234c" stroke-width="1.6">
+              <path d="M17.8 8.9A7 7 0 1 0 18 13"></path>
+              <path d="M17.8 4.6v4.6h-4.6"></path>
+            </svg>
+          </button>
+          <button class="square-action">
+            <svg width="22" height="22" viewBox="0 0 22 22" fill="none" stroke="#14234c" stroke-width="1.5">
+              <path d="m11 3 1.2 1.9 2.2.4.5 2.2 1.8 1.3-1.1 2 1.1 2-1.8 1.3-.5 2.2-2.2.4L11 18l-1.2-1.9-2.2-.4-.5-2.2-1.8-1.3 1.1-2-1.1-2 1.8-1.3.5-2.2 2.2-.4L11 3Z"></path>
+              <circle cx="11" cy="10.8" r="2.5"></circle>
+            </svg>
+          </button>
+        </div>
+
+        <div class="data-table">
+          <div class="table-row header">
+            <div class="cell checkbox-cell"><span class="checkbox"></span></div>
+            <div class="cell">记录编号</div>
+            <div class="cell">关联任务编号</div>
+            <div class="cell">处置人员</div>
+            <div class="cell">处置时间</div>
+            <div class="cell">处置结果</div>
+            <div class="cell">备注</div>
+            <div class="cell center">操作</div>
+          </div>
+
+          <div class="table-row highlight">
+            <div class="cell checkbox-cell"><span class="checkbox"></span></div>
+            <div class="cell">DSP202608240001</div>
+            <div class="cell">TSK202608230015</div>
+            <div class="cell">张伟</div>
+            <div class="cell">2026-08-24 14:52:36</div>
+            <div class="cell"><span class="result-badge result-success">已完成</span></div>
+            <div class="cell">现场烟头已清理，上传处置照片</div>
+            <div class="cell center"><button class="detail-button">查看详情 <svg class="detail-chevron" viewBox="0 0 9 14" fill="none" stroke="#1467e9" stroke-width="1.7"><path d="m2 2 5 5-5 5"></path></svg></button></div>
+          </div>
+
+          <div class="table-row">
+            <div class="cell checkbox-cell"><span class="checkbox"></span></div>
+            <div class="cell">DSP202608240002</div>
+            <div class="cell">TSK202608230016</div>
+            <div class="cell">李强</div>
+            <div class="cell">2026-08-24 14:35:12</div>
+            <div class="cell"><span class="result-badge result-success">已完成</span></div>
+            <div class="cell">点位复核完成，任务闭环</div>
+            <div class="cell center"><button class="detail-button">查看详情 <svg class="detail-chevron" viewBox="0 0 9 14" fill="none" stroke="#1467e9" stroke-width="1.7"><path d="m2 2 5 5-5 5"></path></svg></button></div>
+          </div>
+
+          <div class="table-row">
+            <div class="cell checkbox-cell"><span class="checkbox"></span></div>
+            <div class="cell">DSP202608240003</div>
+            <div class="cell">TSK202608230017</div>
+            <div class="cell">王敏</div>
+            <div class="cell">2026-08-24 14:12:48</div>
+            <div class="cell"><span class="result-badge result-failed">处置失败</span></div>
+            <div class="cell">设备异常，转交维护组</div>
+            <div class="cell center"><button class="detail-button">查看详情 <svg class="detail-chevron" viewBox="0 0 9 14" fill="none" stroke="#1467e9" stroke-width="1.7"><path d="m2 2 5 5-5 5"></path></svg></button></div>
+          </div>
+
+          <div class="table-row">
+            <div class="cell checkbox-cell"><span class="checkbox"></span></div>
+            <div class="cell">DSP202608240004</div>
+            <div class="cell">TSK202608230018</div>
+            <div class="cell">陈亮</div>
+            <div class="cell">2026-08-24 13:58:39</div>
+            <div class="cell"><span class="result-badge result-cancelled">已取消</span></div>
+            <div class="cell">天气原因取消任务</div>
+            <div class="cell center"><button class="detail-button">查看详情 <svg class="detail-chevron" viewBox="0 0 9 14" fill="none" stroke="#1467e9" stroke-width="1.7"><path d="m2 2 5 5-5 5"></path></svg></button></div>
+          </div>
+
+          <div class="table-row">
+            <div class="cell checkbox-cell"><span class="checkbox"></span></div>
+            <div class="cell">DSP202608240005</div>
+            <div class="cell">TSK202608230019</div>
+            <div class="cell">赵磊</div>
+            <div class="cell">2026-08-24 13:24:05</div>
+            <div class="cell"><span class="result-badge result-success">已完成</span></div>
+            <div class="cell">现场清理完毕，周边无复燃</div>
+            <div class="cell center"><button class="detail-button">查看详情 <svg class="detail-chevron" viewBox="0 0 9 14" fill="none" stroke="#1467e9" stroke-width="1.7"><path d="m2 2 5 5-5 5"></path></svg></button></div>
+          </div>
+
+          <div class="table-row">
+            <div class="cell checkbox-cell"><span class="checkbox"></span></div>
+            <div class="cell">DSP202608240006</div>
+            <div class="cell">TSK202608230020</div>
+            <div class="cell">孙涛</div>
+            <div class="cell">2026-08-24 12:47:33</div>
+            <div class="cell"><span class="result-badge result-success">已完成</span></div>
+            <div class="cell">联合执法劝导，教育后整改</div>
+            <div class="cell center"><button class="detail-button">查看详情 <svg class="detail-chevron" viewBox="0 0 9 14" fill="none" stroke="#1467e9" stroke-width="1.7"><path d="m2 2 5 5-5 5"></path></svg></button></div>
+          </div>
+
+          <div class="table-row">
+            <div class="cell checkbox-cell"><span class="checkbox"></span></div>
+            <div class="cell">DSP202608240007</div>
+            <div class="cell">TSK202608230021</div>
+            <div class="cell">张伟</div>
+            <div class="cell">2026-08-24 11:33:21</div>
+            <div class="cell"><span class="result-badge result-failed">处置失败</span></div>
+            <div class="cell">当事人不配合，已上报处理</div>
+            <div class="cell center"><button class="detail-button">查看详情 <svg class="detail-chevron" viewBox="0 0 9 14" fill="none" stroke="#1467e9" stroke-width="1.7"><path d="m2 2 5 5-5 5"></path></svg></button></div>
+          </div>
+
+          <div class="table-row">
+            <div class="cell checkbox-cell"><span class="checkbox"></span></div>
+            <div class="cell">DSP202608240008</div>
+            <div class="cell">TSK202608230022</div>
+            <div class="cell">李强</div>
+            <div class="cell">2026-08-24 10:15:09</div>
+            <div class="cell"><span class="result-badge result-cancelled">已取消</span></div>
+            <div class="cell">任务重复派发，已取消</div>
+            <div class="cell center"><button class="detail-button">查看详情 <svg class="detail-chevron" viewBox="0 0 9 14" fill="none" stroke="#1467e9" stroke-width="1.7"><path d="m2 2 5 5-5 5"></path></svg></button></div>
+          </div>
+        </div>
+
+        <div class="pagination">
+          <span class="total-count">共 12,568 条</span>
+          <div class="page-size">10条/页
+            <svg width="12" height="8" viewBox="0 0 12 8" fill="none" stroke="#53688e" stroke-width="1.5"><path d="m1 1.5 5 5 5-5"></path></svg>
+          </div>
+          <div class="page-controls">
+            <button class="page-button">
+              <svg width="8" height="14" viewBox="0 0 8 14" fill="none" stroke="#14234c" stroke-width="1.5"><path d="m6.5 2-5 5 5 5"></path></svg>
+            </button>
+            <span class="page-number current">1</span>
+            <span class="page-number">2</span>
+            <span class="page-number">3</span>
+            <span class="page-number">4</span>
+            <span class="page-number">5</span>
+            <span class="page-ellipsis">...</span>
+            <span class="page-number">1257</span>
+            <button class="page-button">
+              <svg width="8" height="14" viewBox="0 0 8 14" fill="none" stroke="#14234c" stroke-width="1.5"><path d="m1.5 2 5 5-5 5"></path></svg>
+            </button>
+          </div>
+          <div class="go-page">
+            <span>前往</span>
+            <span class="go-input">1</span>
+            <span>页</span>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+</div>
+
+<script src="./script.js"></script><script src="../shared/product-nav.js?v=4.1"></script></body></html>

@@ -1,0 +1,208 @@
+/* ============================================================
+   后台页面通用类
+   仅放跨页面复用的原子类（按钮 / 表单控件 / 进度条 / 页面骨架），
+   结构与业务样式写在组件 scoped 样式内。颜色一律取自 tokens.css。
+   ============================================================ */
+
+/* ---- 页面骨架 ---- */
+.ad-page {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 20px 24px 24px;
+  overflow: auto;
+}
+
+.ad-head {
+  display: flex;
+  align-items: flex-end;
+  gap: 12px;
+  flex: none;
+}
+.ad-title {
+  font-size: 20px;
+  font-weight: 700;
+  line-height: 1.3;
+  color: var(--yz-text-strong);
+}
+.ad-sub {
+  font-size: 12px;
+  color: var(--yz-text-muted);
+  padding-bottom: 2px;
+}
+.ad-actions {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.ad-row {
+  display: flex;
+  gap: 12px;
+  min-height: 0;
+}
+.ad-col {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  min-height: 0;
+}
+.ad-grow {
+  flex: 1;
+  min-width: 0;
+}
+
+/* ---- 按钮 ---- */
+.ad-btn {
+  height: 32px;
+  padding: 0 14px;
+  border: 1px solid var(--yz-border-soft);
+  border-radius: var(--yz-radius-btn);
+  background: #fff;
+  color: var(--yz-text-2);
+  font-size: 13px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  white-space: nowrap;
+  transition:
+    border-color 0.16s,
+    color 0.16s,
+    background 0.16s;
+}
+.ad-btn:hover {
+  border-color: var(--yz-primary);
+  color: var(--yz-primary);
+}
+.ad-btn--primary {
+  border-color: transparent;
+  color: #fff;
+  background: linear-gradient(100deg, #087cf0, #05bd8d);
+}
+.ad-btn--primary:hover {
+  color: #fff;
+  filter: brightness(1.05);
+}
+.ad-btn--ghost {
+  background: transparent;
+}
+.ad-btn--sm {
+  height: 26px;
+  padding: 0 10px;
+  font-size: 12px;
+}
+.ad-btn--icon {
+  width: 32px;
+  padding: 0;
+}
+.ad-btn--icon.ad-btn--sm {
+  width: 26px;
+}
+
+.ad-link {
+  color: var(--yz-primary);
+  font-size: 12px;
+  background: none;
+  border: 0;
+  padding: 0;
+}
+.ad-link:hover {
+  text-decoration: underline;
+}
+
+/* ---- 表单控件 ---- */
+.ad-ctrl {
+  height: 32px;
+  min-width: 120px;
+  padding: 0 10px;
+  border: 1px solid var(--yz-border-soft);
+  border-radius: var(--yz-radius-input);
+  background: #fff;
+  color: var(--yz-text-2);
+  font-size: 13px;
+  outline: none;
+  transition: border-color 0.16s, box-shadow 0.16s;
+}
+.ad-ctrl:focus {
+  border-color: var(--yz-primary);
+  box-shadow: 0 0 0 2px var(--yz-primary-soft);
+}
+.ad-ctrl::placeholder {
+  color: var(--yz-text-placeholder);
+}
+select.ad-ctrl {
+  padding-right: 6px;
+  cursor: pointer;
+}
+
+/* ---- 进度条 ---- */
+.ad-bar {
+  display: inline-block;
+  width: 92px;
+  height: 7px;
+  border-radius: 7px;
+  background: #e4ebf0;
+  overflow: hidden;
+  vertical-align: middle;
+}
+.ad-bar i {
+  display: block;
+  height: 100%;
+  border-radius: 7px;
+  background: linear-gradient(90deg, #238aff, #32be88);
+}
+
+/* ---- 只读 / 演示标识 ---- */
+.ad-badge {
+  display: inline-flex;
+  align-items: center;
+  height: 22px;
+  padding: 0 9px;
+  border-radius: var(--yz-radius-pill);
+  border: 1px solid var(--yz-border-soft);
+  background: #fff;
+  font-size: 11px;
+  color: var(--yz-text-muted);
+}
+
+/* ---- 环形图（纯 CSS，避免为小图引 ECharts） ---- */
+.ad-ring {
+  position: relative;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+}
+.ad-ring::after {
+  content: '';
+  position: absolute;
+  inset: 8px;
+  background: #f8fbfd;
+  border-radius: 50%;
+}
+.ad-ring > * {
+  position: relative;
+  z-index: 1;
+}
+
+/* ---- 滚动区域 ---- */
+.ad-scroll {
+  overflow: auto;
+  min-height: 0;
+}
+
+/* ---- 窄屏：页头改为上下堆叠，避免标题说明与右侧徽标挤在一行 ---- */
+@media (max-width: 640px) {
+  .ad-head {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+  .ad-actions {
+    margin-left: 0;
+    flex-wrap: wrap;
+  }
+}

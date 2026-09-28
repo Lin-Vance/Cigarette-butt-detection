@@ -1,0 +1,134 @@
+/* ============================================================
+   烟踪智治 · 设计令牌
+   全部数值提取自 smoke-admin/ 现有 18 页设计稿的 styles.css，
+   作为 Vue3 重建时的视觉规范来源（见 docs/烟踪智治-文档缺陷与修订说明.md C4）。
+   禁止在组件内写死颜色，一律引用此处变量。
+   ============================================================ */
+
+:root {
+  /* ---- 画布 ---- */
+  --yz-design-w: 1672;
+  --yz-design-h: 941;
+  --yz-viewport-bg: #dfe6ed;
+  --yz-canvas-bg: linear-gradient(135deg, #f2f8fc 0%, #eef5fa 52%, #eaf2f8 100%);
+  --yz-login-bg: linear-gradient(
+    118deg,
+    rgba(248, 255, 254, 0.88) 0%,
+    rgba(227, 250, 255, 0.78) 38%,
+    rgba(201, 238, 255, 0.76) 100%
+  );
+
+  /* ---- 顶栏 ---- */
+  --yz-topbar-h: 60px;
+  --yz-topbar-bg: rgba(250, 253, 255, 0.97);
+  --yz-topbar-border: #d7e5f0;
+  --yz-topbar-shadow: 0 2px 7px rgba(57, 106, 146, 0.08);
+
+  /* ---- 主色 ---- */
+  --yz-primary: #087ce0;
+  --yz-primary-deep: #1262e8;
+  --yz-primary-strong: #216eff;
+  --yz-primary-soft: #eaf5ff;
+  --yz-primary-grad: linear-gradient(100deg, #216eff 0%, #4baedb 56%, #80eaa3 100%);
+  --yz-accent-cyan: #4baedb;
+  --yz-accent-green: #80eaa3;
+
+  /* ---- 语义色 ---- */
+  --yz-success: #1d9e75;
+  --yz-warning: #ba7517;
+  --yz-danger: #e24b4a;
+  --yz-danger-soft: #fa3030;
+
+  /* ---- 文字 ---- */
+  --yz-text-1: #11295a;
+  --yz-text-title: #10275a;
+  --yz-text-strong: #172743;
+  --yz-text-2: #293b61;
+  --yz-text-body: #263952;
+  --yz-text-3: #1d3567;
+  --yz-text-muted: #64738e;
+  --yz-text-placeholder: #8591a6;
+
+  /* ---- 边框 ---- */
+  --yz-border: #bcc8d8;
+  --yz-border-soft: #cbdbe9;
+  --yz-border-faint: #d8e9f7;
+
+  /* ---- 玻璃拟态面板 ---- */
+  --yz-glass-panel: linear-gradient(
+    145deg,
+    rgba(255, 255, 255, 0.66),
+    rgba(239, 250, 255, 0.48)
+  );
+  --yz-glass-card: linear-gradient(
+    145deg,
+    rgba(255, 255, 255, 0.43),
+    rgba(233, 249, 255, 0.34)
+  );
+  --yz-glass-border: rgba(255, 255, 255, 0.9);
+  --yz-surface: #ffffff;
+  --yz-surface-alt: rgba(250, 253, 255, 0.97);
+
+  /* ---- 圆角 ---- */
+  --yz-radius-input: 9px;
+  --yz-radius-btn: 9px;
+  --yz-radius-tag: 5px;
+  --yz-radius-card: 14px;
+  --yz-radius-art: 20px;
+  --yz-radius-panel: 31px;
+  --yz-radius-pill: 999px;
+
+  /* ---- 投影 ---- */
+  --yz-shadow-card: 0 7px 14px rgba(76, 161, 220, 0.08);
+  --yz-shadow-panel: 0 8px 18px rgba(72, 135, 177, 0.12);
+  --yz-shadow-inset: inset 0 1px 0 rgba(255, 255, 255, 0.7);
+  --yz-shadow-pop: 0 10px 30px rgba(23, 63, 105, 0.16);
+
+  /* ---- 字体 ---- */
+  --yz-font: "Microsoft YaHei", "PingFang SC", Arial, sans-serif;
+  --yz-font-num: "DIN Alternate", "Bahnschrift", var(--yz-font);
+
+  /* ---- Element Plus 覆盖：外观必须服从设计稿，不得用 EP 默认色 ---- */
+  --el-color-primary: #087ce0;
+  --el-color-primary-light-3: #4aa3e9;
+  --el-color-primary-light-5: #83c0ef;
+  --el-color-primary-light-7: #bcdcf6;
+  --el-color-primary-light-8: #d9ebfa;
+  --el-color-primary-light-9: #eaf5ff;
+  --el-color-primary-dark-2: #0662b3;
+  --el-color-success: #1d9e75;
+  --el-color-warning: #ba7517;
+  --el-color-danger: #e24b4a;
+  --el-color-error: #e24b4a;
+  --el-text-color-primary: #172743;
+  --el-text-color-regular: #293b61;
+  --el-text-color-secondary: #64738e;
+  --el-text-color-placeholder: #8591a6;
+  --el-border-color: #bcc8d8;
+  --el-border-color-light: #cbdbe9;
+  --el-border-color-lighter: #d8e9f7;
+  --el-border-radius-base: 9px;
+  --el-border-radius-small: 5px;
+  --el-font-family: var(--yz-font);
+  --el-font-size-base: 14px;
+}
+
+/* 全站滚动条（设计稿风格：细灰蓝） */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #b9cbdc transparent;
+}
+*::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+*::-webkit-scrollbar-thumb {
+  background: #b9cbdc;
+  border-radius: 3px;
+}
+*::-webkit-scrollbar-thumb:hover {
+  background: #9db3c9;
+}
+*::-webkit-scrollbar-track {
+  background: transparent;
+}

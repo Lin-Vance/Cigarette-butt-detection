@@ -1,0 +1,314 @@
+<!doctype html>
+<html lang="zh-CN"><head><meta charset="UTF-8">
+
+<title>烟踪智治 - 调度中心任务池</title>
+
+<meta name="viewport" content="width=device-width, initial-scale=1"><link rel="stylesheet" href="./styles.css"></head>
+<body>
+<div class="fit-shell">
+  <div class="fit-box">
+    <main class="screen export-inline-style-1">
+      <header class="top-header">
+        <div class="brand-block">
+          <img class="smoke-trace-logo export-reference-asset-1" src="./assets/smoke_trace_governance_logo.png" alt="smoke_trace_governance_logo">
+        </div>
+
+        <nav class="main-navigation" aria-label="主导航">
+          <div class="nav-item">态势总览</div>
+          <div class="nav-item">事件中心</div>
+          <div class="nav-item active">调度中心</div>
+          <div class="nav-item">全域地图</div>
+          <div class="nav-item">资源管理</div>
+          <div class="nav-item">AI治理</div>
+          <div class="nav-item">系统管理</div>
+        </nav>
+
+        <div class="header-tools">
+          <time class="current-time">2026-08-24 14:36:28</time>
+
+          <button class="notification" type="button" aria-label="通知">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M5.2 16.8h13.6c-1.5-1.7-2-3.7-2-6.8 0-3-1.8-5.2-4.8-5.2S7.2 7 7.2 10c0 3.1-.5 5.1-2 6.8Z"></path>
+              <path d="M9.6 19.2c.5.9 1.3 1.4 2.4 1.4s1.9-.5 2.4-1.4"></path>
+              <path d="M10.7 3.2c.3-.5.7-.8 1.3-.8s1 .3 1.3.8"></path>
+            </svg>
+          </button>
+
+          <div class="administrator">
+            <img class="super-administrator-avatar export-reference-asset-2" src="./assets/super_administrator_avatar.png" alt="super_administrator_avatar">
+            <span class="administrator-name">超级管理员</span>
+          </div>
+
+          <button class="logout-button" type="button">退出</button>
+        </div>
+      </header>
+
+      <div class="dispatch-dropdown">
+        <div class="dropdown-option selected">任务池</div>
+        <div class="dropdown-option">调度记录</div>
+      </div>
+
+      <section class="summary-strip" aria-label="任务概览">
+        <div class="summary-metrics">
+          <div class="summary-item">
+            <span class="summary-label">待派发</span>
+            <strong class="summary-value blue">36</strong>
+          </div>
+          <div class="summary-item">
+            <span class="summary-label">执行中</span>
+            <strong class="summary-value green">82</strong>
+          </div>
+          <div class="summary-item">
+            <span class="summary-label">已超时</span>
+            <strong class="summary-value orange">8</strong>
+          </div>
+        </div>
+        <button class="batch-task-button" type="button">批量派发任务</button>
+      </section>
+
+      <section class="filter-panel" aria-labelledby="filter-title">
+        <h2 class="panel-title" id="filter-title">任务筛选</h2>
+
+        <div class="filter-field region-field">
+          <div class="field-label">所属区域</div>
+          <div class="select-control">
+            全部区域
+            <svg class="select-chevron" viewBox="0 0 14 9" aria-hidden="true">
+              <path d="M2 2.2 7 7l5-4.8"></path>
+            </svg>
+          </div>
+        </div>
+
+        <div class="filter-field status-field">
+          <div class="field-label">任务状态</div>
+          <div class="select-control">
+            全部状态
+            <svg class="select-chevron" viewBox="0 0 14 9" aria-hidden="true">
+              <path d="M2 2.2 7 7l5-4.8"></path>
+            </svg>
+          </div>
+          <p class="status-helper">包含：待派发、执行中、已完成、已超时</p>
+        </div>
+
+        <div class="filter-field level-field">
+          <div class="field-label">紧急等级</div>
+          <div class="select-control">
+            全部等级
+            <svg class="select-chevron" viewBox="0 0 14 9" aria-hidden="true">
+              <path d="M2 2.2 7 7l5-4.8"></path>
+            </svg>
+          </div>
+        </div>
+
+        <label class="keyword-search">
+          <input class="keyword-input" type="text" placeholder="请输入任务编号或路段名称">
+          <svg class="search-icon" viewBox="0 0 22 22" aria-hidden="true">
+            <circle cx="9.5" cy="9.5" r="6.8"></circle>
+            <path d="m14.6 14.6 5 5"></path>
+          </svg>
+        </label>
+
+        <button class="filter-action reset-button" type="button">重置</button>
+        <button class="filter-action query-button" type="button">查询</button>
+
+        <button class="refresh-button" type="button" aria-label="刷新筛选">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M19.2 8.1A8 8 0 1 0 20 14"></path>
+            <path d="M19.2 3.9v4.7h-4.7"></path>
+          </svg>
+        </button>
+      </section>
+
+      <section class="task-panel" aria-labelledby="task-list-title">
+        <div class="task-heading">
+          <h2 id="task-list-title">任务数据列表</h2>
+          <span class="task-count-caption">共 2,368 条任务</span>
+        </div>
+
+        <div class="task-toolbar">
+          <button class="outline-action" type="button">批量派发</button>
+
+          <button class="square-tool" type="button" aria-label="刷新列表">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M19.3 8.1A8 8 0 1 0 20 14"></path>
+              <path d="M19.3 3.9v4.7h-4.7"></path>
+            </svg>
+          </button>
+
+          <button class="square-tool" type="button" aria-label="列表设置">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M9.9 3.4h4.2l.6 2a7.4 7.4 0 0 1 1.4.8l2-.5 2.1 3.6-1.5 1.5a7.7 7.7 0 0 1 0 1.6l1.5 1.5-2.1 3.6-2-.5a7.4 7.4 0 0 1-1.4.8l-.6 2H9.9l-.6-2a7.4 7.4 0 0 1-1.4-.8l-2 .5-2.1-3.6 1.5-1.5a7.7 7.7 0 0 1 0-1.6L3.8 9.3l2.1-3.6 2 .5a7.4 7.4 0 0 1 1.4-.8l.6-2Z"></path>
+              <circle cx="12" cy="11.6" r="2.6"></circle>
+            </svg>
+          </button>
+        </div>
+
+        <div class="task-table" role="table" aria-label="任务数据列表">
+          <div class="table-row table-head" role="row">
+            <div class="cell col-check"><span class="checkbox"></span></div>
+            <div class="cell col-number">任务编号</div>
+            <div class="cell col-time">生成时间</div>
+            <div class="cell col-region">所属路段</div>
+            <div class="cell col-type">任务类型</div>
+            <div class="cell col-content">任务内容</div>
+            <div class="cell col-owner">负责人</div>
+            <div class="cell col-status">任务状态</div>
+            <div class="cell col-remaining">剩余时效</div>
+            <div class="cell col-actions">操作</div>
+          </div>
+
+          <div class="table-row highlighted" role="row">
+            <div class="cell col-check"><span class="checkbox"></span></div>
+            <div class="cell col-number">TSK202608240001</div>
+            <div class="cell col-time">2026-08-24 14:28:15</div>
+            <div class="cell col-region">沂河区民权路</div>
+            <div class="cell col-type">烟头清理</div>
+            <div class="cell col-content">民权路与解放路交叉口北侧人行道烟头清理</div>
+            <div class="cell col-owner">张伟</div>
+            <div class="cell col-status"><span class="status-badge status-pending">待派发</span></div>
+            <div class="cell col-remaining"><span class="remaining warning">42分钟</span></div>
+            <div class="cell col-actions">
+              <button class="row-action details-action" type="button">查看详情</button>
+              <button class="row-action dispatch-action" type="button">派发任务</button>
+            </div>
+          </div>
+
+          <div class="table-row" role="row">
+            <div class="cell col-check"><span class="checkbox"></span></div>
+            <div class="cell col-number">TSK202608240002</div>
+            <div class="cell col-time">2026-08-24 14:15:42</div>
+            <div class="cell col-region">平桥区中心大道</div>
+            <div class="cell col-type">点位巡查</div>
+            <div class="cell col-content">中心大道沿线垃圾分类点位巡查</div>
+            <div class="cell col-owner">李强</div>
+            <div class="cell col-status"><span class="status-badge status-progress">执行中</span></div>
+            <div class="cell col-remaining"><span class="remaining warning">1小时18分</span></div>
+            <div class="cell col-actions">
+              <button class="row-action details-action" type="button">查看详情</button>
+              <button class="row-action change-action" type="button">改派</button>
+            </div>
+          </div>
+
+          <div class="table-row" role="row">
+            <div class="cell col-check"><span class="checkbox"></span></div>
+            <div class="cell col-number">TSK202608240003</div>
+            <div class="cell col-time">2026-08-24 13:52:08</div>
+            <div class="cell col-region">羊山新区新七大道</div>
+            <div class="cell col-type">垃圾清运</div>
+            <div class="cell col-content">新七大道沿线垃圾满溢清运</div>
+            <div class="cell col-owner">待指派</div>
+            <div class="cell col-status"><span class="status-badge status-pending">待派发</span></div>
+            <div class="cell col-remaining"><span class="remaining warning">56分钟</span></div>
+            <div class="cell col-actions">
+              <button class="row-action details-action" type="button">查看详情</button>
+              <button class="row-action dispatch-action" type="button">派发任务</button>
+            </div>
+          </div>
+
+          <div class="table-row" role="row">
+            <div class="cell col-check"><span class="checkbox"></span></div>
+            <div class="cell col-number">TSK202608240004</div>
+            <div class="cell col-time">2026-08-24 13:30:33</div>
+            <div class="cell col-region">高新区工业路</div>
+            <div class="cell col-type">设备协同</div>
+            <div class="cell col-content">工业路智慧垃圾箱设备故障处理</div>
+            <div class="cell col-owner">王敏</div>
+            <div class="cell col-status"><span class="status-badge status-progress">执行中</span></div>
+            <div class="cell col-remaining"><span class="remaining warning">2小时05分</span></div>
+            <div class="cell col-actions">
+              <button class="row-action details-action" type="button">查看详情</button>
+              <button class="row-action change-action" type="button">改派</button>
+            </div>
+          </div>
+
+          <div class="table-row" role="row">
+            <div class="cell col-check"><span class="checkbox"></span></div>
+            <div class="cell col-number">TSK202608240005</div>
+            <div class="cell col-time">2026-08-24 12:58:21</div>
+            <div class="cell col-region">沂河区民权路</div>
+            <div class="cell col-type">烟头清理</div>
+            <div class="cell col-content">民权路沿线公园入口烟头清理</div>
+            <div class="cell col-owner">陈亮</div>
+            <div class="cell col-status"><span class="status-badge status-complete">已完成</span></div>
+            <div class="cell col-remaining"><span class="remaining success">已完成</span></div>
+            <div class="cell col-actions">
+              <button class="row-action details-action" type="button">查看详情</button>
+              <button class="row-action complete-action" type="button">标记完成</button>
+            </div>
+          </div>
+
+          <div class="table-row" role="row">
+            <div class="cell col-check"><span class="checkbox"></span></div>
+            <div class="cell col-number">TSK202608240006</div>
+            <div class="cell col-time">2026-08-24 11:46:17</div>
+            <div class="cell col-region">平桥区中心大道</div>
+            <div class="cell col-type">点位巡查</div>
+            <div class="cell col-content">中心大道与行政路交叉口点位巡查</div>
+            <div class="cell col-owner">赵磊</div>
+            <div class="cell col-status"><span class="status-badge status-complete">已完成</span></div>
+            <div class="cell col-remaining"><span class="remaining success">已完成</span></div>
+            <div class="cell col-actions">
+              <button class="row-action details-action" type="button">查看详情</button>
+              <button class="row-action complete-action" type="button">标记完成</button>
+            </div>
+          </div>
+
+          <div class="table-row" role="row">
+            <div class="cell col-check"><span class="checkbox"></span></div>
+            <div class="cell col-number">TSK202608240007</div>
+            <div class="cell col-time">2026-08-24 09:22:05</div>
+            <div class="cell col-region">罗山县行政路</div>
+            <div class="cell col-type">垃圾清运</div>
+            <div class="cell col-content">行政路商业街垃圾清运</div>
+            <div class="cell col-owner">孙涛</div>
+            <div class="cell col-status"><span class="status-badge status-overdue">已超时</span></div>
+            <div class="cell col-remaining"><span class="remaining danger">超时26分钟</span></div>
+            <div class="cell col-actions">
+              <button class="row-action details-action" type="button">查看详情</button>
+              <button class="row-action change-action" type="button">改派</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="pagination-bar">
+          <span class="total-count">共 2,368 条</span>
+
+          <div class="page-size">
+            10条/页
+            <svg viewBox="0 0 13 8" aria-hidden="true">
+              <path d="M1.5 1.5 6.5 6.5l5-5"></path>
+            </svg>
+          </div>
+
+          <div class="page-controls">
+            <button class="page-arrow" type="button" aria-label="上一页">
+              <svg viewBox="0 0 14 20" aria-hidden="true">
+                <path d="m9.5 4-5 6 5 6"></path>
+              </svg>
+            </button>
+            <button class="page-number active" type="button">1</button>
+            <button class="page-number" type="button">2</button>
+            <button class="page-number" type="button">3</button>
+            <button class="page-number" type="button">4</button>
+            <button class="page-number" type="button">5</button>
+            <span class="page-ellipsis">···</span>
+            <button class="page-number" type="button">237</button>
+            <button class="page-arrow" type="button" aria-label="下一页">
+              <svg viewBox="0 0 14 20" aria-hidden="true">
+                <path d="m4.5 4 5 6-5 6"></path>
+              </svg>
+            </button>
+          </div>
+
+          <div class="page-jump">
+            <span>前往</span>
+            <span class="jump-input">1</span>
+            <span>页</span>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+</div>
+
+<script src="./script.js"></script><script src="../shared/product-nav.js?v=4.1"></script></body></html>

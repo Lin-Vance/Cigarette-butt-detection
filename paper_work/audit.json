@@ -1,0 +1,125 @@
+{
+  "title": "基于目标检测与时序证据链的烟头乱扔行为监测系统设计与实现",
+  "citation_order": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15
+  ],
+  "reference_count": 15,
+  "equation_count": 15,
+  "references": [
+    {
+      "id": 1,
+      "text": "SLAUGHTER E, GERSBERG R M, WATANABE K, et al. Toxicity of cigarette butts, and their chemical components, to marine and freshwater fish[J]. Tobacco Control, 2011, 20(Suppl 1): i25–i29. DOI: 10.1136/tc.2010.040170.",
+      "url": "https://pubmed.ncbi.nlm.nih.gov/21504921/",
+      "human_verification": "pending"
+    },
+    {
+      "id": 2,
+      "text": "REDMON J, DIVVALA S, GIRSHICK R, et al. You Only Look Once: Unified, Real-Time Object Detection[C]//Proceedings of CVPR. 2016: 779–788. DOI: 10.1109/CVPR.2016.91.",
+      "url": "https://www.cv-foundation.org/openaccess/content_cvpr_2016/papers/Redmon_You_Only_Look_CVPR_2016_paper.pdf",
+      "human_verification": "pending"
+    },
+    {
+      "id": 3,
+      "text": "LIN T Y, DOLLÁR P, GIRSHICK R, et al. Feature Pyramid Networks for Object Detection[C]//Proceedings of CVPR. 2017: 2117–2125.",
+      "url": "https://arxiv.org/abs/1612.03144",
+      "human_verification": "pending"
+    },
+    {
+      "id": 4,
+      "text": "WOO S, PARK J, LEE J Y, et al. CBAM: Convolutional Block Attention Module[C]//Proceedings of ECCV. 2018: 3–19.",
+      "url": "https://www.ecva.net/papers/eccv_2018/papers_ECCV/html/Sanghyun_Woo_Convolutional_Block_Attention_ECCV_2018_paper.php",
+      "human_verification": "pending"
+    },
+    {
+      "id": 5,
+      "text": "WANG Z, LEI L, SHI P. Smoking behavior detection algorithm based on YOLOv8-MNC[J]. Frontiers in Computational Neuroscience, 2023, 17: 1243779. DOI: 10.3389/fncom.2023.1243779.",
+      "url": "https://www.frontiersin.org/journals/computational-neuroscience/articles/10.3389/fncom.2023.1243779/full",
+      "human_verification": "pending"
+    },
+    {
+      "id": 6,
+      "text": "BAE K, YUN K, KIM H I, et al. Anti-Litter Surveillance based on Person Understanding via Multi-Task Learning[C]//Proceedings of BMVC. 2020.",
+      "url": "https://www.bmva-archive.org.uk/bmvc/2020/assets/papers/0279.pdf",
+      "human_verification": "pending"
+    },
+    {
+      "id": 7,
+      "text": "KONDRATYUK D, YUAN L, LI Y, et al. MoViNets: Mobile Video Networks for Efficient Video Recognition[C]//Proceedings of CVPR. 2021: 16020–16030.",
+      "url": "https://openaccess.thecvf.com/content/CVPR2021/html/Kondratyuk_MoViNets_Mobile_Video_Networks_for_Efficient_Video_Recognition_CVPR_2021_paper.html",
+      "human_verification": "pending"
+    },
+    {
+      "id": 8,
+      "text": "ALHARBI E, ALSULAMI G, ALJOHANI S, et al. Real-time detection and monitoring of public littering behavior using deep learning for a sustainable environment[J]. Scientific Reports, 2025, 15: 3000. DOI: 10.1038/s41598-024-77118-x.",
+      "url": "https://pubmed.ncbi.nlm.nih.gov/39848984/",
+      "human_verification": "pending"
+    },
+    {
+      "id": 9,
+      "text": "WOJKE N, BEWLEY A, PAULUS D. Simple Online and Realtime Tracking with a Deep Association Metric[C]//Proceedings of ICIP. 2017: 3645–3649. DOI: 10.1109/ICIP.2017.8296962.",
+      "url": "https://arxiv.org/abs/1703.07402",
+      "human_verification": "pending"
+    },
+    {
+      "id": 10,
+      "text": "ZHANG Y, SUN P, JIANG Y, et al. ByteTrack: Multi-Object Tracking by Associating Every Detection Box[C]//Proceedings of ECCV. 2022: 1–21.",
+      "url": "https://www.ecva.net/papers/eccv_2022/papers_ECCV/papers/136820001.pdf",
+      "human_verification": "pending"
+    },
+    {
+      "id": 11,
+      "text": "LI X, WANG W, WU L, et al. Generalized Focal Loss: Learning Qualified and Distributed Bounding Boxes for Dense Object Detection[C]//Advances in Neural Information Processing Systems. 2020, 33: 21002–21012.",
+      "url": "https://proceedings.nips.cc/paper_files/paper/2020/hash/f0bda020d2470f2e74990a07a607ebd9-Abstract.html",
+      "human_verification": "pending"
+    },
+    {
+      "id": 12,
+      "text": "LUCAS B D, KANADE T. An Iterative Image Registration Technique with an Application to Stereo Vision[C]//Proceedings of IJCAI. 1981, 2: 674–679.",
+      "url": "https://publications.ri.cmu.edu/an-iterative-image-registration-technique-with-an-application-to-stereo-vision-ijcai",
+      "human_verification": "pending"
+    },
+    {
+      "id": 13,
+      "text": "LIN T Y, MAIRE M, BELONGIE S, et al. Microsoft COCO: Common Objects in Context[C]//Proceedings of ECCV. 2014: 740–755.",
+      "url": "https://www.microsoft.com/en-us/research/wp-content/uploads/2014/09/LinECCV14coco.pdf",
+      "human_verification": "pending"
+    },
+    {
+      "id": 14,
+      "text": "BERNARDIN K, STIEFELHAGEN R. Evaluating Multiple Object Tracking Performance: The CLEAR MOT Metrics[J]. EURASIP Journal on Image and Video Processing, 2008: 246309. DOI: 10.1155/2008/246309.",
+      "url": "https://link.springer.com/article/10.1155/2008/246309",
+      "human_verification": "pending"
+    },
+    {
+      "id": 15,
+      "text": "LUITEN J, OŠEP A, DENDORFER P, et al. HOTA: A Higher Order Metric for Evaluating Multi-object Tracking[J]. International Journal of Computer Vision, 2021, 129: 548–578. DOI: 10.1007/s11263-020-01375-2.",
+      "url": "https://link.springer.com/article/10.1007/s11263-020-01375-2",
+      "human_verification": "pending"
+    }
+  ],
+  "status": "draft_not_submission_ready",
+  "missing": [
+    "独立视频事件和行人ID标注",
+    "A—D消融实验",
+    "状态机与关联对比",
+    "整条流水线测速",
+    "作者单位与基金信息",
+    "完整原始训练环境及日志"
+  ],
+  "result_source": "用户提供的烟踪智治_实验部分_公式与理论及图表(1).docx",
+  "notes": "训练统计与性能按用户文档转录，未重新运行验证；时序及关联是设计方案；图为原创流程示意。"
+}

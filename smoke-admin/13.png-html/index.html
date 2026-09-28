@@ -1,0 +1,330 @@
+<!doctype html>
+<html lang="zh-CN"><head><meta charset="UTF-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>烟踪智治 - 模型与数据集管理</title>
+  
+<link rel="stylesheet" href="./styles.css"></head>
+<body>
+  <div class="fit-shell">
+    <div class="fit-box">
+      <main class="screen export-inline-style-1">
+        <header class="topbar">
+          <img class="brand-logo export-reference-asset-1" src="./assets/smoke_control_brand_logo.png" alt="smoke_control_brand_logo">
+
+          <nav class="main-nav" aria-label="主导航">
+            <div class="nav-item">态势总览</div>
+            <div class="nav-item">事件中心</div>
+            <div class="nav-item">调度中心</div>
+            <div class="nav-item">全域地图</div>
+            <div class="nav-item">资源管理</div>
+            <div class="nav-item active">AI治理</div>
+            <div class="nav-item">系统管理</div>
+          </nav>
+
+          <div class="header-time">2026-08-24 17:06:32</div>
+
+          <div class="notification-icon" aria-label="通知">
+            <svg width="29" height="31" viewBox="0 0 29 31" fill="none">
+              <path d="M6.5 22.5H22.5L20.7 19.8V13.2C20.7 9.35 18.35 6.7 14.5 6.7C10.65 6.7 8.3 9.35 8.3 13.2V19.8L6.5 22.5Z" stroke="#101d4d" stroke-width="1.7" stroke-linejoin="round"></path>
+              <path d="M12 25.5C12.45 26.65 13.3 27.25 14.5 27.25C15.7 27.25 16.55 26.65 17 25.5" stroke="#101d4d" stroke-width="1.7" stroke-linecap="round"></path>
+              <path d="M12.8 4.9C12.8 3.8 13.55 3 14.5 3C15.45 3 16.2 3.8 16.2 4.9" stroke="#101d4d" stroke-width="1.7" stroke-linecap="round"></path>
+            </svg>
+          </div>
+
+          <img class="profile-avatar export-reference-asset-2" src="./assets/super_admin_profile_avatar.png" alt="super_admin_profile_avatar">
+
+          <div class="profile-name">超级管理员</div>
+          <button class="logout-button">退出</button>
+
+          <div class="ai-menu">
+            <div class="ai-menu-item selected">模型与数据集</div>
+            <div class="ai-menu-item">AI识别配置</div>
+            <div class="ai-menu-item">数据分析</div>
+          </div>
+        </header>
+
+        <section class="content-card model-card" aria-labelledby="model-title">
+          <h1 class="section-title" id="model-title">模型管理</h1>
+          <div class="section-count">共 12 个模型版本</div>
+
+          <button class="primary-button">
+            <svg class="upload-icon" width="19" height="20" viewBox="0 0 19 20" fill="none">
+              <path d="M9.5 13.5V3" stroke="#fff" stroke-width="1.6" stroke-linecap="round"></path>
+              <path d="M5.8 6.7L9.5 3L13.2 6.7" stroke="#fff" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path>
+              <path d="M3 11.5V16.2C3 16.86 3.54 17.4 4.2 17.4H14.8C15.46 17.4 16 16.86 16 16.2V11.5" stroke="#fff" stroke-width="1.6" stroke-linecap="round"></path>
+            </svg>
+            上传模型文件
+          </button>
+
+          <button class="outline-button">批量管理</button>
+
+          <button class="refresh-button" aria-label="刷新">
+            <svg class="refresh-icon" width="21" height="21" viewBox="0 0 21 21" fill="none">
+              <path d="M17.5 8.2A7.5 7.5 0 0 0 4.1 5.1L2.5 6.7" stroke="#101d4d" stroke-width="1.7" stroke-linecap="round"></path>
+              <path d="M2.5 3.7V6.7H5.5" stroke="#101d4d" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"></path>
+              <path d="M3.5 12.8A7.5 7.5 0 0 0 16.9 15.9L18.5 14.3" stroke="#101d4d" stroke-width="1.7" stroke-linecap="round"></path>
+              <path d="M18.5 17.3V14.3H15.5" stroke="#101d4d" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"></path>
+            </svg>
+          </button>
+
+          <div class="table model-table">
+            <div class="table-header">
+              <div class="cell check-cell"><span class="checkbox"></span></div>
+              <div class="cell model-id">模型ID</div>
+              <div class="cell model-name">模型名称</div>
+              <div class="cell model-version">版本号</div>
+              <div class="cell model-time">上传时间</div>
+              <div class="cell model-status"></div>
+              <div class="cell model-description">描述</div>
+              <div class="cell model-actions">操作</div>
+            </div>
+
+            <div class="table-row">
+              <div class="cell check-cell"><span class="checkbox"></span></div>
+              <div class="cell model-id">MDL-001</div>
+              <div class="cell model-name">烟头检测模型</div>
+              <div class="cell model-version">v3.2.1</div>
+              <div class="cell model-time">2026-08-20 14:32:18</div>
+              <div class="cell model-status"><span class="status enabled">已启用</span></div>
+              <div class="cell model-description">识别地面及物体表面的烟头目标</div>
+              <div class="cell model-actions">
+                <button class="small-action switch-action">切换启用版本</button>
+                <button class="small-action delete-action">删除历史模型</button>
+              </div>
+            </div>
+
+            <div class="table-row">
+              <div class="cell check-cell"><span class="checkbox"></span></div>
+              <div class="cell model-id">MDL-002</div>
+              <div class="cell model-name">持烟动作识别模型</div>
+              <div class="cell model-version">v3.1.8</div>
+              <div class="cell model-time">2026-08-18 10:21:07</div>
+              <div class="cell model-status"><span class="status enabled">已启用</span></div>
+              <div class="cell model-description">识别人员持烟动作及姿态特征</div>
+              <div class="cell model-actions">
+                <button class="small-action switch-action">切换启用版本</button>
+                <button class="small-action delete-action">删除历史模型</button>
+              </div>
+            </div>
+
+            <div class="table-row">
+              <div class="cell check-cell"><span class="checkbox"></span></div>
+              <div class="cell model-id">MDL-003</div>
+              <div class="cell model-name">抛掷行为识别模型</div>
+              <div class="cell model-version">v2.9.6</div>
+              <div class="cell model-time">2026-08-14 09:45:33</div>
+              <div class="cell model-status"><span class="status enabled">已启用</span></div>
+              <div class="cell model-description">识别抛掷动作及物体抛出轨迹</div>
+              <div class="cell model-actions">
+                <button class="small-action switch-action">切换启用版本</button>
+                <button class="small-action delete-action">删除历史模型</button>
+              </div>
+            </div>
+
+            <div class="table-row">
+              <div class="cell check-cell"><span class="checkbox"></span></div>
+              <div class="cell model-id">MDL-004</div>
+              <div class="cell model-name">烟头落地识别模型</div>
+              <div class="cell model-version">v2.8.4</div>
+              <div class="cell model-time">2026-08-10 16:18:52</div>
+              <div class="cell model-status"><span class="status disabled">未启用</span></div>
+              <div class="cell model-description">识别烟头落地时刻与落点位置</div>
+              <div class="cell model-actions">
+                <button class="small-action switch-action">切换启用版本</button>
+                <button class="small-action delete-action">删除历史模型</button>
+              </div>
+            </div>
+
+            <div class="table-row">
+              <div class="cell check-cell"><span class="checkbox"></span></div>
+              <div class="cell model-id">MDL-005</div>
+              <div class="cell model-name">行人关联模型</div>
+              <div class="cell model-version">v1.7.2</div>
+              <div class="cell model-time">2026-08-05 11:07:26</div>
+              <div class="cell model-status"><span class="status disabled">未启用</span></div>
+              <div class="cell model-description">将行为与人员身份进行关联匹配</div>
+              <div class="cell model-actions">
+                <button class="small-action switch-action">切换启用版本</button>
+                <button class="small-action delete-action">删除历史模型</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="pagination-bar">
+            <div class="total-label">共 12 条</div>
+            <div class="page-size">
+              5条/页
+              <svg width="12" height="7" viewBox="0 0 12 7" fill="none">
+                <path d="M1 1L6 6L11 1" stroke="#101d4d" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"></path>
+              </svg>
+            </div>
+            <div class="pages">
+              <button class="page-button" aria-label="上一页">
+                <svg width="9" height="14" viewBox="0 0 9 14" fill="none">
+                  <path d="M7 1L1.5 7L7 13" stroke="#101d4d" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"></path>
+                </svg>
+              </button>
+              <div class="page-number current">1</div>
+              <div class="page-number">2</div>
+              <div class="page-number">3</div>
+              <button class="page-button" aria-label="下一页">
+                <svg width="9" height="14" viewBox="0 0 9 14" fill="none">
+                  <path d="M2 1L7.5 7L2 13" stroke="#101d4d" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"></path>
+                </svg>
+              </button>
+            </div>
+          </div>
+        </section>
+
+        <section class="content-card dataset-card" aria-labelledby="dataset-title">
+          <h2 class="section-title" id="dataset-title">数据集管理</h2>
+          <div class="section-count">共 36 个数据集</div>
+
+          <button class="primary-button">
+            <svg class="upload-icon" width="19" height="20" viewBox="0 0 19 20" fill="none">
+              <path d="M9.5 13.5V3" stroke="#fff" stroke-width="1.6" stroke-linecap="round"></path>
+              <path d="M5.8 6.7L9.5 3L13.2 6.7" stroke="#fff" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path>
+              <path d="M3 11.5V16.2C3 16.86 3.54 17.4 4.2 17.4H14.8C15.46 17.4 16 16.86 16 16.2V11.5" stroke="#fff" stroke-width="1.6" stroke-linecap="round"></path>
+            </svg>
+            上传数据集包
+          </button>
+
+          <button class="outline-button">批量下载</button>
+
+          <button class="refresh-button" aria-label="刷新">
+            <svg class="refresh-icon" width="21" height="21" viewBox="0 0 21 21" fill="none">
+              <path d="M17.5 8.2A7.5 7.5 0 0 0 4.1 5.1L2.5 6.7" stroke="#101d4d" stroke-width="1.7" stroke-linecap="round"></path>
+              <path d="M2.5 3.7V6.7H5.5" stroke="#101d4d" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"></path>
+              <path d="M3.5 12.8A7.5 7.5 0 0 0 16.9 15.9L18.5 14.3" stroke="#101d4d" stroke-width="1.7" stroke-linecap="round"></path>
+              <path d="M18.5 17.3V14.3H15.5" stroke="#101d4d" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"></path>
+            </svg>
+          </button>
+
+          <div class="table dataset-table">
+            <div class="table-header">
+              <div class="cell check-cell"><span class="checkbox"></span></div>
+              <div class="cell dataset-id">数据集ID</div>
+              <div class="cell dataset-name">数据集名称</div>
+              <div class="cell sample-count">样本数量</div>
+              <div class="cell dataset-time">上传时间</div>
+              <div class="cell dataset-status">数据状态</div>
+              <div class="cell dataset-actions">操作</div>
+            </div>
+
+            <div class="table-row">
+              <div class="cell check-cell"><span class="checkbox"></span></div>
+              <div class="cell dataset-id">DATA-001</div>
+              <div class="cell dataset-name">公共道路烟头数据集</div>
+              <div class="cell sample-count">28,560</div>
+              <div class="cell dataset-time">2026-08-21 15:23:11</div>
+              <div class="cell dataset-status"><span class="status available">可用</span></div>
+              <div class="cell dataset-actions">
+                <button class="dataset-action">
+                  <svg class="action-icon" width="17" height="17" viewBox="0 0 17 17" fill="none">
+                    <path d="M8.5 2V11" stroke="#0867ed" stroke-width="1.5" stroke-linecap="round"></path>
+                    <path d="M5.2 8L8.5 11.3L11.8 8" stroke="#0867ed" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
+                    <path d="M2.5 12.2V14.5H14.5V12.2" stroke="#0867ed" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
+                  </svg>
+                  下载数据集
+                </button>
+                <button class="dataset-action">
+                  <svg class="action-icon" width="17" height="17" viewBox="0 0 17 17" fill="none">
+                    <circle cx="8.5" cy="8.5" r="6.4" stroke="#0867ed" stroke-width="1.5"></circle>
+                    <path d="M8.5 7.7V11.2" stroke="#0867ed" stroke-width="1.5" stroke-linecap="round"></path>
+                    <circle cx="8.5" cy="5.3" r="0.8" fill="#0867ed"></circle>
+                  </svg>
+                  查看数据集简介
+                </button>
+              </div>
+            </div>
+
+            <div class="table-row">
+              <div class="cell check-cell"><span class="checkbox"></span></div>
+              <div class="cell dataset-id">DATA-002</div>
+              <div class="cell dataset-name">持烟动作关键帧集</div>
+              <div class="cell sample-count">16,842</div>
+              <div class="cell dataset-time">2026-08-19 09:16:44</div>
+              <div class="cell dataset-status"><span class="status available">可用</span></div>
+              <div class="cell dataset-actions">
+                <button class="dataset-action">下载数据集</button>
+                <button class="dataset-action">查看数据集简介</button>
+              </div>
+            </div>
+
+            <div class="table-row">
+              <div class="cell check-cell"><span class="checkbox"></span></div>
+              <div class="cell dataset-id">DATA-003</div>
+              <div class="cell dataset-name">抛掷行为轨迹集</div>
+              <div class="cell sample-count">12,386</div>
+              <div class="cell dataset-time">2026-08-16 13:38:09</div>
+              <div class="cell dataset-status"><span class="status training">训练中</span></div>
+              <div class="cell dataset-actions">
+                <button class="dataset-action">下载数据集</button>
+                <button class="dataset-action">查看数据集简介</button>
+              </div>
+            </div>
+
+            <div class="table-row">
+              <div class="cell check-cell"><span class="checkbox"></span></div>
+              <div class="cell dataset-id">DATA-004</div>
+              <div class="cell dataset-name">烟头落地样本集</div>
+              <div class="cell sample-count">19,420</div>
+              <div class="cell dataset-time">2026-08-12 10:05:27</div>
+              <div class="cell dataset-status"><span class="status pending">待校验</span></div>
+              <div class="cell dataset-actions">
+                <button class="dataset-action">下载数据集</button>
+                <button class="dataset-action">查看数据集简介</button>
+              </div>
+            </div>
+
+            <div class="table-row">
+              <div class="cell check-cell"><span class="checkbox"></span></div>
+              <div class="cell dataset-id">DATA-005</div>
+              <div class="cell dataset-name">复杂光照验证集</div>
+              <div class="cell sample-count">8,936</div>
+              <div class="cell dataset-time">2026-08-06 17:42:33</div>
+              <div class="cell dataset-status"><span class="status available">可用</span></div>
+              <div class="cell dataset-actions">
+                <button class="dataset-action">下载数据集</button>
+                <button class="dataset-action">查看数据集简介</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="pagination-bar">
+            <div class="total-label">共 36 条</div>
+            <div class="page-size">
+              5条/页
+              <svg width="12" height="7" viewBox="0 0 12 7" fill="none">
+                <path d="M1 1L6 6L11 1" stroke="#101d4d" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"></path>
+              </svg>
+            </div>
+            <div class="pages">
+              <button class="page-button" aria-label="上一页">
+                <svg width="9" height="14" viewBox="0 0 9 14" fill="none">
+                  <path d="M7 1L1.5 7L7 13" stroke="#101d4d" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"></path>
+                </svg>
+              </button>
+              <div class="page-number current">1</div>
+              <div class="page-number">2</div>
+              <div class="page-number">3</div>
+              <div class="ellipsis">…</div>
+              <div class="page-number">8</div>
+              <button class="page-button" aria-label="下一页">
+                <svg width="9" height="14" viewBox="0 0 9 14" fill="none">
+                  <path d="M2 1L7.5 7L2 13" stroke="#101d4d" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"></path>
+                </svg>
+              </button>
+            </div>
+          </div>
+        </section>
+
+        <div class="scrollbar-track">
+          <div class="scrollbar-thumb"></div>
+        </div>
+      </main>
+    </div>
+  </div>
+
+<script src="./script.js"></script><script src="../shared/product-nav.js?v=4.1"></script></body></html>

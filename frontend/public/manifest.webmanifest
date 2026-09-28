@@ -1,0 +1,24 @@
+{
+  "name": "烟踪智治",
+  "short_name": "烟踪智治",
+  "description": "面向信阳公共空间的扔烟头行为证据复核与环境治理平台",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#0b1320",
+  "theme_color": "#0b1320",
+  "lang": "zh-CN",
+  "icons": [
+    {
+      "src": "./apple-touch-icon.png",
+      "sizes": "180x180",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "./logo-mark.png",
+      "sizes": "256x256",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ]
+}

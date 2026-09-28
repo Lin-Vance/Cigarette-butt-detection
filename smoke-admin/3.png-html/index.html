@@ -1,0 +1,527 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>烟踪智治 - 态势总览 · 治理态势</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="./styles.css">
+</head>
+<body>
+<script>if(/embed/.test(location.hash))document.documentElement.className+=" yz-embed";</script>
+
+<!-- ================= 顶部固定通栏一级导航（格式参照 2.png-html） ================= -->
+<header class="topbar">
+  <div class="topbar-inner">
+    <img class="brand-logo" src="./assets/yanfang_smart_governance_logo.png" alt="烟防智治">
+
+    <nav class="main-nav" aria-label="主导航">
+      <div class="nav-group" id="navGroupOverview">
+        <button class="nav-item active" type="button">态势总览 <span class="nav-caret">▾</span></button>
+        <div class="dropdown" role="menu">
+          <button class="menu-item" type="button" data-target="#map">事件总览</button>
+          <button class="menu-item selected" type="button" data-target="#top">治理态势</button>
+          <button class="menu-item" type="button" data-target="#hourly">设备状态</button>
+          <button class="menu-item" type="button" data-target="#ranking">工作看板</button>
+        </div>
+      </div>
+      <div class="nav-group"><button class="nav-item" type="button" data-target="#map">事件中心</button></div>
+      <div class="nav-group"><button class="nav-item" type="button" data-target="#hourly">调度中心</button></div>
+      <div class="nav-group"><button class="nav-item" type="button" data-target="#map">全域地图</button></div>
+      <div class="nav-group"><button class="nav-item" type="button" data-target="#comparison">资源管理</button></div>
+      <div class="nav-group"><button class="nav-item" type="button" data-target="#violation">AI治理</button></div>
+      <div class="nav-group"><button class="nav-item" type="button" data-target="#ranking">系统管理</button></div>
+    </nav>
+
+    <div class="topbar-right">
+      <div class="date-time" id="clock">2026-08-26 10:36:28</div>
+      <div class="bell" id="bell" aria-label="通知">
+        <svg viewBox="0 0 26 28" fill="none" stroke="#15243b" stroke-width="1.8">
+          <path d="M6 20h14M7 18V11a6 6 0 0 1 12 0v7l2 2H5l2-2Z"></path>
+          <path d="M11 24c.7 1 1.4 1.4 2 1.4s1.3-.4 2-1.4"></path>
+        </svg>
+        <i class="bell-dot"></i>
+      </div>
+      <img class="profile-avatar" src="./assets/administrator_profile_avatar.png" alt="管理员头像">
+      <div class="profile-name">超级管理员</div>
+      <button class="logout" type="button">退出</button>
+    </div>
+  </div>
+</header>
+
+<!-- ================= 主体画布（纵向滚动，顶部留出导航高度） ================= -->
+<main class="stage" id="top">
+  <div class="fit-box">
+    <div class="screen">
+
+      <section class="panel overview-panel" id="map" aria-labelledby="overview-title">
+        <h1 class="overview-heading" id="overview-title">未闭环事件预警</h1>
+
+        <div class="overview-stat unclosed">未闭环 <strong>23</strong></div>
+        <div class="overview-stat overdue">超时 <strong>8</strong></div>
+
+        <div class="map-canvas">
+          <img class="layer-raw" src="./assets/district_risk_heatmap_background_ai_original.png" alt="区域风险热力底图">
+          <img class="layer-composite composite" src="./assets/district_risk_heatmap_background_local_composite.png" alt="区域风险热力叠加图层">
+        </div>
+
+        <article class="metric-card left-top">
+          <div class="metric-icon">
+            <svg viewBox="0 0 46 46" fill="none" aria-hidden="true">
+              <path d="M23 3.5c5.4 4 11.1 6.1 17 7.4v11.5c0 9.3-5.6 15.8-17 20.1C11.6 38.2 6 31.7 6 22.4V10.9C11.9 9.6 17.6 7.5 23 3.5Z" stroke="#247af5" stroke-width="3" stroke-linejoin="round"></path>
+              <path d="m15.5 23 5 5 10.5-12" stroke="#247af5" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"></path>
+            </svg>
+          </div>
+          <div class="metric-copy">
+            <div class="metric-label">事件处置率</div>
+            <div class="metric-value">92.6<span class="unit">%</span></div>
+            <div class="metric-foot">较上周 <span class="positive">+3.2%</span></div>
+          </div>
+        </article>
+
+        <article class="metric-card left-bottom">
+          <div class="metric-icon">
+            <svg viewBox="0 0 46 46" fill="none" aria-hidden="true">
+              <circle cx="23" cy="23" r="19" stroke="#00a5a8" stroke-width="3"></circle>
+              <path d="M23 11.5v12.1l8.3 5" stroke="#00a5a8" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"></path>
+            </svg>
+          </div>
+          <div class="metric-copy">
+            <div class="metric-label">平均处置时长</div>
+            <div class="metric-value">38<span class="unit">分钟</span></div>
+            <div class="metric-foot">较上周 <span class="negative">-6.8%</span></div>
+          </div>
+        </article>
+
+        <article class="metric-card right-top">
+          <div class="metric-icon">
+            <svg viewBox="0 0 46 46" fill="none" aria-hidden="true">
+              <path d="M10 14.2A17.5 17.5 0 0 1 39.4 15" stroke="#247af5" stroke-width="3" stroke-linecap="round"></path>
+              <path d="m38.8 9.4.8 6.5-6.5.8" stroke="#247af5" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"></path>
+              <path d="M36 31.8A17.5 17.5 0 0 1 6.6 31" stroke="#247af5" stroke-width="3" stroke-linecap="round"></path>
+              <path d="m7.2 36.6-.8-6.5 6.5-.8" stroke="#247af5" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"></path>
+              <path d="m15.7 23.1 5 5 10.2-11.4" stroke="#247af5" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"></path>
+            </svg>
+          </div>
+          <div class="metric-copy">
+            <div class="metric-label">闭环完成率</div>
+            <div class="metric-value">94.7<span class="unit">%</span></div>
+            <div class="metric-foot">较上周 <span class="positive">+2.4%</span></div>
+          </div>
+        </article>
+
+        <article class="metric-card right-bottom">
+          <div class="metric-icon">
+            <svg viewBox="0 0 46 46" fill="none" aria-hidden="true">
+              <path d="M23 4.5c-8.8 0-15.2 6.8-15.2 15.5 0 10 15.2 22 15.2 22s15.2-12 15.2-22C38.2 11.3 31.8 4.5 23 4.5Z" stroke="#00a5a8" stroke-width="3" stroke-linejoin="round"></path>
+              <circle cx="23" cy="19.5" r="5.3" stroke="#00a5a8" stroke-width="3"></circle>
+              <path d="M12 39.2c-4 .6-6.3 1.6-6.3 2.8 0 1.9 7.7 3.4 17.3 3.4s17.3-1.5 17.3-3.4c0-1.2-2.3-2.2-6.3-2.8" stroke="#00a5a8" stroke-width="2.3" stroke-linecap="round"></path>
+            </svg>
+          </div>
+          <div class="metric-copy">
+            <div class="metric-label">高发区域数量</div>
+            <div class="metric-value teal">12</div>
+            <div class="metric-foot">重点关注 <span class="positive">4处</span></div>
+          </div>
+        </article>
+
+        <div class="map-zoom" aria-label="地图缩放">
+          <button class="zoom-button plus" type="button" aria-label="放大"></button>
+          <button class="zoom-button minus" type="button" aria-label="缩小"></button>
+        </div>
+
+        <button class="map-locate" type="button" aria-label="地图定位">
+          <svg viewBox="0 0 22 22" fill="none" aria-hidden="true">
+            <circle cx="11" cy="11" r="7.5" stroke="#1b2944" stroke-width="1.8"></circle>
+            <circle cx="11" cy="11" r="2.7" stroke="#1b2944" stroke-width="1.8"></circle>
+            <path d="M11 1.5v3M11 17.5v3M1.5 11h3M17.5 11h3" stroke="#1b2944" stroke-width="1.8" stroke-linecap="round"></path>
+          </svg>
+        </button>
+
+        <div class="map-legend">
+          <div class="legend-item"><span class="legend-dot high"></span>高风险</div>
+          <div class="legend-item"><span class="legend-dot medium"></span>中风险</div>
+          <div class="legend-item"><span class="legend-dot low"></span>低风险</div>
+          <div class="legend-item"><span class="legend-camera"></span>未闭环点位</div>
+          <div class="legend-item"><span class="legend-route"></span>在途任务</div>
+        </div>
+      </section>
+
+      <section class="panel district-comparison-panel" id="comparison" aria-labelledby="district-comparison-title">
+        <h2 class="panel-title" id="district-comparison-title">各区域事件处置对比</h2>
+        <div class="bar-chart-legend">
+          <div class="chart-key"><i class="blue"></i>事件总量</div>
+          <div class="chart-key"><i class="light-blue"></i>已处置</div>
+          <div class="chart-key"><i class="green"></i>已闭环</div>
+        </div>
+        <img class="district-bar-chart" src="./assets/district_event_disposal_bar_chart.png" alt="各区域事件处置对比柱状图">
+      </section>
+
+      <section class="panel hourly-panel" id="hourly" aria-labelledby="hourly-title">
+        <h2 class="panel-title" id="hourly-title">24小时违规行为时段分布</h2>
+        <div class="line-chart-legend">
+          <div class="line-key"><span class="line-symbol"></span>识别事件</div>
+          <div class="line-key"><span class="line-symbol green"></span>高风险事件</div>
+        </div>
+        <img class="hourly-line-chart" src="./assets/hourly_violation_distribution_line_chart.png" alt="24小时违规行为时段分布折线图">
+      </section>
+
+      <section class="panel violation-share-panel" id="violation" aria-labelledby="violation-share-title">
+        <h2 class="panel-title" id="violation-share-title">违规行为类型占比</h2>
+        <img class="violation-donut-chart" src="./assets/violation_type_share_donut_chart.png" alt="违规行为类型占比环形图">
+
+        <div class="share-list">
+          <div class="share-row">
+            <span class="share-color blue"></span>
+            <span class="share-name">乱扔烟头</span>
+            <span class="share-percent">46.8%</span>
+          </div>
+          <div class="share-row">
+            <span class="share-color cyan"></span>
+            <span class="share-name">违规吸烟</span>
+            <span class="share-percent">28.4%</span>
+          </div>
+          <div class="share-row">
+            <span class="share-color mint"></span>
+            <span class="share-name">烟头落地</span>
+            <span class="share-percent">15.6%</span>
+          </div>
+          <div class="share-row">
+            <span class="share-color yellow"></span>
+            <span class="share-name">疑似抛掷</span>
+            <span class="share-percent">9.2%</span>
+          </div>
+        </div>
+      </section>
+
+      <section class="panel ranking-panel" id="ranking" aria-labelledby="ranking-title">
+        <h2 class="panel-title" id="ranking-title">治理效能排行榜</h2>
+
+        <table class="ranking-table">
+          <colgroup>
+            <col class="rank">
+            <col class="region">
+            <col class="rate">
+            <col class="time">
+            <col class="close">
+            <col class="trend">
+          </colgroup>
+          <thead>
+            <tr>
+              <th>排名</th>
+              <th>区域</th>
+              <th>处置率</th>
+              <th>平均时长</th>
+              <th>闭环率</th>
+              <th>趋势</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr data-page="1">
+              <td><span class="medal gold">1</span></td>
+              <td>澜河区</td>
+              <td>
+                <div class="rate-cell">
+                  <span class="rate-value">95.1%</span>
+                  <span class="progress-track"><span class="progress-fill p951"></span></span>
+                </div>
+              </td>
+              <td>34分钟</td>
+              <td>
+                <div class="rate-cell">
+                  <span class="rate-value">96.3%</span>
+                  <span class="progress-track"><span class="progress-fill p963"></span></span>
+                </div>
+              </td>
+              <td>
+                <span class="trend-icon">
+                  <svg viewBox="0 0 17 19" fill="none" aria-hidden="true">
+                    <path d="M8.5 17V3M3.8 7.7 8.5 3l4.7 4.7" stroke="#ff2929" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+                  </svg>
+                </span>
+              </td>
+            </tr>
+            <tr data-page="1">
+              <td><span class="medal silver">2</span></td>
+              <td>平桥区</td>
+              <td>
+                <div class="rate-cell">
+                  <span class="rate-value">93.2%</span>
+                  <span class="progress-track"><span class="progress-fill p932"></span></span>
+                </div>
+              </td>
+              <td>38分钟</td>
+              <td>
+                <div class="rate-cell">
+                  <span class="rate-value">94.8%</span>
+                  <span class="progress-track"><span class="progress-fill p948"></span></span>
+                </div>
+              </td>
+              <td>
+                <span class="trend-icon">
+                  <svg viewBox="0 0 17 19" fill="none" aria-hidden="true">
+                    <path d="M8.5 17V3M3.8 7.7 8.5 3l4.7 4.7" stroke="#ff2929" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+                  </svg>
+                </span>
+              </td>
+            </tr>
+            <tr data-page="1">
+              <td><span class="medal bronze">3</span></td>
+              <td>羊山新区</td>
+              <td>
+                <div class="rate-cell">
+                  <span class="rate-value">91.3%</span>
+                  <span class="progress-track"><span class="progress-fill p913"></span></span>
+                </div>
+              </td>
+              <td>41分钟</td>
+              <td>
+                <div class="rate-cell">
+                  <span class="rate-value">93.6%</span>
+                  <span class="progress-track"><span class="progress-fill p936"></span></span>
+                </div>
+              </td>
+              <td>
+                <span class="trend-icon">
+                  <svg viewBox="0 0 17 19" fill="none" aria-hidden="true">
+                    <path d="M8.5 17V3M3.8 7.7 8.5 3l4.7 4.7" stroke="#ff2929" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+                  </svg>
+                </span>
+              </td>
+            </tr>
+            <tr data-page="1">
+              <td><span class="rank-number">4</span></td>
+              <td>高新区</td>
+              <td>
+                <div class="rate-cell">
+                  <span class="rate-value">89.6%</span>
+                  <span class="progress-track"><span class="progress-fill p896"></span></span>
+                </div>
+              </td>
+              <td>44分钟</td>
+              <td>
+                <div class="rate-cell">
+                  <span class="rate-value">92.1%</span>
+                  <span class="progress-track"><span class="progress-fill p921"></span></span>
+                </div>
+              </td>
+              <td>
+                <span class="trend-icon">
+                  <svg viewBox="0 0 17 19" fill="none" aria-hidden="true">
+                    <path d="M8.5 2v14M3.8 11.3 8.5 16l4.7-4.7" stroke="#0aa348" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+                  </svg>
+                </span>
+              </td>
+            </tr>
+            <tr data-page="1">
+              <td><span class="rank-number">5</span></td>
+              <td>罗山县</td>
+              <td>
+                <div class="rate-cell">
+                  <span class="rate-value">88.4%</span>
+                  <span class="progress-track"><span class="progress-fill p884"></span></span>
+                </div>
+              </td>
+              <td>47分钟</td>
+              <td>
+                <div class="rate-cell">
+                  <span class="rate-value">90.7%</span>
+                  <span class="progress-track"><span class="progress-fill p907"></span></span>
+                </div>
+              </td>
+              <td>
+                <span class="trend-icon">
+                  <svg viewBox="0 0 17 19" fill="none" aria-hidden="true">
+                    <path d="M8.5 2v14M3.8 11.3 8.5 16l4.7-4.7" stroke="#0aa348" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+                  </svg>
+                </span>
+              </td>
+            </tr>
+            <tr data-page="1">
+              <td><span class="rank-number">6</span></td>
+              <td>光山县</td>
+              <td>
+                <div class="rate-cell">
+                  <span class="rate-value">86.2%</span>
+                  <span class="progress-track"><span class="progress-fill p862"></span></span>
+                </div>
+              </td>
+              <td>46分钟</td>
+              <td>
+                <div class="rate-cell">
+                  <span class="rate-value">87.4%</span>
+                  <span class="progress-track"><span class="progress-fill p874"></span></span>
+                </div>
+              </td>
+              <td>
+                <span class="trend-icon">
+                  <svg viewBox="0 0 17 19" fill="none" aria-hidden="true">
+                    <path d="M8.5 2v14M3.8 11.3 8.5 16l4.7-4.7" stroke="#0aa348" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+                  </svg>
+                </span>
+              </td>
+            </tr>
+            <tr data-page="2">
+              <td><span class="rank-number">7</span></td>
+              <td>息县</td>
+              <td>
+                <div class="rate-cell">
+                  <span class="rate-value">84.1%</span>
+                  <span class="progress-track"><span class="progress-fill p841"></span></span>
+                </div>
+              </td>
+              <td>49分钟</td>
+              <td>
+                <div class="rate-cell">
+                  <span class="rate-value">85.2%</span>
+                  <span class="progress-track"><span class="progress-fill p852"></span></span>
+                </div>
+              </td>
+              <td>
+                <span class="trend-icon">
+                  <svg viewBox="0 0 17 19" fill="none" aria-hidden="true">
+                    <path d="M8.5 2v14M3.8 11.3 8.5 16l4.7-4.7" stroke="#0aa348" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+                  </svg>
+                </span>
+              </td>
+            </tr>
+            <tr data-page="2">
+              <td><span class="rank-number">8</span></td>
+              <td>潢川县</td>
+              <td>
+                <div class="rate-cell">
+                  <span class="rate-value">82.7%</span>
+                  <span class="progress-track"><span class="progress-fill p827"></span></span>
+                </div>
+              </td>
+              <td>51分钟</td>
+              <td>
+                <div class="rate-cell">
+                  <span class="rate-value">84.6%</span>
+                  <span class="progress-track"><span class="progress-fill p846"></span></span>
+                </div>
+              </td>
+              <td>
+                <span class="trend-icon">
+                  <svg viewBox="0 0 17 19" fill="none" aria-hidden="true">
+                    <path d="M8.5 17V3M3.8 7.7 8.5 3l4.7 4.7" stroke="#ff2929" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+                  </svg>
+                </span>
+              </td>
+            </tr>
+            <tr data-page="2">
+              <td><span class="rank-number">9</span></td>
+              <td>淮滨县</td>
+              <td>
+                <div class="rate-cell">
+                  <span class="rate-value">81.3%</span>
+                  <span class="progress-track"><span class="progress-fill p813"></span></span>
+                </div>
+              </td>
+              <td>52分钟</td>
+              <td>
+                <div class="rate-cell">
+                  <span class="rate-value">83.1%</span>
+                  <span class="progress-track"><span class="progress-fill p831"></span></span>
+                </div>
+              </td>
+              <td>
+                <span class="trend-icon">
+                  <svg viewBox="0 0 17 19" fill="none" aria-hidden="true">
+                    <path d="M8.5 2v14M3.8 11.3 8.5 16l4.7-4.7" stroke="#0aa348" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+                  </svg>
+                </span>
+              </td>
+            </tr>
+            <tr data-page="2">
+              <td><span class="rank-number">10</span></td>
+              <td>固始县</td>
+              <td>
+                <div class="rate-cell">
+                  <span class="rate-value">79.8%</span>
+                  <span class="progress-track"><span class="progress-fill p798"></span></span>
+                </div>
+              </td>
+              <td>54分钟</td>
+              <td>
+                <div class="rate-cell">
+                  <span class="rate-value">81.9%</span>
+                  <span class="progress-track"><span class="progress-fill p819"></span></span>
+                </div>
+              </td>
+              <td>
+                <span class="trend-icon">
+                  <svg viewBox="0 0 17 19" fill="none" aria-hidden="true">
+                    <path d="M8.5 2v14M3.8 11.3 8.5 16l4.7-4.7" stroke="#0aa348" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+                  </svg>
+                </span>
+              </td>
+            </tr>
+            <tr data-page="2">
+              <td><span class="rank-number">11</span></td>
+              <td>商城县</td>
+              <td>
+                <div class="rate-cell">
+                  <span class="rate-value">77.6%</span>
+                  <span class="progress-track"><span class="progress-fill p776"></span></span>
+                </div>
+              </td>
+              <td>55分钟</td>
+              <td>
+                <div class="rate-cell">
+                  <span class="rate-value">80.4%</span>
+                  <span class="progress-track"><span class="progress-fill p804"></span></span>
+                </div>
+              </td>
+              <td>
+                <span class="trend-icon">
+                  <svg viewBox="0 0 17 19" fill="none" aria-hidden="true">
+                    <path d="M8.5 17V3M3.8 7.7 8.5 3l4.7 4.7" stroke="#ff2929" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+                  </svg>
+                </span>
+              </td>
+            </tr>
+            <tr data-page="2">
+              <td><span class="rank-number">12</span></td>
+              <td>新县</td>
+              <td>
+                <div class="rate-cell">
+                  <span class="rate-value">75.9%</span>
+                  <span class="progress-track"><span class="progress-fill p759"></span></span>
+                </div>
+              </td>
+              <td>57分钟</td>
+              <td>
+                <div class="rate-cell">
+                  <span class="rate-value">78.6%</span>
+                  <span class="progress-track"><span class="progress-fill p786"></span></span>
+                </div>
+              </td>
+              <td>
+                <span class="trend-icon">
+                  <svg viewBox="0 0 17 19" fill="none" aria-hidden="true">
+                    <path d="M8.5 2v14M3.8 11.3 8.5 16l4.7-4.7" stroke="#0aa348" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+                  </svg>
+                </span>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div class="rank-pagination">
+          <span class="page-info">共 12 条 · 第 <b id="pageCur">1</b> / <b id="pageTotal">2</b> 页</span>
+          <div class="page-controls">
+            <button class="page-btn prev" id="pagePrev" type="button" aria-label="上一页">‹</button>
+            <button class="page-btn num active" data-page="1" type="button">1</button>
+            <button class="page-btn num" data-page="2" type="button">2</button>
+            <button class="page-btn next" id="pageNext" type="button" aria-label="下一页">›</button>
+          </div>
+        </div>
+      </section>
+
+    </div>
+  </div>
+</main>
+
+<script src="./script.js"></script>
+<script src="../shared/product-nav.js?v=4.1"></script></body>
+</html>

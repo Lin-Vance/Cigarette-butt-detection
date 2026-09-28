@@ -1,0 +1,308 @@
+<!doctype html>
+<html lang="zh-CN"><head><meta charset="UTF-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>烟踪智治 · 环卫资源管理</title>
+  
+<link rel="stylesheet" href="./styles.css"></head>
+<body>
+  <main class="fit-shell">
+    <div class="fit-box">
+      <section class="screen export-inline-style-1" aria-label="环卫资源管理页面">
+        <header class="top-header">
+          <img class="brand-logo export-reference-asset-1" src="./assets/yanluo_zhizhi_logo.png" alt="yanluo_zhizhi_logo">
+
+          <nav class="main-nav" aria-label="主导航">
+            <div class="nav-item">态势总览</div>
+            <div class="nav-item">事件中心</div>
+            <div class="nav-item">调度中心</div>
+            <div class="nav-item">全域地图</div>
+            <div class="nav-item active">资源管理</div>
+            <div class="nav-item">AI治理</div>
+            <div class="nav-item">系统管理</div>
+          </nav>
+
+          <div class="resource-menu" aria-label="资源管理子菜单">
+            <div class="resource-menu-item">设备资源</div>
+            <div class="resource-menu-item selected">环卫资源</div>
+          </div>
+
+          <div class="header-time">2026-08-24 16:32:18</div>
+
+          <button class="bell-button" aria-label="通知">
+            <svg viewBox="0 0 24 28" aria-hidden="true">
+              <path d="M5 20h14"></path>
+              <path d="M6.5 20V11a5.5 5.5 0 0 1 11 0v9"></path>
+              <path d="M3.5 20h17l-1.7-2.7V11a6.8 6.8 0 0 0-13.6 0v6.3L3.5 20Z"></path>
+              <path d="M9.5 24a3 3 0 0 0 5 0"></path>
+              <path d="M10 3.5a2 2 0 0 1 4 0"></path>
+            </svg>
+          </button>
+
+          <img class="admin-avatar export-reference-asset-2" src="./assets/super_admin_avatar.png" alt="super_admin_avatar">
+
+          <div class="admin-name">超级管理员</div>
+          <button class="logout-button">退出</button>
+        </header>
+
+        <section class="summary-bar" aria-label="资源统计">
+          <div class="summary-item region">
+            <span class="summary-label">区域总数</span>
+            <span class="summary-value">12</span>
+          </div>
+          <div class="summary-item stage">
+            <span class="summary-label">治理路段</span>
+            <span class="summary-value">286</span>
+          </div>
+          <div class="summary-item team">
+            <span class="summary-label">管辖环卫班组</span>
+            <span class="summary-value">48</span>
+          </div>
+
+          <div class="summary-actions">
+            <button class="outline-action">批量导入环卫资源数据</button>
+            <button class="primary-action">
+              <span class="plus-icon" aria-hidden="true"></span>新增路段资源
+            </button>
+          </div>
+        </section>
+
+        <section class="filter-panel" aria-label="环卫资源筛选">
+          <h1 class="filter-title">环卫资源筛选</h1>
+
+          <div class="filter-field region-field">
+            <div class="field-label">所属区域</div>
+            <div class="field-box">
+              全部区域
+              <svg viewBox="0 0 18 18" aria-hidden="true">
+                <path d="m3.5 6.5 5.5 5 5.5-5"></path>
+              </svg>
+            </div>
+          </div>
+
+          <div class="filter-field road-field">
+            <div class="field-label">路段检索</div>
+            <div class="field-box">
+              请输入路段名称或区域编号
+              <svg class="search-icon" viewBox="0 0 22 22" aria-hidden="true">
+                <circle cx="9.5" cy="9.5" r="6.5"></circle>
+                <path d="m14.5 14.5 5 5"></path>
+              </svg>
+            </div>
+          </div>
+
+          <div class="filter-buttons">
+            <button class="reset-button">重置</button>
+            <button class="query-button">查询</button>
+            <button class="refresh-button" aria-label="刷新">
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M20 8a8.5 8.5 0 0 0-14.5-2L4 7.5"></path>
+                <path d="M4 3.5v4h4"></path>
+                <path d="M4 16a8.5 8.5 0 0 0 14.5 2l1.5-1.5"></path>
+                <path d="M20 20.5v-4h-4"></path>
+              </svg>
+            </button>
+          </div>
+        </section>
+
+        <section class="resource-panel" aria-label="环卫资源列表">
+          <div class="resource-heading">
+            <h2 class="resource-title">环卫资源列表</h2>
+            <span class="resource-count">共 286 条路段资源</span>
+          </div>
+
+          <div class="table-tools">
+            <button class="export-button">导出资源数据</button>
+            <button class="tool-icon-button" aria-label="设置">
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="m9.4 3.8.6-1.3h4l.6 1.3 1.5.8 1.4-.3 2 3.4-1 1.1.1 1.7 1 1.1-2 3.4-1.4-.3-1.5.8-.6 1.3h-4l-.6-1.3-1.5-.8-1.4.3-2-3.4 1-1.1-.1-1.7-1-1.1 2-3.4 1.4.3 1.5-.8Z"></path>
+                <circle cx="12" cy="9.7" r="2.6"></circle>
+              </svg>
+            </button>
+            <button class="tool-icon-button" aria-label="刷新">
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M20 8a8.5 8.5 0 0 0-14.5-2L4 7.5"></path>
+                <path d="M4 3.5v4h4"></path>
+                <path d="M4 16a8.5 8.5 0 0 0 14.5 2l1.5-1.5"></path>
+                <path d="M20 20.5v-4h-4"></path>
+              </svg>
+            </button>
+          </div>
+
+          <div class="resource-table" role="table" aria-label="环卫资源数据表">
+            <div class="table-row header-row" role="row">
+              <div class="table-cell check-cell" role="columnheader">
+                <span class="checkbox" aria-hidden="true"></span>
+              </div>
+              <div class="table-cell region-code-cell" role="columnheader">区域编号</div>
+              <div class="table-cell road-name-cell" role="columnheader">路段名称</div>
+              <div class="table-cell location-cell" role="columnheader">地理位置</div>
+              <div class="table-cell team-cell" role="columnheader">管辖环卫班组</div>
+              <div class="table-cell operation-cell" role="columnheader">操作</div>
+            </div>
+
+            <div class="table-row data-row" role="row">
+              <div class="table-cell check-cell"><span class="checkbox"></span></div>
+              <div class="table-cell region-code-cell">REG-001</div>
+              <div class="table-cell road-name-cell">民权路治理路段<span class="road-status"></span></div>
+              <div class="table-cell location-cell">瀍河区民权路与北京路交叉口至新华东路</div>
+              <div class="table-cell team-cell">瀍河区环卫一班</div>
+              <div class="table-cell operation-cell">
+                <button class="edit-button">
+                  <svg viewBox="0 0 20 20" aria-hidden="true">
+                    <path d="M12.8 3.2 16.8 7.2"></path>
+                    <path d="m4 16 .8-3.5L12.8 4.5a1.7 1.7 0 0 1 2.4 0l.3.3a1.7 1.7 0 0 1 0 2.4L7.5 15.2 4 16Z"></path>
+                    <path d="M11.5 5.8 15.5 9.8"></path>
+                    <path d="M4 18h12"></path>
+                  </svg>编辑路段信息
+                </button>
+              </div>
+            </div>
+
+            <div class="table-row data-row" role="row">
+              <div class="table-cell check-cell"><span class="checkbox"></span></div>
+              <div class="table-cell region-code-cell">REG-002</div>
+              <div class="table-cell road-name-cell">中心大道重点路段<span class="road-status"></span></div>
+              <div class="table-cell location-cell">平桥区中心大道（平西路至平中大街）</div>
+              <div class="table-cell team-cell">平桥区中心班组</div>
+              <div class="table-cell operation-cell">
+                <button class="edit-button">
+                  <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M12.8 3.2 16.8 7.2"></path><path d="m4 16 .8-3.5L12.8 4.5a1.7 1.7 0 0 1 2.4 0l.3.3a1.7 1.7 0 0 1 0 2.4L7.5 15.2 4 16Z"></path><path d="M11.5 5.8 15.5 9.8"></path><path d="M4 18h12"></path></svg>编辑路段信息
+                </button>
+              </div>
+            </div>
+
+            <div class="table-row data-row" role="row">
+              <div class="table-cell check-cell"><span class="checkbox"></span></div>
+              <div class="table-cell region-code-cell">REG-003</div>
+              <div class="table-cell road-name-cell">新七大道治理段<span class="road-status"></span></div>
+              <div class="table-cell location-cell">羊山新区新七大道（新二十四街至新三十二街）</div>
+              <div class="table-cell team-cell">羊山新区清运组</div>
+              <div class="table-cell operation-cell">
+                <button class="edit-button">
+                  <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M12.8 3.2 16.8 7.2"></path><path d="m4 16 .8-3.5L12.8 4.5a1.7 1.7 0 0 1 2.4 0l.3.3a1.7 1.7 0 0 1 0 2.4L7.5 15.2 4 16Z"></path><path d="M11.5 5.8 15.5 9.8"></path><path d="M4 18h12"></path></svg>编辑路段信息
+                </button>
+              </div>
+            </div>
+
+            <div class="table-row data-row" role="row">
+              <div class="table-cell check-cell"><span class="checkbox"></span></div>
+              <div class="table-cell region-code-cell">REG-004</div>
+              <div class="table-cell road-name-cell">工业园区主干道<span class="road-status"></span></div>
+              <div class="table-cell location-cell">高新区工五路工业园区主干道</div>
+              <div class="table-cell team-cell">高新区环卫二队</div>
+              <div class="table-cell operation-cell">
+                <button class="edit-button">
+                  <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M12.8 3.2 16.8 7.2"></path><path d="m4 16 .8-3.5L12.8 4.5a1.7 1.7 0 0 1 2.4 0l.3.3a1.7 1.7 0 0 1 0 2.4L7.5 15.2 4 16Z"></path><path d="M11.5 5.8 15.5 9.8"></path><path d="M4 18h12"></path></svg>编辑路段信息
+                </button>
+              </div>
+            </div>
+
+            <div class="table-row data-row" role="row">
+              <div class="table-cell check-cell"><span class="checkbox"></span></div>
+              <div class="table-cell region-code-cell">REG-005</div>
+              <div class="table-cell road-name-cell">行政路示范段<span class="road-status"></span></div>
+              <div class="table-cell location-cell">瀍河区行政路（东方红大道至串城大道）</div>
+              <div class="table-cell team-cell">瀍河区环卫二班</div>
+              <div class="table-cell operation-cell">
+                <button class="edit-button">
+                  <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M12.8 3.2 16.8 7.2"></path><path d="m4 16 .8-3.5L12.8 4.5a1.7 1.7 0 0 1 2.4 0l.3.3a1.7 1.7 0 0 1 0 2.4L7.5 15.2 4 16Z"></path><path d="M11.5 5.8 15.5 9.8"></path><path d="M4 18h12"></path></svg>编辑路段信息
+                </button>
+              </div>
+            </div>
+
+            <div class="table-row data-row" role="row">
+              <div class="table-cell check-cell"><span class="checkbox"></span></div>
+              <div class="table-cell region-code-cell">REG-006</div>
+              <div class="table-cell road-name-cell">北京路商业段<span class="road-status"></span></div>
+              <div class="table-cell location-cell">瀍河区北京路商业街（新大街至四一路）</div>
+              <div class="table-cell team-cell">瀍河区环卫三班</div>
+              <div class="table-cell operation-cell">
+                <button class="edit-button">
+                  <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M12.8 3.2 16.8 7.2"></path><path d="m4 16 .8-3.5L12.8 4.5a1.7 1.7 0 0 1 2.4 0l.3.3a1.7 1.7 0 0 1 0 2.4L7.5 15.2 4 16Z"></path><path d="M11.5 5.8 15.5 9.8"></path><path d="M4 18h12"></path></svg>编辑路段信息
+                </button>
+              </div>
+            </div>
+
+            <div class="table-row data-row" role="row">
+              <div class="table-cell check-cell"><span class="checkbox"></span></div>
+              <div class="table-cell region-code-cell">REG-007</div>
+              <div class="table-cell road-name-cell">东方红大道<span class="road-status"></span></div>
+              <div class="table-cell location-cell">平桥区东方红大道（平中大街至平东大街）</div>
+              <div class="table-cell team-cell">平桥区东部班组</div>
+              <div class="table-cell operation-cell">
+                <button class="edit-button">
+                  <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M12.8 3.2 16.8 7.2"></path><path d="m4 16 .8-3.5L12.8 4.5a1.7 1.7 0 0 1 2.4 0l.3.3a1.7 1.7 0 0 1 0 2.4L7.5 15.2 4 16Z"></path><path d="M11.5 5.8 15.5 9.8"></path><path d="M4 18h12"></path></svg>编辑路段信息
+                </button>
+              </div>
+            </div>
+
+            <div class="table-row data-row" role="row">
+              <div class="table-cell check-cell"><span class="checkbox"></span></div>
+              <div class="table-cell region-code-cell">REG-008</div>
+              <div class="table-cell road-name-cell">滨河北路<span class="road-status"></span></div>
+              <div class="table-cell location-cell">瀍河区滨河北路（滨河南路至胜利路）</div>
+              <div class="table-cell team-cell">瀍河区清运组</div>
+              <div class="table-cell operation-cell">
+                <button class="edit-button">
+                  <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M12.8 3.2 16.8 7.2"></path><path d="m4 16 .8-3.5L12.8 4.5a1.7 1.7 0 0 1 2.4 0l.3.3a1.7 1.7 0 0 1 0 2.4L7.5 15.2 4 16Z"></path><path d="M11.5 5.8 15.5 9.8"></path><path d="M4 18h12"></path></svg>编辑路段信息
+                </button>
+              </div>
+            </div>
+
+            <div class="table-row data-row" role="row">
+              <div class="table-cell check-cell"><span class="checkbox"></span></div>
+              <div class="table-cell region-code-cell">REG-009</div>
+              <div class="table-cell road-name-cell">建设路公共区域<span class="road-status"></span></div>
+              <div class="table-cell location-cell">罗山县建设路（风山大道至龙山大道）</div>
+              <div class="table-cell team-cell">罗山县环卫班组</div>
+              <div class="table-cell operation-cell">
+                <button class="edit-button">
+                  <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M12.8 3.2 16.8 7.2"></path><path d="m4 16 .8-3.5L12.8 4.5a1.7 1.7 0 0 1 2.4 0l.3.3a1.7 1.7 0 0 1 0 2.4L7.5 15.2 4 16Z"></path><path d="M11.5 5.8 15.5 9.8"></path><path d="M4 18h12"></path></svg>编辑路段信息
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <div class="pagination">
+            <div class="total-records">共 286 条</div>
+
+            <button class="page-size">
+              10条/页
+              <svg viewBox="0 0 16 16" aria-hidden="true">
+                <path d="m3 6 5 4.5L13 6"></path>
+              </svg>
+            </button>
+
+            <div class="page-controls">
+              <button class="page-arrow" aria-label="上一页">
+                <svg viewBox="0 0 18 18" aria-hidden="true">
+                  <path d="m11 4-4 5 4 5"></path>
+                </svg>
+              </button>
+              <div class="page-number current">1</div>
+              <div class="page-number">2</div>
+              <div class="page-number">3</div>
+              <div class="page-number">4</div>
+              <div class="page-number">5</div>
+              <div class="page-ellipsis">...</div>
+              <div class="page-number">29</div>
+              <button class="page-arrow" aria-label="下一页">
+                <svg viewBox="0 0 18 18" aria-hidden="true">
+                  <path d="m7 4 4 5-4 5"></path>
+                </svg>
+              </button>
+            </div>
+
+            <div class="page-jump">
+              <span class="jump-label">前往</span>
+              <div class="jump-input">1</div>
+              <span class="jump-label">页</span>
+            </div>
+          </div>
+        </section>
+      </section>
+    </div>
+  </main>
+
+<script src="./script.js"></script><script src="../shared/product-nav.js?v=4.1"></script></body></html>

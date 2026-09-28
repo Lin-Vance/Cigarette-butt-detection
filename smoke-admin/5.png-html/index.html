@@ -1,0 +1,410 @@
+<!doctype html>
+<html lang="zh-CN"><head><meta charset="UTF-8">
+  
+  <title>烟路智治 · 状态总览</title>
+  
+<meta name="viewport" content="width=device-width, initial-scale=1"><link rel="stylesheet" href="./styles.css"></head>
+<body>
+<script>if(/embed/.test(location.hash))document.documentElement.className+=" yz-embed";</script>
+  <div class="fit-shell">
+    <div class="fit-box">
+      <main class="screen export-inline-style-1">
+        <header class="top-header">
+          <div class="brand">
+            <img class="brand-logo export-reference-asset-1" src="./assets/smoke_route_governance_logo_mark.png" alt="smoke_route_governance_logo_mark">
+            <div class="brand-title">烟路智治</div>
+          </div>
+
+          <nav class="primary-nav" aria-label="主导航">
+            <div class="nav-item active">态势总览</div>
+            <div class="nav-item">事件中心</div>
+            <div class="nav-item">调度中心</div>
+            <div class="nav-item">全域地图</div>
+            <div class="nav-item">资源管理</div>
+            <div class="nav-item">AI治理</div>
+            <div class="nav-item">系统管理</div>
+          </nav>
+
+          <div class="header-time">2026-08-24 11:18:36</div>
+
+          <div class="notification" aria-label="通知">
+            <svg viewBox="0 0 24 27" aria-hidden="true">
+              <path d="M5.5 19.2h13M7.2 18.7V11c0-3.1 2-5.6 4.8-5.6s4.8 2.5 4.8 5.6v7.7M9.8 21.8c.4 1.1 1.3 1.7 2.2 1.7s1.8-.6 2.2-1.7M9.5 5.6c.1-1.3 1.2-2.3 2.5-2.3s2.4 1 2.5 2.3"></path>
+            </svg>
+          </div>
+
+          <div class="profile">
+            <img class="profile-avatar export-reference-asset-2" src="./assets/administrator_profile_avatar.png" alt="administrator_profile_avatar">
+            <div class="profile-name">超级管理员</div>
+          </div>
+
+          <button class="logout-button" type="button">退出</button>
+        </header>
+
+        <div class="nav-popover" aria-label="事件中心菜单">
+          <div class="popover-item">事件总览</div>
+          <div class="popover-item">治理态势</div>
+          <div class="popover-item">设备状态</div>
+          <div class="popover-item selected">工作看板</div>
+        </div>
+
+        <section class="map-panel" aria-label="区域任务分布地图">
+          <h1 class="panel-heading">区域任务分布地图</h1>
+
+          <img class="map-image export-reference-asset-10" src="./assets/slice_01.png" alt="slice_01">
+
+          <div class="map-control layers">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M12 4 4 8l8 4 8-4-8-4Z"></path>
+              <path d="m4 12 8 4 8-4M4 16l8 4 8-4"></path>
+            </svg>
+            <span class="map-control-label">图层</span>
+          </div>
+
+          <div class="map-control fullscreen" aria-label="全屏">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M4 9V4h5M15 4h5v5M20 15v5h-5M9 20H4v-5"></path>
+            </svg>
+          </div>
+
+          <div class="map-zoom" aria-label="地图缩放">
+            <div class="zoom-button">+</div>
+            <div class="zoom-button">−</div>
+            <div class="zoom-button zoom-crosshair">
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <circle cx="12" cy="12" r="4"></circle>
+                <path d="M12 2v4M12 18v4M2 12h4M18 12h4"></path>
+              </svg>
+            </div>
+          </div>
+
+          <article class="map-stat-card staff">
+            <img class="stat-icon export-reference-asset-3" src="./assets/staff_count_person_icon.png" alt="staff_count_person_icon">
+            <div class="stat-copy">
+              <div class="stat-label">在岗人员数</div>
+              <div class="stat-value">684</div>
+              <div class="stat-note">较昨日 <strong>↑ 3.2%</strong></div>
+            </div>
+          </article>
+
+          <article class="map-stat-card active-task">
+            <img class="stat-icon export-reference-asset-5" src="./assets/active_task_hourglass_icon.png" alt="active_task_hourglass_icon">
+            <div class="stat-copy">
+              <div class="stat-label">正在执行任务</div>
+              <div class="stat-value">118</div>
+              <div class="stat-note">实时更新</div>
+            </div>
+          </article>
+
+          <article class="map-stat-card pending">
+            <img class="stat-icon export-reference-asset-4" src="./assets/pending_task_clipboard_icon.png" alt="pending_task_clipboard_icon">
+            <div class="stat-copy">
+              <div class="stat-label">待派发任务</div>
+              <div class="stat-value">43</div>
+              <div class="stat-note">需及时处理</div>
+            </div>
+          </article>
+
+          <article class="map-stat-card completed">
+            <img class="stat-icon export-reference-asset-6" src="./assets/completed_task_check_icon.png" alt="completed_task_check_icon">
+            <div class="stat-copy">
+              <div class="stat-label">今日已完成任务</div>
+              <div class="stat-value">326</div>
+              <div class="stat-note">完成率 <strong>92.6%</strong></div>
+            </div>
+          </article>
+
+          <article class="map-detail-card">
+            <div class="detail-close">×</div>
+            <div class="detail-title">涧河区任务概况</div>
+            <div class="detail-row"><span>任务总数</span><b>128</b></div>
+            <div class="detail-row"><span>待处理</span><b>23</b></div>
+            <div class="detail-row overdue"><span>超时</span><b>4</b></div>
+            <div class="detail-row rate"><span>完成率</span><b>92.6%</b></div>
+            <div class="detail-action">查看区域任务</div>
+          </article>
+
+          <div class="map-legend" aria-label="地图图例">
+            <div class="legend-item">
+              <span class="legend-red"></span>
+              <span>紧急任务</span>
+            </div>
+            <div class="legend-item">
+              <span class="legend-blue"></span>
+              <span>普通任务</span>
+            </div>
+            <div class="legend-item">
+              <span class="legend-route"></span>
+              <span>执行路线</span>
+            </div>
+            <div class="legend-item">
+              <span class="legend-green"></span>
+              <span>已完成点位</span>
+            </div>
+          </div>
+        </section>
+
+        <section class="analysis-panel trend-panel" aria-label="任务完成量趋势">
+          <h2 class="section-title">任务完成量近7日趋势</h2>
+
+          <div class="chart-legend">
+            <span class="chart-key">
+              <span class="chart-key-line"></span>
+              新增任务
+            </span>
+            <span class="chart-key">
+              <span class="chart-key-line teal"></span>
+              已完成任务
+            </span>
+          </div>
+
+          <div class="chart-area">
+            <span class="chart-label-y y300">300</span>
+            <span class="chart-label-y y250">250</span>
+            <span class="chart-label-y y200">200</span>
+            <span class="chart-label-y y150">150</span>
+            <span class="chart-label-y y100">100</span>
+            <span class="chart-label-y y50">50</span>
+            <span class="chart-label-y y0">0</span>
+
+            <svg class="chart-svg" viewBox="0 0 747 163" aria-label="近七日任务折线图">
+              <polyline points="0,85 121,64 242,51 363,48 484,73 605,67 726,48" fill="none" stroke="#087df0" stroke-width="2"></polyline>
+              <polyline points="0,107 121,91 242,78 363,78 484,99 605,91 726,78" fill="none" stroke="#0abbaa" stroke-width="2"></polyline>
+              <g fill="#fff" stroke="#087df0" stroke-width="2">
+                <circle cx="0" cy="85" r="3"></circle>
+                <circle cx="121" cy="64" r="3"></circle>
+                <circle cx="242" cy="51" r="3"></circle>
+                <circle cx="363" cy="48" r="3"></circle>
+                <circle cx="484" cy="73" r="3"></circle>
+                <circle cx="605" cy="67" r="3"></circle>
+                <circle cx="726" cy="48" r="3"></circle>
+              </g>
+              <g fill="#fff" stroke="#0abbaa" stroke-width="2">
+                <circle cx="0" cy="107" r="3"></circle>
+                <circle cx="121" cy="91" r="3"></circle>
+                <circle cx="242" cy="78" r="3"></circle>
+                <circle cx="363" cy="78" r="3"></circle>
+                <circle cx="484" cy="99" r="3"></circle>
+                <circle cx="605" cy="91" r="3"></circle>
+                <circle cx="726" cy="78" r="3"></circle>
+              </g>
+            </svg>
+
+            <span class="chart-date date-1">08-18</span>
+            <span class="chart-date date-2">08-19</span>
+            <span class="chart-date date-3">08-20</span>
+            <span class="chart-date date-4">08-21</span>
+            <span class="chart-date date-5">08-22</span>
+            <span class="chart-date date-6">08-23</span>
+            <span class="chart-date date-7">08-24</span>
+
+            <div class="chart-tooltip">
+              <div class="tooltip-date">08-22</div>
+              <div class="tooltip-row">
+                <span><i class="tooltip-dot"></i>新增任务</span>
+                <b class="tooltip-value">186</b>
+              </div>
+              <div class="tooltip-row">
+                <span><i class="tooltip-dot teal"></i>已完成任务</span>
+                <b class="tooltip-value teal">152</b>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="analysis-panel region-panel" aria-label="区域工作状态">
+          <h2 class="section-title">区域工作状态</h2>
+
+          <table class="region-table">
+            <thead>
+              <tr>
+                <th>区域</th>
+                <th>任务总数</th>
+                <th>已完成任务</th>
+                <th>待处理任务</th>
+                <th>超时任务</th>
+                <th>完成率</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="region-name"><span class="region-symbol"></span>涧河区</td>
+                <td>128</td>
+                <td>118</td>
+                <td>23</td>
+                <td class="overdue-number">4</td>
+                <td><span class="progress-track"><span class="progress-fill fill-926"></span></span></td>
+                <td>92.6%</td>
+              </tr>
+              <tr>
+                <td class="region-name"><span class="region-symbol"></span>平桥区</td>
+                <td>102</td>
+                <td>94</td>
+                <td>15</td>
+                <td class="overdue-number">2</td>
+                <td><span class="progress-track"><span class="progress-fill fill-922"></span></span></td>
+                <td>92.2%</td>
+              </tr>
+              <tr>
+                <td class="region-name"><span class="region-symbol"></span>羊山新区</td>
+                <td>96</td>
+                <td>88</td>
+                <td>12</td>
+                <td class="overdue-number">3</td>
+                <td><span class="progress-track"><span class="progress-fill fill-917"></span></span></td>
+                <td>91.7%</td>
+              </tr>
+              <tr>
+                <td class="region-name"><span class="region-symbol"></span>高新区</td>
+                <td>88</td>
+                <td>79</td>
+                <td>11</td>
+                <td class="overdue-number">2</td>
+                <td><span class="progress-track"><span class="progress-fill fill-898"></span></span></td>
+                <td>89.8%</td>
+              </tr>
+              <tr>
+                <td class="region-name"><span class="region-symbol"></span>罗山县</td>
+                <td>76</td>
+                <td>68</td>
+                <td>10</td>
+                <td class="overdue-number">1</td>
+                <td><span class="progress-track"><span class="progress-fill fill-895"></span></span></td>
+                <td>89.5%</td>
+              </tr>
+            </tbody>
+          </table>
+        </section>
+
+        <section class="lower-panel task-panel" aria-label="任务执行监控">
+          <h2 class="section-title">任务执行监控</h2>
+
+          <table class="task-table">
+            <thead>
+              <tr>
+                <th>任务编号</th>
+                <th>所属区域</th>
+                <th>任务状态</th>
+                <th>剩余时长</th>
+                <th>操作</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>TASK-20260824-001</td>
+                <td>涧河区</td>
+                <td><span class="task-status">待派发</span></td>
+                <td>—</td>
+                <td>
+                  <div class="task-actions">
+                    <button class="task-action" type="button">查看详情</button>
+                    <button class="task-action" type="button">改派</button>
+                  </div>
+                </td>
+              </tr>
+              <tr>
+                <td>TASK-20260824-002</td>
+                <td>平桥区</td>
+                <td><span class="task-status running">执行中</span></td>
+                <td>01:32:45</td>
+                <td>
+                  <div class="task-actions">
+                    <button class="task-action" type="button">查看详情</button>
+                    <button class="task-action" type="button">改派</button>
+                  </div>
+                </td>
+              </tr>
+              <tr>
+                <td>TASK-20260824-003</td>
+                <td>羊山新区</td>
+                <td><span class="task-status running">执行中</span></td>
+                <td>00:58:12</td>
+                <td>
+                  <div class="task-actions">
+                    <button class="task-action" type="button">查看详情</button>
+                    <button class="task-action" type="button">改派</button>
+                  </div>
+                </td>
+              </tr>
+              <tr>
+                <td>TASK-20260824-004</td>
+                <td>高新区</td>
+                <td><span class="task-status done">已完成</span></td>
+                <td>—</td>
+                <td>
+                  <div class="task-actions">
+                    <button class="task-action" type="button">查看详情</button>
+                    <button class="task-action" type="button">改派</button>
+                  </div>
+                </td>
+              </tr>
+              <tr>
+                <td>TASK-20260824-005</td>
+                <td>罗山县</td>
+                <td><span class="task-status late">已超时</span></td>
+                <td>00:15:32</td>
+                <td>
+                  <div class="task-actions">
+                    <button class="task-action" type="button">查看详情</button>
+                    <button class="task-action" type="button">改派</button>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+
+          <div class="task-pagination">
+            <span>共23条</span>
+            <div class="page-size">
+              5条/页
+              <svg viewBox="0 0 12 12" aria-hidden="true">
+                <path d="m2 4 4 4 4-4"></path>
+              </svg>
+            </div>
+            <svg class="page-arrow" viewBox="0 0 12 18" aria-hidden="true">
+              <path d="m9 2-6 7 6 7"></path>
+            </svg>
+            <span class="page-number active">1</span>
+            <span class="page-number">2</span>
+            <span class="page-number">3</span>
+            <span class="page-number">4</span>
+            <span class="page-number">5</span>
+            <svg class="page-arrow" viewBox="0 0 12 18" aria-hidden="true">
+              <path d="m3 2 6 7-6 7"></path>
+            </svg>
+          </div>
+        </section>
+
+        <section class="lower-panel shortcut-panel" aria-label="快捷操作">
+          <h2 class="section-title shortcut-title">快捷操作</h2>
+
+          <article class="shortcut-card dispatch">
+            <img class="shortcut-icon export-reference-asset-7" src="./assets/quick_dispatch_airplane_icon.png" alt="quick_dispatch_airplane_icon">
+            <svg class="shortcut-arrow" viewBox="0 0 16 20" aria-hidden="true">
+              <path d="m4 3 7 7-7 7"></path>
+            </svg>
+            <div class="shortcut-label">快速派单</div>
+          </article>
+
+          <article class="shortcut-card reminder">
+            <img class="shortcut-icon export-reference-asset-8" src="./assets/task_reminder_bell_icon.png" alt="task_reminder_bell_icon">
+            <svg class="shortcut-arrow" viewBox="0 0 16 20" aria-hidden="true">
+              <path d="m4 3 7 7-7 7"></path>
+            </svg>
+            <div class="shortcut-label">待处理任务提醒</div>
+          </article>
+
+          <article class="shortcut-card batch">
+            <img class="shortcut-icon export-reference-asset-9" src="./assets/batch_schedule_layers_icon.png" alt="batch_schedule_layers_icon">
+            <svg class="shortcut-arrow" viewBox="0 0 16 20" aria-hidden="true">
+              <path d="m4 3 7 7-7 7"></path>
+            </svg>
+            <div class="shortcut-label">批量调度</div>
+          </article>
+        </section>
+      </main>
+    </div>
+  </div>
+
+<script src="./script.js"></script><script src="../shared/product-nav.js?v=4.1"></script></body></html>

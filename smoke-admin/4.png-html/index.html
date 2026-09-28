@@ -1,0 +1,282 @@
+<!doctype html>
+<html lang="zh-CN"><head><meta charset="UTF-8">
+
+<title>烟踪智治 · 设备运行地图</title>
+
+<meta name="viewport" content="width=device-width, initial-scale=1"><link rel="stylesheet" href="./styles.css"></head>
+<body>
+<script>if(/embed/.test(location.hash))document.documentElement.className+=" yz-embed";</script>
+<div class="fit-shell">
+  <div class="fit-box">
+    <main class="screen export-inline-style-1">
+      <header class="top-header">
+        <img class="brand-mark export-reference-asset-1" src="./assets/smoke_intelligence_logo.png" alt="smoke_intelligence_logo">
+
+        <nav class="primary-nav">
+          <div class="primary-nav-item active">态势总览</div>
+          <div class="primary-nav-item">事件中心</div>
+          <div class="primary-nav-item">调度中心</div>
+          <div class="primary-nav-item">全域地图</div>
+          <div class="primary-nav-item">资源管理</div>
+          <div class="primary-nav-item">AI治理</div>
+          <div class="primary-nav-item">系统管理</div>
+        </nav>
+
+        <div class="header-time">2026-08-24 10:42:18</div>
+        <div class="header-bell">
+          <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="#152757" stroke-width="1.7">
+            <path d="M6 17.5h12M7.2 16.5V10a4.8 4.8 0 0 1 9.6 0v6.5l1.5 1.5H5.7l1.5-1.5Z"></path>
+            <path d="M10 20h4"></path>
+          </svg>
+        </div>
+        <img class="admin-avatar export-reference-asset-2" src="./assets/administrator_avatar.png" alt="administrator_avatar">
+        <div class="admin-name">超级管理员</div>
+        <button class="logout-button">退出</button>
+      </header>
+
+      <div class="nav-dropdown">
+        <div class="dropdown-row">事件总览</div>
+        <div class="dropdown-row">治理态势</div>
+        <div class="dropdown-row selected">设备状态</div>
+        <div class="dropdown-row">工作看板</div>
+      </div>
+
+      <section class="map-panel">
+        <h1 class="map-title">设备运行地图</h1>
+        <div class="map-stats">
+          <div class="stat-item stat-online">在线 <span class="stat-value">5,426</span></div>
+          <div class="stat-item stat-offline">离线 <span class="stat-value">286</span></div>
+          <div class="stat-item stat-alert">告警 <span class="stat-value">120</span></div>
+        </div>
+
+        <div class="map-viewport">
+          <img class="map-image-raw export-reference-asset-4" src="./assets/device_operations_map_background_ai_original.png" alt="device_operations_map_background_ai_original">
+          <img class="map-image-composite export-reference-asset-3" src="./assets/device_operations_map_background_local_composite.png" alt="device_operations_map_background_local_composite">
+
+          <div class="metric-card metric-left-top">
+            <div class="metric-icon">
+              <svg viewBox="0 0 64 64" fill="none" stroke="#0968e2" stroke-width="3" stroke-linejoin="round">
+                <path d="m9 22 8-7 36 18-8 8L9 22Z"></path>
+                <path d="M17 15v16M45 33v12"></path>
+                <path d="M13 33v17M20 38v13M27 43v8"></path>
+                <path d="M8 50c0-3 2-5 5-5s5 2 5 5"></path>
+              </svg>
+            </div>
+            <div class="metric-copy">
+              <div class="metric-label">设备总数</div>
+              <div class="metric-number">5,832</div>
+              <div class="metric-note">较昨日 <span class="up">↑ 2.4%</span></div>
+            </div>
+          </div>
+
+          <div class="metric-card metric-left-bottom">
+            <div class="metric-icon">
+              <svg viewBox="0 0 64 64" fill="none" stroke="#08b4bd" stroke-width="3" stroke-linejoin="round">
+                <rect x="9" y="10" width="45" height="34" rx="3"></rect>
+                <path d="M20 54h24M32 44v10"></path>
+                <circle cx="31.5" cy="27" r="8"></circle>
+                <path d="m28 27 2.5 2.5 5-5"></path>
+              </svg>
+            </div>
+            <div class="metric-copy">
+              <div class="metric-label">设备在线率</div>
+              <div class="metric-number">93.0%</div>
+              <div class="metric-note">较昨日 <span class="green">↑ 1.2%</span></div>
+            </div>
+          </div>
+
+          <div class="metric-card metric-right-top">
+            <div class="metric-icon">
+              <svg viewBox="0 0 64 64" fill="none" stroke="#8d99ad" stroke-width="3" stroke-linejoin="round">
+                <rect x="10" y="34" width="44" height="13" rx="3"></rect>
+                <path d="M17 34V22a15 15 0 0 1 30 0v12"></path>
+                <circle cx="32" cy="28" r="7"></circle>
+                <path d="m29.5 25.5 5 5M34.5 25.5l-5 5"></path>
+                <path d="M22 52h20"></path>
+              </svg>
+            </div>
+            <div class="metric-copy">
+              <div class="metric-label">设备离线率</div>
+              <div class="metric-number">4.9%</div>
+              <div class="metric-note">较昨日 <span class="green">↓ 0.8%</span></div>
+            </div>
+          </div>
+
+          <div class="metric-card metric-right-bottom">
+            <div class="metric-icon">
+              <svg viewBox="0 0 64 64" fill="none" stroke="#f13b1f" stroke-width="3" stroke-linejoin="round">
+                <path d="M18 43V27a14 14 0 0 1 28 0v16l5 6H13l5-6Z"></path>
+                <path d="M27 55h10"></path>
+                <circle cx="32" cy="12" r="3"></circle>
+              </svg>
+            </div>
+            <div class="metric-copy">
+              <div class="metric-label">告警待处置数量</div>
+              <div class="metric-number">36</div>
+              <div class="metric-note">较昨日 <span class="green">↓ 6台</span></div>
+            </div>
+          </div>
+
+          <div class="map-tooltip">
+            <div class="tooltip-title">CAM-037 民权路点位</div>
+            <div class="tooltip-line"><span class="tooltip-key">设备类型</span> 高清摄像头</div>
+            <div class="tooltip-line"><span class="tooltip-key">所属区域</span> 濂河区</div>
+            <div class="tooltip-line"><span class="tooltip-key">在线状态</span> <span class="tooltip-alert">告警</span></div>
+            <div class="tooltip-line"><span class="tooltip-key">最后上报</span> 2026-08-24 10:40:26</div>
+            <button class="tooltip-button">查看设备</button>
+          </div>
+
+          <div class="map-controls">
+            <div class="map-control">
+              <svg viewBox="0 0 20 20" width="20" height="20" stroke="#172858" stroke-width="1.7">
+                <path d="M4 10h12M10 4v12"></path>
+              </svg>
+            </div>
+            <div class="map-control">
+              <svg viewBox="0 0 20 20" width="20" height="20" stroke="#172858" stroke-width="1.7">
+                <path d="M4 10h12"></path>
+              </svg>
+            </div>
+            <div class="map-control target">
+              <svg viewBox="0 0 20 20" width="20" height="20" fill="none" stroke="#172858" stroke-width="1.6">
+                <circle cx="10" cy="10" r="5"></circle>
+                <circle cx="10" cy="10" r="1.5" fill="#172858"></circle>
+                <path d="M10 2v3M10 15v3M2 10h3M15 10h3"></path>
+              </svg>
+            </div>
+          </div>
+
+          <div class="map-legend">
+            <div class="legend-item"><span class="legend-dot dot-green"></span>在线设备</div>
+            <div class="legend-item"><span class="legend-dot dot-gray"></span>离线设备</div>
+            <div class="legend-item"><span class="legend-dot dot-red"></span>告警设备</div>
+          </div>
+        </div>
+      </section>
+
+      <section class="analytics-card trend-card">
+        <h2 class="section-title">设备在线率趋势</h2>
+        <div class="trend-legend">
+          <div class="trend-legend-item"><span class="trend-line-blue"></span>在线率</div>
+          <div class="trend-legend-item"><span class="trend-line-teal"></span>设备健康度</div>
+        </div>
+        <div class="trend-chart">
+          <div class="trend-label y99">99%</div>
+          <div class="trend-label y96">96%</div>
+          <div class="trend-label y93">93%</div>
+          <div class="trend-label y90">90%</div>
+          <div class="trend-label y87">87%</div>
+          <div class="chart-grid"></div>
+          <svg class="trend-svg" viewBox="0 0 722 133" fill="none">
+            <polyline points="53,31 155,19 258,36 359,16 462,12 563,21 666,6" stroke="#1269e8" stroke-width="2"></polyline>
+            <polyline points="53,62 155,53 258,72 359,55 462,43 563,58 666,40" stroke="#08aaa8" stroke-width="2"></polyline>
+            <g fill="#1269e8" stroke="#fff" stroke-width="2">
+              <circle cx="53" cy="31" r="5"></circle><circle cx="155" cy="19" r="5"></circle><circle cx="258" cy="36" r="5"></circle><circle cx="359" cy="16" r="5"></circle><circle cx="462" cy="12" r="5"></circle><circle cx="563" cy="21" r="5"></circle><circle cx="666" cy="6" r="5"></circle>
+            </g>
+            <g fill="#08aaa8" stroke="#fff" stroke-width="2">
+              <circle cx="53" cy="62" r="5"></circle><circle cx="155" cy="53" r="5"></circle><circle cx="258" cy="72" r="5"></circle><circle cx="359" cy="55" r="5"></circle><circle cx="462" cy="43" r="5"></circle><circle cx="563" cy="58" r="5"></circle><circle cx="666" cy="40" r="5"></circle>
+            </g>
+          </svg>
+          <div class="chart-value export-inline-style-2">95.2%</div>
+          <div class="chart-value export-inline-style-3">96.1%</div>
+          <div class="chart-value export-inline-style-4">94.8%</div>
+          <div class="chart-value export-inline-style-5">96.7%</div>
+          <div class="chart-value export-inline-style-6">97.0%</div>
+          <div class="chart-value export-inline-style-7">96.3%</div>
+          <div class="chart-value export-inline-style-8">97.4%</div>
+
+          <div class="chart-value teal export-inline-style-9">93.4%</div>
+          <div class="chart-value teal export-inline-style-10">94.0%</div>
+          <div class="chart-value teal export-inline-style-11">92.8%</div>
+          <div class="chart-value teal export-inline-style-12">94.5%</div>
+          <div class="chart-value teal export-inline-style-13">95.1%</div>
+          <div class="chart-value teal export-inline-style-14">94.2%</div>
+          <div class="chart-value teal export-inline-style-15">95.6%</div>
+
+          <div class="x-labels">
+            <span>08-18</span><span>08-19</span><span>08-20</span><span>08-21</span><span>08-22</span><span>08-23</span><span>08-24</span>
+          </div>
+        </div>
+      </section>
+
+      <section class="analytics-card donut-card">
+        <h2 class="section-title">设备故障类型占比</h2>
+        <div class="donut-graphic">
+          <div class="donut-center">
+            <div class="donut-total">120</div>
+            <div class="donut-caption">告警设备</div>
+          </div>
+        </div>
+        <div class="donut-legend">
+          <div class="donut-row"><span class="legend-dot blue"></span>网络中断 <span class="donut-percent">38.3%</span></div>
+          <div class="donut-row"><span class="legend-dot teal"></span>供电异常 <span class="donut-percent">26.7%</span></div>
+          <div class="donut-row"><span class="legend-dot orange"></span>画面异常 <span class="donut-percent">20.8%</span></div>
+          <div class="donut-row"><span class="legend-dot gray"></span>存储故障 <span class="donut-percent">14.2%</span></div>
+        </div>
+      </section>
+
+      <section class="alert-panel">
+        <h2 class="alert-title">设备告警列表</h2>
+        <table class="alert-table">
+          <colgroup>
+            <col><col><col><col><col><col>
+          </colgroup>
+          <thead>
+            <tr>
+              <th>设备编号</th>
+              <th>安装点位</th>
+              <th>设备状态</th>
+              <th>告警类型</th>
+              <th>发生时间</th>
+              <th>操作</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>CAM-037</td>
+              <td>民权路</td>
+              <td><span class="status-badge status-alert">告警</span></td>
+              <td>网络中断</td>
+              <td>2026-08-24&nbsp;&nbsp;10:32:18</td>
+              <td><button class="detail-button">查看详情</button></td>
+            </tr>
+            <tr>
+              <td>CAM-052</td>
+              <td>中心广场</td>
+              <td><span class="status-badge status-alert">告警</span></td>
+              <td>画面异常</td>
+              <td>2026-08-24&nbsp;&nbsp;10:25:47</td>
+              <td><button class="detail-button">查看详情</button></td>
+            </tr>
+            <tr>
+              <td>CAM-018</td>
+              <td>新七大道</td>
+              <td><span class="status-badge status-online">在线</span></td>
+              <td>供电异常</td>
+              <td>2026-08-24&nbsp;&nbsp;10:15:31</td>
+              <td><button class="detail-button">查看详情</button></td>
+            </tr>
+            <tr>
+              <td>CAM-061</td>
+              <td>工业园</td>
+              <td><span class="status-badge status-offline">离线</span></td>
+              <td>存储故障</td>
+              <td>2026-08-24&nbsp;&nbsp;10:08:09</td>
+              <td><button class="detail-button">查看详情</button></td>
+            </tr>
+            <tr>
+              <td>CAM-029</td>
+              <td>民权路</td>
+              <td><span class="status-badge status-alert">告警</span></td>
+              <td>网络中断</td>
+              <td>2026-08-24&nbsp;&nbsp;09:55:12</td>
+              <td><button class="detail-button">查看详情</button></td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+    </main>
+  </div>
+</div>
+
+<script src="./script.js"></script><script src="../shared/product-nav.js?v=4.1"></script></body></html>

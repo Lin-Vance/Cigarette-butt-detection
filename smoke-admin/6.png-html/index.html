@@ -1,0 +1,198 @@
+<!doctype html>
+<html lang="zh-CN"><head><meta charset="UTF-8">
+
+<title>烟路智治 - 告警数据列表</title>
+
+<meta name="viewport" content="width=device-width, initial-scale=1"><link rel="stylesheet" href="./styles.css"></head>
+<body>
+<div class="fit-shell">
+  <div class="fit-box">
+    <main class="screen export-inline-style-1">
+      <header class="top-header">
+        <img class="brand-logo export-reference-asset-1" src="./assets/smoke_governance_brand_logo.png" alt="smoke_governance_brand_logo">
+
+        <nav class="main-nav" aria-label="主导航">
+          <div class="nav-item">态势总览</div>
+          <div class="nav-item">事件中心</div>
+          <div class="nav-item">调度中心</div>
+          <div class="nav-item">全域地图</div>
+          <div class="nav-item">资源管理</div>
+          <div class="nav-item">AI治理</div>
+          <div class="nav-item">系统管理</div>
+        </nav>
+
+        <div class="nav-dropdown">
+          <div class="dropdown-option active">告警中心</div>
+          <div class="dropdown-option">事件报表</div>
+        </div>
+
+        <div class="header-tools">
+          <span class="header-time">2026-08-24 11:08:32</span>
+          <svg class="bell-icon" viewBox="0 0 26 28" aria-hidden="true">
+            <path d="M5 20h16M7 19V11a6 6 0 0 1 12 0v8M4 20h18l-2-3v-6a7 7 0 0 0-14 0v6l-2 3Z" fill="none" stroke="#172047" stroke-width="1.8" stroke-linejoin="round"></path>
+            <path d="M10 24c.7 1.2 1.7 1.8 3 1.8s2.3-.6 3-1.8" fill="none" stroke="#172047" stroke-width="1.6" stroke-linecap="round"></path>
+          </svg>
+          <img class="admin-avatar export-reference-asset-2" src="./assets/admin_user_avatar.png" alt="admin_user_avatar">
+          <span class="admin-name">超级管理员</span>
+          <button class="logout-button">退出</button>
+        </div>
+      </header>
+
+      <section class="summary-strip">
+        <span>未闭告警</span><span class="summary-number blue">43</span>
+        <span class="summary-divider"></span>
+        <span>今日新增</span><span class="summary-number green">128</span>
+      </section>
+
+      <button class="export-button"><span class="excel-mark">X</span>导出告警列表 Excel</button>
+
+      <section class="filter-panel" aria-label="告警筛选">
+        <h1 class="panel-heading">告警筛选</h1>
+
+        <div class="filter-field date">
+          <span class="field-label">时间范围</span>
+          <div class="field-box date-box">
+            <span>2026-08-18</span><span class="date-separator">至</span><span>2026-08-24</span>
+            <svg class="calendar-icon" viewBox="0 0 18 18" aria-hidden="true">
+              <rect x="2.3" y="3.5" width="13.4" height="12" rx="1.7" fill="none" stroke="#8797b5" stroke-width="1.5"></rect>
+              <path d="M2.5 7h13M5.5 1.8v3.4M12.5 1.8v3.4" fill="none" stroke="#8797b5" stroke-width="1.5" stroke-linecap="round"></path>
+            </svg>
+          </div>
+        </div>
+
+        <div class="filter-field level">
+          <span class="field-label">告警等级</span>
+          <div class="field-box select-box">全部等级
+            <svg class="chevron-icon" viewBox="0 0 15 12"><path d="m2 3 5.5 5L13 3" fill="none" stroke="#7485a6" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+          </div>
+        </div>
+        <div class="filter-field region">
+          <span class="field-label">所属区域</span>
+          <div class="field-box select-box">全部区域
+            <svg class="chevron-icon" viewBox="0 0 15 12"><path d="m2 3 5.5 5L13 3" fill="none" stroke="#7485a6" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+          </div>
+        </div>
+        <div class="filter-field status">
+          <span class="field-label">告警状态</span>
+          <div class="field-box select-box">全部状态
+            <svg class="chevron-icon" viewBox="0 0 15 12"><path d="m2 3 5.5 5L13 3" fill="none" stroke="#7485a6" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+          </div>
+        </div>
+        <div class="filter-field search">
+          <span class="field-label">&nbsp;</span>
+          <div class="field-box search-box">请输入告警编号或摄像头编号
+            <svg class="search-icon" viewBox="0 0 20 20"><circle cx="8.5" cy="8.5" r="5.7" fill="none" stroke="#8292b2" stroke-width="1.7"></circle><path d="m13 13 4.3 4.3" fill="none" stroke="#8292b2" stroke-width="1.7" stroke-linecap="round"></path></svg>
+          </div>
+        </div>
+
+        <button class="filter-action reset-button">重置</button>
+        <button class="filter-action query-button">查询</button>
+        <button class="filter-action filter-refresh">
+          <svg class="refresh-icon" viewBox="0 0 22 21">
+            <path d="M18.2 8.2A7.7 7.7 0 0 0 4.6 5.1L3 7.2M3 3.5v3.8h3.8M3.8 12.8a7.7 7.7 0 0 0 13.6 3.1l1.6-2.1M19 17.5v-3.8h-3.8" fill="none" stroke="#172047" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path>
+          </svg>
+        </button>
+      </section>
+
+      <section class="data-panel" aria-label="告警数据列表">
+        <h2 class="data-title">告警数据列表 <span class="record-count">共 8,639 条记录</span></h2>
+        <div class="data-toolbar">
+          <button class="toolbar-button mark-read">批量标记已阅</button>
+          <button class="toolbar-button icon-tool">
+            <svg class="settings-icon" viewBox="0 0 20 20">
+              <path d="m8.1 2.3.5-1h2.8l.5 1 1.4.6 1-.4 2 2-.4 1 .6 1.4 1 .5v2.8l-1 .5-.6 1.4.4 1-2 2-1-.4-1.4.6-.5 1H8.6l-.5-1-1.4-.6-1 .4-2-2 .4-1-.6-1.4-1-.5V7.4l1-.5.6-1.4-.4-1 2-2 1 .4 1.4-.6Z" fill="none" stroke="#172047" stroke-width="1.35" stroke-linejoin="round"></path>
+              <circle cx="10" cy="8.8" r="2.5" fill="none" stroke="#172047" stroke-width="1.35"></circle>
+            </svg>
+          </button>
+          <button class="toolbar-button icon-tool">
+            <svg class="refresh-icon" viewBox="0 0 22 21">
+              <path d="M18.2 8.2A7.7 7.7 0 0 0 4.6 5.1L3 7.2M3 3.5v3.8h3.8M3.8 12.8a7.7 7.7 0 0 0 13.6 3.1l1.6-2.1M19 17.5v-3.8h-3.8" fill="none" stroke="#172047" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path>
+            </svg>
+          </button>
+        </div>
+
+        <div class="table-area">
+          <div class="table-header">
+            <div class="check-box"></div>
+            <span class="th col-number">告警编号</span>
+            <span class="th col-time">发生时间</span>
+            <span class="th col-region">所属区域</span>
+            <span class="th col-camera">摄像头编号</span>
+            <span class="th col-level">告警等级</span>
+            <span class="th col-thumb">抓拍缩略图</span>
+            <span class="th col-status">告警状态</span>
+            <span class="th col-operation">操作</span>
+          </div>
+
+          <article class="alert-row row-1 highlight">
+            <div class="check-box"></div>
+            <span class="td number">ALM202608240001</span>
+            <span class="td time">2026-08-24 10:32:18</span>
+            <span class="td region">渝河区</span>
+            <span class="td camera">CAM-037</span>
+            <span class="td level severity high">高</span>
+            <img class="camera-thumbnail export-reference-asset-3" src="./assets/pedestrian_smoke_camera_thumbnail.png" alt="pedestrian_smoke_camera_thumbnail">
+            <span class="status-badge status-unread">未阅</span>
+            <button class="row-button view-button"><svg class="eye-icon" viewBox="0 0 19 16"><path d="M1.5 8s2.5-5 8-5 8 5 8 5-2.5 5-8 5-8-5-8-5Z" fill="none" stroke="#1269e7" stroke-width="1.6"></path><circle cx="9.5" cy="8" r="2.2" fill="none" stroke="#1269e7" stroke-width="1.5"></circle></svg><span>查看证据</span></button>
+            <button class="row-button mark-button">标记已阅</button>
+            <svg class="row-arrow" viewBox="0 0 12 16"><path d="m3 2 5 6-5 6" fill="none" stroke="#273354" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+          </article>
+
+          <article class="alert-row row-2">
+            <div class="check-box"></div><span class="td number">ALM202608240002</span><span class="td time">2026-08-24 10:28:47</span><span class="td region">平桥区</span><span class="td camera">CAM-052</span><span class="td level severity medium">中</span>
+            <img class="camera-thumbnail export-reference-asset-4" src="./assets/pedestrian_crosswalk_camera_thumbnail.png" alt="pedestrian_crosswalk_camera_thumbnail">
+            <span class="status-badge status-unread">未阅</span><button class="row-button view-button"><svg class="eye-icon" viewBox="0 0 19 16"><path d="M1.5 8s2.5-5 8-5 8 5 8 5-2.5 5-8 5-8-5-8-5Z" fill="none" stroke="#1269e7" stroke-width="1.6"></path><circle cx="9.5" cy="8" r="2.2" fill="none" stroke="#1269e7" stroke-width="1.5"></circle></svg><span>查看证据</span></button><button class="row-button mark-button">标记已阅</button><svg class="row-arrow" viewBox="0 0 12 16"><path d="m3 2 5 6-5 6" fill="none" stroke="#273354" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+          </article>
+
+          <article class="alert-row row-3">
+            <div class="check-box"></div><span class="td number">ALM202608240003</span><span class="td time">2026-08-24 10:26:31</span><span class="td region">羊山新区</span><span class="td camera">CAM-018</span><span class="td level severity low">低</span>
+            <img class="camera-thumbnail export-reference-asset-5" src="./assets/roadside_vehicle_camera_thumbnail.png" alt="roadside_vehicle_camera_thumbnail">
+            <span class="status-badge status-read">已阅</span><button class="row-button view-button"><svg class="eye-icon" viewBox="0 0 19 16"><path d="M1.5 8s2.5-5 8-5 8 5 8 5-2.5 5-8 5-8-5-8-5Z" fill="none" stroke="#1269e7" stroke-width="1.6"></path><circle cx="9.5" cy="8" r="2.2" fill="none" stroke="#1269e7" stroke-width="1.5"></circle></svg><span>查看证据</span></button><button class="row-button mark-button marked-button">已阅</button><svg class="row-arrow" viewBox="0 0 12 16"><path d="m3 2 5 6-5 6" fill="none" stroke="#273354" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+          </article>
+
+          <article class="alert-row row-4">
+            <div class="check-box"></div><span class="td number">ALM202608240004</span><span class="td time">2026-08-24 10:21:05</span><span class="td region">高新区</span><span class="td camera">CAM-061</span><span class="td level severity high">高</span>
+            <img class="camera-thumbnail export-reference-asset-6" src="./assets/urban_vehicle_camera_thumbnail.png" alt="urban_vehicle_camera_thumbnail">
+            <span class="status-badge status-unread">未阅</span><button class="row-button view-button"><svg class="eye-icon" viewBox="0 0 19 16"><path d="M1.5 8s2.5-5 8-5 8 5 8 5-2.5 5-8 5-8-5-8-5Z" fill="none" stroke="#1269e7" stroke-width="1.6"></path><circle cx="9.5" cy="8" r="2.2" fill="none" stroke="#1269e7" stroke-width="1.5"></circle></svg><span>查看证据</span></button><button class="row-button mark-button">标记已阅</button><svg class="row-arrow" viewBox="0 0 12 16"><path d="m3 2 5 6-5 6" fill="none" stroke="#273354" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+          </article>
+
+          <article class="alert-row row-5">
+            <div class="check-box"></div><span class="td number">ALM202608240005</span><span class="td time">2026-08-24 10:15:42</span><span class="td region">罗山县</span><span class="td camera">CAM-029</span><span class="td level severity medium">中</span>
+            <img class="camera-thumbnail export-reference-asset-7" src="./assets/sidewalk_pedestrian_camera_thumbnail.png" alt="sidewalk_pedestrian_camera_thumbnail">
+            <span class="status-badge status-read">已阅</span><button class="row-button view-button"><svg class="eye-icon" viewBox="0 0 19 16"><path d="M1.5 8s2.5-5 8-5 8 5 8 5-2.5 5-8 5-8-5-8-5Z" fill="none" stroke="#1269e7" stroke-width="1.6"></path><circle cx="9.5" cy="8" r="2.2" fill="none" stroke="#1269e7" stroke-width="1.5"></circle></svg><span>查看证据</span></button><button class="row-button mark-button marked-button">已阅</button><svg class="row-arrow" viewBox="0 0 12 16"><path d="m3 2 5 6-5 6" fill="none" stroke="#273354" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+          </article>
+
+          <article class="alert-row row-6">
+            <div class="check-box"></div><span class="td number">ALM202608240006</span><span class="td time">2026-08-24 10:12:09</span><span class="td region">渝河区</span><span class="td camera">CAM-037</span><span class="td level severity low">低</span>
+            <img class="camera-thumbnail export-reference-asset-8" src="./assets/pedestrian_road_camera_thumbnail.png" alt="pedestrian_road_camera_thumbnail">
+            <span class="status-badge status-unread">未阅</span><button class="row-button view-button"><svg class="eye-icon" viewBox="0 0 19 16"><path d="M1.5 8s2.5-5 8-5 8 5 8 5-2.5 5-8 5-8-5-8-5Z" fill="none" stroke="#1269e7" stroke-width="1.6"></path><circle cx="9.5" cy="8" r="2.2" fill="none" stroke="#1269e7" stroke-width="1.5"></circle></svg><span>查看证据</span></button><button class="row-button mark-button">标记已阅</button><svg class="row-arrow" viewBox="0 0 12 16"><path d="m3 2 5 6-5 6" fill="none" stroke="#273354" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+          </article>
+
+          <article class="alert-row row-7">
+            <div class="check-box"></div><span class="td number">ALM202608240007</span><span class="td time">2026-08-24 10:08:54</span><span class="td region">平桥区</span><span class="td camera">CAM-052</span><span class="td level severity medium">中</span>
+            <img class="camera-thumbnail export-reference-asset-9" src="./assets/roadside_pedestrian_camera_thumbnail.png" alt="roadside_pedestrian_camera_thumbnail">
+            <span class="status-badge status-read">已阅</span><button class="row-button view-button"><svg class="eye-icon" viewBox="0 0 19 16"><path d="M1.5 8s2.5-5 8-5 8 5 8 5-2.5 5-8 5-8-5-8-5Z" fill="none" stroke="#1269e7" stroke-width="1.6"></path><circle cx="9.5" cy="8" r="2.2" fill="none" stroke="#1269e7" stroke-width="1.5"></circle></svg><span>查看证据</span></button><button class="row-button mark-button marked-button">已阅</button><svg class="row-arrow" viewBox="0 0 12 16"><path d="m3 2 5 6-5 6" fill="none" stroke="#273354" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+          </article>
+        </div>
+
+        <div class="pagination">
+          <span class="pagination-total">共 8,639 条</span>
+          <div class="page-size">10条/页<svg class="chevron-icon" viewBox="0 0 15 12"><path d="m2 3 5.5 5L13 3" fill="none" stroke="#7485a6" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path></svg></div>
+          <div class="page-controls">
+            <div class="page-box"><svg class="chevron-icon export-inline-style-2" viewBox="0 0 15 12"><path d="m2 3 5.5 5L13 3" fill="none" stroke="#7485a6" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path></svg></div>
+            <div class="page-box active">1</div>
+            <span class="plain-page">2</span><span class="plain-page">3</span><span class="plain-page">4</span><span class="plain-page">5</span><span class="plain-page">…</span><span class="plain-page">864</span>
+          </div>
+          <button class="pagination-next"><svg class="chevron-icon export-inline-style-3" viewBox="0 0 15 12"><path d="m2 3 5.5 5L13 3" fill="none" stroke="#7485a6" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path></svg></button>
+          <div class="jump"><span>前往</span><input class="jump-input" value="1" readonly=""><span>页</span></div>
+        </div>
+      </section>
+
+      <button class="side-collapse">
+        <svg class="back-icon" viewBox="0 0 13 17"><path d="m10 2-6 6.5 6 6.5" fill="none" stroke="#172047" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+      </button>
+    </main>
+  </div>
+</div>
+
+<script src="./script.js"></script><script src="../shared/product-nav.js?v=4.1"></script></body></html>

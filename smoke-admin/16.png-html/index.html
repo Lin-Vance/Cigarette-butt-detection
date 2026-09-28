@@ -1,0 +1,221 @@
+<!doctype html>
+<html lang="zh-CN"><head><meta charset="UTF-8">
+
+<title>用户账号管理 - 烟踪智治</title>
+
+<meta name="viewport" content="width=device-width, initial-scale=1"><link rel="stylesheet" href="./styles.css"></head>
+<body>
+<div class="fit-shell">
+  <div class="fit-box">
+    <main class="screen export-inline-style-1">
+      <header class="topbar">
+        <img class="brand-logo export-reference-asset-1" src="./assets/smoke_trace_governance_logo.png" alt="smoke_trace_governance_logo">
+        <nav class="top-menu">
+          <div class="top-menu-item">态势总览</div>
+          <div class="top-menu-item">事件中心</div>
+          <div class="top-menu-item">调度中心</div>
+          <div class="top-menu-item">全域地图</div>
+          <div class="top-menu-item">资源管理</div>
+          <div class="top-menu-item">AI治理</div>
+          <div class="top-menu-item active">系统管理</div>
+        </nav>
+        <div class="top-time">2026-08-24 18:16:28</div>
+        <svg class="bell-icon" viewBox="0 0 28 28" fill="none" aria-hidden="true">
+          <path d="M6 20h16M8 20V12c0-4 2.1-6.5 6-6.5s6 2.5 6 6.5v8M11.5 23c.5 1.2 1.4 1.8 2.5 1.8s2-.6 2.5-1.8" stroke="#132866" stroke-width="1.7" stroke-linecap="round"></path>
+          <path d="M14 2.5v2" stroke="#132866" stroke-width="1.7" stroke-linecap="round"></path>
+        </svg>
+        <img class="admin-avatar export-reference-asset-2" src="./assets/super_admin_avatar.png" alt="super_admin_avatar">
+        <div class="admin-name">超级管理员</div>
+        <button class="logout-button">退出</button>
+      </header>
+
+      <div class="system-popup">
+        <div class="system-popup-row selected">权限与账号</div>
+        <div class="system-popup-row">系统配置</div>
+        <div class="system-popup-row">审计日志</div>
+      </div>
+
+      <section class="panel accounts-panel">
+        <h1 class="panel-title">用户账号管理</h1>
+        <div class="panel-count">共 128 个账号</div>
+        <div class="panel-actions">
+          <button class="primary-button"><span class="button-plus"></span>新增账号</button>
+          <button class="outline-button">批量导入</button>
+          <button class="icon-button" aria-label="刷新">
+            <svg viewBox="0 0 24 24" width="23" height="23" fill="none">
+              <path d="M19 8.5A7.5 7.5 0 0 0 5.2 7M5 4v4h4M5 15.5A7.5 7.5 0 0 0 18.8 17M19 20v-4h-4" stroke="#142b6b" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"></path>
+            </svg>
+          </button>
+        </div>
+
+        <div class="accounts-table">
+          <div class="table-row table-head account-head">
+            <div class="cell"><span class="check-box"></span></div>
+            <div class="cell">账号</div>
+            <div class="cell">用户名</div>
+            <div class="cell">角色</div>
+            <div class="cell">手机号</div>
+            <div class="cell">账号状态</div>
+            <div class="cell">更新时间</div>
+            <div class="cell">操作</div>
+            <div class="cell"></div>
+          </div>
+
+          <div class="table-row account-row">
+            <div class="cell"><span class="check-box"></span></div>
+            <div class="cell">admin</div>
+            <div class="cell">系统管理员</div>
+            <div class="cell"><span class="role-badge">超级管理员</span></div>
+            <div class="cell">139****8868</div>
+            <div class="cell"><span class="status-badge">正常</span></div>
+            <div class="cell">2026-08-24 18:05:12</div>
+            <div class="cell row-actions"><button class="small-button">编辑信息</button><button class="small-button reset">重置密码</button></div>
+            <div class="cell"><button class="small-button danger">禁用账号</button></div>
+          </div>
+          <div class="table-row account-row">
+            <div class="cell"><span class="check-box"></span></div>
+            <div class="cell">zhangwei</div>
+            <div class="cell">张伟</div>
+            <div class="cell"><span class="role-badge purple">区域管理员</span></div>
+            <div class="cell">139****3321</div>
+            <div class="cell"><span class="status-badge">正常</span></div>
+            <div class="cell">2026-08-24 17:42:33</div>
+            <div class="cell row-actions"><button class="small-button">编辑信息</button><button class="small-button reset">重置密码</button></div>
+            <div class="cell"><button class="small-button danger">禁用账号</button></div>
+          </div>
+          <div class="table-row account-row">
+            <div class="cell"><span class="check-box"></span></div>
+            <div class="cell">lisi</div>
+            <div class="cell">李思思</div>
+            <div class="cell"><span class="role-badge orange">工作人员</span></div>
+            <div class="cell">136****5598</div>
+            <div class="cell"><span class="status-badge">正常</span></div>
+            <div class="cell">2026-08-24 16:31:07</div>
+            <div class="cell row-actions"><button class="small-button">编辑信息</button><button class="small-button reset">重置密码</button></div>
+            <div class="cell"><button class="small-button danger">禁用账号</button></div>
+          </div>
+          <div class="table-row account-row">
+            <div class="cell"><span class="check-box"></span></div>
+            <div class="cell">wangmin</div>
+            <div class="cell">王敏</div>
+            <div class="cell"><span class="role-badge green">普通用户</span></div>
+            <div class="cell">137****7710</div>
+            <div class="cell"><span class="status-badge disabled">已禁用</span></div>
+            <div class="cell">2026-08-24 09:18:45</div>
+            <div class="cell row-actions"><button class="small-button">编辑信息</button><button class="small-button reset">重置密码</button></div>
+            <div class="cell"><button class="small-button enable">启用账号</button></div>
+          </div>
+          <div class="table-row account-row">
+            <div class="cell"><span class="check-box"></span></div>
+            <div class="cell">chenliang</div>
+            <div class="cell">陈亮</div>
+            <div class="cell"><span class="role-badge green">普通用户</span></div>
+            <div class="cell">188****6622</div>
+            <div class="cell"><span class="status-badge">正常</span></div>
+            <div class="cell">2026-08-20 16:07:59</div>
+            <div class="cell row-actions"><button class="small-button">编辑信息</button><button class="small-button reset">重置密码</button></div>
+            <div class="cell"><button class="small-button danger">禁用账号</button></div>
+          </div>
+        </div>
+
+        <div class="panel-footer">
+          <span class="total-text">共 128 条</span>
+          <div class="page-size">5条/页 <span class="chevron down"></span></div>
+          <div class="pagination">
+            <div class="page-arrow"><span class="chevron left"></span></div>
+            <div class="page-number active">1</div>
+            <div class="page-number">2</div>
+            <div class="page-number">3</div>
+            <div class="page-number">···</div>
+            <div class="page-number">26</div>
+            <div class="page-arrow"><span class="chevron right"></span></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="panel roles-panel">
+        <h2 class="panel-title">角色配置</h2>
+        <div class="panel-count">共 3 个角色</div>
+        <div class="panel-actions">
+          <button class="primary-button"><span class="button-plus"></span>新增角色</button>
+          <button class="outline-button">复制角色</button>
+          <button class="icon-button" aria-label="刷新">
+            <svg viewBox="0 0 24 24" width="23" height="23" fill="none">
+              <path d="M19 8.5A7.5 7.5 0 0 0 5.2 7M5 4v4h4M5 15.5A7.5 7.5 0 0 0 18.8 17M19 20v-4h-4" stroke="#142b6b" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"></path>
+            </svg>
+          </button>
+        </div>
+
+        <div class="roles-table">
+          <div class="table-row table-head role-head">
+            <div class="cell">角色名称</div>
+            <div class="cell">角色描述</div>
+            <div class="cell">拥有菜单权限</div>
+            <div class="cell">账号数量</div>
+            <div class="cell">更新时间</div>
+            <div class="cell">操作</div>
+          </div>
+          <div class="table-row role-row">
+            <div class="cell">超级管理员</div>
+            <div class="cell">负责平台整体管理与系统配置</div>
+            <div class="cell role-permissions"><span class="permission-tag">态势总览</span><span class="permission-tag">事件中心</span><span class="permission-tag">调度中心</span><span class="permission-tag">+6项</span></div>
+            <div class="cell">2</div>
+            <div class="cell">2026-08-24 17:50:12</div>
+            <div class="cell role-action"><button class="small-button">编辑角色</button><button class="small-button permission-button"><span class="grid-icon"></span>分配权限</button></div>
+          </div>
+          <div class="table-row role-row">
+            <div class="cell">区域管理员</div>
+            <div class="cell">负责区域内业务管理与资源配置</div>
+            <div class="cell role-permissions"><span class="permission-tag">事件中心</span><span class="permission-tag">调度中心</span><span class="permission-tag">全域地图</span><span class="permission-tag">+3项</span></div>
+            <div class="cell">8</div>
+            <div class="cell">2026-08-24 16:22:07</div>
+            <div class="cell role-action"><button class="small-button">编辑角色</button><button class="small-button permission-button"><span class="grid-icon"></span>分配权限</button></div>
+          </div>
+          <div class="table-row role-row">
+            <div class="cell">工作人员</div>
+            <div class="cell">负责分配的任务执行与处理</div>
+            <div class="cell role-permissions"><span class="permission-tag">事件中心</span><span class="permission-tag">资源管理</span><span class="permission-tag">AI治理</span><span class="permission-tag">+2项</span></div>
+            <div class="cell">15</div>
+            <div class="cell">2026-08-24 15:08:34</div>
+            <div class="cell role-action"><button class="small-button">编辑角色</button><button class="small-button permission-button"><span class="grid-icon"></span>分配权限</button></div>
+          </div>
+        </div>
+
+        <div class="panel-footer">
+          <span class="total-text">共 3 条</span>
+          <div class="page-size">5条/页 <span class="chevron down"></span></div>
+          <div class="pagination">
+            <div class="page-arrow"><span class="chevron left"></span></div>
+            <div class="page-number active">1</div>
+            <div class="page-number">2</div>
+            <div class="page-arrow"><span class="chevron right"></span></div>
+          </div>
+        </div>
+      </section>
+
+      <aside class="permission-drawer">
+        <div class="drawer-title">分配菜单权限 <span class="drawer-close">×</span></div>
+        <div class="drawer-content">
+          <div class="tree-row"><span class="tree-check"></span>全选</div>
+          <div class="tree-row"><span class="tree-check checked"></span>态势总览</div>
+          <div class="tree-row"><span class="tree-check checked"></span>事件中心 <span class="tree-arrow"></span></div>
+          <div class="tree-row indent-1"><span class="tree-check checked"></span>事件总览</div>
+          <div class="tree-row indent-1"><span class="tree-check checked"></span>事件列表</div>
+          <div class="tree-row indent-1"><span class="tree-check checked"></span>事件上报</div>
+          <div class="tree-row"><span class="tree-check"></span>调度中心 <span class="tree-arrow"></span></div>
+          <div class="tree-row"><span class="tree-check"></span>全域地图 <span class="tree-arrow"></span></div>
+        </div>
+        <span class="drawer-scrollbar"></span>
+        <div class="drawer-footer">
+          <span>已选择 9 项</span>
+          <div class="drawer-buttons">
+            <button class="drawer-cancel">取消</button>
+            <button class="drawer-confirm">确定</button>
+          </div>
+        </div>
+      </aside>
+    </main>
+  </div>
+</div>
+
+<script src="./script.js"></script><script src="../shared/product-nav.js?v=4.1"></script></body></html>

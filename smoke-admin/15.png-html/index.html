@@ -1,0 +1,423 @@
+<!doctype html>
+<html lang="zh-CN"><head><meta charset="UTF-8">
+  
+  <title>烟踪智治 - 数据分析</title>
+  
+<meta name="viewport" content="width=device-width, initial-scale=1"><link rel="stylesheet" href="./styles.css"></head>
+<body>
+  <div class="fit-shell">
+    <div class="fit-box">
+      <main class="screen export-inline-style-1">
+        <header class="topbar">
+          <img class="brand-logo export-reference-asset-1" src="./assets/smoke_trace_governance_logo.png" alt="smoke_trace_governance_logo">
+
+          <nav class="top-nav" aria-label="主导航">
+            <div class="top-nav-item">态势总览</div>
+            <div class="top-nav-item">事件中心</div>
+            <div class="top-nav-item">调度中心</div>
+            <div class="top-nav-item">全域地图</div>
+            <div class="top-nav-item">资源管理</div>
+            <div class="top-nav-item active">AI治理</div>
+            <div class="top-nav-item">系统管理</div>
+          </nav>
+
+          <div class="top-actions">
+            <time class="current-time">2026-08-24 17:52:18</time>
+            <svg class="bell" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <path d="M6.5 17.5h11l-1.2-1.9V10a4.3 4.3 0 0 0-8.6 0v5.6L6.5 17.5Z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"></path>
+              <path d="M9.5 19.5c.5 1 1.3 1.5 2.5 1.5s2-.5 2.5-1.5M10 5.4c.2-1.1 1-1.8 2-1.8s1.8.7 2 1.8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"></path>
+            </svg>
+            <img class="administrator-photo export-reference-asset-2" src="./assets/administrator_profile_photo.png" alt="administrator_profile_photo">
+            <span class="admin-name">超级管理员</span>
+            <button class="logout-button">退出</button>
+          </div>
+
+          <div class="ai-menu">
+            <div class="ai-menu-item">模型与数据集</div>
+            <div class="ai-menu-item">AI识别配置</div>
+            <div class="ai-menu-item selected">数据分析</div>
+          </div>
+        </header>
+
+        <section class="filter-panel" aria-label="分析筛选">
+          <h1 class="filter-title">分析筛选</h1>
+
+          <span class="filter-label date-label">时间范围</span>
+          <div class="date-field">
+            <span>2026-08-18</span>
+            <span class="date-separator">至</span>
+            <span>2026-08-24</span>
+            <svg class="calendar-icon" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+              <rect x="3" y="4.5" width="14" height="12" rx="1.5" stroke="#102d70" stroke-width="1.4"></rect>
+              <path d="M6 3v3M14 3v3M3.5 8h13" stroke="#102d70" stroke-width="1.4" stroke-linecap="round"></path>
+            </svg>
+          </div>
+
+          <span class="filter-label region-label">选择区域</span>
+          <div class="select-field">
+            <span>全部区域</span>
+            <svg class="chevron-down" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+              <path d="m4 6 4 4 4-4" stroke="#102d70" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"></path>
+            </svg>
+          </div>
+
+          <div class="filter-actions">
+            <button class="outline-button">重置</button>
+            <button class="primary-button">查询</button>
+            <button class="refresh-button" aria-label="刷新">
+              <svg class="icon-svg" viewBox="0 0 24 24" fill="none">
+                <path d="M19 8.5A8 8 0 1 0 20 13" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"></path>
+                <path d="M19 4v4.5h-4.5" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"></path>
+              </svg>
+            </button>
+            <button class="export-button">
+              <svg class="button-icon" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+                <path d="M10 3v9M6.5 6.5 10 3l3.5 3.5M4 10.5v4.2c0 .7.6 1.3 1.3 1.3h9.4c.7 0 1.3-.6 1.3-1.3v-4.2" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"></path>
+              </svg>
+              <span>导出分析数据</span>
+            </button>
+          </div>
+        </section>
+
+        <section class="panel trend-panel" aria-label="违规行为时段分布">
+          <h2 class="panel-title">违规行为时段分布</h2>
+          <div class="legend trend-legend">
+            <span class="legend-item"><i class="legend-line"></i>识别事件</span>
+            <span class="legend-item"><i class="legend-line teal"></i>高风险事件</span>
+          </div>
+
+          <svg class="chart-svg" viewBox="0 0 765 186" preserveAspectRatio="none" aria-hidden="true">
+            <line class="grid-line" x1="33" y1="10" x2="731" y2="10"></line>
+            <line class="grid-line" x1="33" y1="45" x2="731" y2="45"></line>
+            <line class="grid-line" x1="33" y1="80" x2="731" y2="80"></line>
+            <line class="grid-line" x1="33" y1="115" x2="731" y2="115"></line>
+            <line class="grid-line" x1="33" y1="150" x2="731" y2="150"></line>
+            <line class="axis-line" x1="33" y1="10" x2="33" y2="150"></line>
+            <line class="axis-line" x1="33" y1="150" x2="731" y2="150"></line>
+
+            <text class="chart-label" x="1" y="14">240</text>
+            <text class="chart-label" x="1" y="49">180</text>
+            <text class="chart-label" x="1" y="84">120</text>
+            <text class="chart-label" x="8" y="119">60</text>
+            <text class="chart-label" x="17" y="154">0</text>
+
+            <path class="trend-blue" d="M33 134 C64 127 87 114 121 111 C151 108 161 111 179 92 C202 66 210 33 241 24 C273 14 289 42 313 55 C340 70 359 62 382 49 C401 38 422 40 442 50 C466 62 480 91 504 92 C529 93 542 62 561 37 C582 10 603 18 623 42 C649 74 662 104 686 121 C703 133 717 136 731 137"></path>
+            <path class="trend-teal" d="M33 146 C63 140 89 131 117 129 C147 127 166 127 184 115 C207 99 218 91 242 88 C268 85 285 100 310 105 C335 111 355 107 377 99 C397 92 420 93 441 101 C464 110 480 129 506 130 C535 131 548 112 568 98 C591 82 612 87 632 103 C656 122 668 139 690 144 C706 148 719 149 731 150"></path>
+
+            <line x1="421" y1="10" x2="421" y2="150" stroke="#cdd8eb" stroke-width="1" stroke-dasharray="3 3"></line>
+            <circle class="point-blue" cx="421" cy="43" r="5.3"></circle>
+            <circle class="point-teal" cx="421" cy="106" r="5.3"></circle>
+
+            <text class="chart-label" x="25" y="173">00:00</text>
+            <text class="chart-label" x="128" y="173">04:00</text>
+            <text class="chart-label" x="226" y="173">08:00</text>
+            <text class="chart-label" x="395" y="173">12:00</text>
+            <text class="chart-label" x="514" y="173">16:00</text>
+            <text class="chart-label" x="631" y="173">20:00</text>
+            <text class="chart-label" x="703" y="173">24:00</text>
+          </svg>
+
+          <div class="tooltip">
+            <div class="tooltip-time">12:00</div>
+            <div class="tooltip-row">
+              <i class="dot"></i>
+              <span>识别事件</span>
+              <span class="tooltip-value">186</span>
+            </div>
+            <div class="tooltip-row">
+              <i class="dot teal"></i>
+              <span>高风险事件</span>
+              <span class="tooltip-value">68</span>
+            </div>
+          </div>
+        </section>
+
+        <section class="panel region-panel" aria-label="各区域违规频次">
+          <h2 class="panel-title">各区域违规频次</h2>
+          <div class="legend region-legend">
+            <span class="legend-item"><i class="legend-line"></i>事件总量</span>
+            <span class="legend-item"><i class="legend-line teal"></i>高风险事件</span>
+          </div>
+
+          <svg class="chart-svg" viewBox="0 0 786 186" preserveAspectRatio="none" aria-hidden="true">
+            <defs>
+              <linearGradient id="blueBar" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0" stop-color="#2778ed"></stop>
+                <stop offset="1" stop-color="#4f8df0"></stop>
+              </linearGradient>
+            </defs>
+
+            <line class="grid-line" x1="42" y1="10" x2="748" y2="10"></line>
+            <line class="grid-line" x1="42" y1="39" x2="748" y2="39"></line>
+            <line class="grid-line" x1="42" y1="68" x2="748" y2="68"></line>
+            <line class="grid-line" x1="42" y1="97" x2="748" y2="97"></line>
+            <line class="grid-line" x1="42" y1="126" x2="748" y2="126"></line>
+            <line class="grid-line" x1="42" y1="150" x2="748" y2="150"></line>
+            <line class="axis-line" x1="42" y1="10" x2="42" y2="150"></line>
+            <line class="axis-line" x1="42" y1="150" x2="748" y2="150"></line>
+
+            <text class="chart-label" x="2" y="14">1,000</text>
+            <text class="chart-label" x="12" y="43">800</text>
+            <text class="chart-label" x="12" y="72">600</text>
+            <text class="chart-label" x="12" y="101">400</text>
+            <text class="chart-label" x="12" y="130">200</text>
+            <text class="chart-label" x="26" y="154">0</text>
+
+            <rect class="bar-blue" x="75" y="25" width="24" height="125" rx="3"></rect>
+            <rect class="bar-teal" x="107" y="106" width="24" height="44" rx="3"></rect>
+            <text class="bar-value" x="87" y="17">896</text>
+            <text class="bar-value" x="119" y="99">312</text>
+
+            <rect class="bar-blue" x="189" y="51" width="24" height="99" rx="3"></rect>
+            <rect class="bar-teal" x="221" y="115" width="24" height="35" rx="3"></rect>
+            <text class="bar-value" x="201" y="43">742</text>
+            <text class="bar-value" x="233" y="108">246</text>
+
+            <rect class="bar-blue" x="303" y="67" width="24" height="83" rx="3"></rect>
+            <rect class="bar-teal" x="335" y="122" width="24" height="28" rx="3"></rect>
+            <text class="bar-value" x="315" y="59">621</text>
+            <text class="bar-value" x="347" y="115">198</text>
+
+            <rect class="bar-blue" x="417" y="77" width="24" height="73" rx="3"></rect>
+            <rect class="bar-teal" x="449" y="126" width="24" height="24" rx="3"></rect>
+            <text class="bar-value" x="429" y="69">538</text>
+            <text class="bar-value" x="461" y="119">165</text>
+
+            <rect class="bar-blue" x="531" y="97" width="24" height="53" rx="3"></rect>
+            <rect class="bar-teal" x="563" y="132" width="24" height="18" rx="3"></rect>
+            <text class="bar-value" x="543" y="89">412</text>
+            <text class="bar-value" x="575" y="125">126</text>
+
+            <rect class="bar-blue" x="645" y="104" width="24" height="46" rx="3"></rect>
+            <rect class="bar-teal" x="677" y="135" width="24" height="15" rx="3"></rect>
+            <text class="bar-value" x="657" y="96">367</text>
+            <text class="bar-value" x="689" y="128">112</text>
+
+            <text class="chart-label" x="70" y="173">漕河区</text>
+            <text class="chart-label" x="184" y="173">平桥区</text>
+            <text class="chart-label" x="294" y="173">羊山新区</text>
+            <text class="chart-label" x="419" y="173">高新区</text>
+            <text class="chart-label" x="531" y="173">罗山县</text>
+            <text class="chart-label" x="638" y="173">光山县</text>
+          </svg>
+        </section>
+
+        <section class="kpi-panel" aria-label="统计指标">
+          <article class="kpi-card">
+            <div class="kpi-card-inner">
+              <img class="kpi-icon export-reference-asset-3" src="./assets/total_identified_events_icon.png" alt="total_identified_events_icon">
+              <div class="kpi-copy">
+                <div class="kpi-label">总识别事件</div>
+                <div class="kpi-value">1,286</div>
+              </div>
+            </div>
+          </article>
+
+          <article class="kpi-card">
+            <div class="kpi-card-inner">
+              <img class="kpi-icon export-reference-asset-4" src="./assets/high_risk_events_icon.png" alt="high_risk_events_icon">
+              <div class="kpi-copy">
+                <div class="kpi-label">高风险事件占比</div>
+                <div class="kpi-value">24.3%</div>
+                <div class="kpi-change">
+                  <span>较上期</span>
+                  <span class="change-good">
+                    <svg class="mini-down" viewBox="0 0 14 14" fill="none" aria-hidden="true">
+                      <path d="M7 2v9M3.5 8l3.5 3.5L10.5 8" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"></path>
+                    </svg>
+                    3.2%
+                  </span>
+                </div>
+              </div>
+            </div>
+          </article>
+
+          <article class="kpi-card">
+            <div class="kpi-card-inner">
+              <img class="kpi-icon export-reference-asset-5" src="./assets/repeat_alerts_icon.png" alt="repeat_alerts_icon">
+              <div class="kpi-copy">
+                <div class="kpi-label">重复告警数量</div>
+                <div class="kpi-value">278</div>
+                <div class="kpi-change">
+                  <span>较上期</span>
+                  <span class="change-good">
+                    <svg class="mini-down" viewBox="0 0 14 14" fill="none" aria-hidden="true">
+                      <path d="M7 2v9M3.5 8l3.5 3.5L10.5 8" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"></path>
+                    </svg>
+                    18.5%
+                  </span>
+                </div>
+              </div>
+            </div>
+          </article>
+
+          <article class="kpi-card">
+            <div class="kpi-card-inner">
+              <img class="kpi-icon export-reference-asset-6" src="./assets/average_ai_latency_icon.png" alt="average_ai_latency_icon">
+              <div class="kpi-copy">
+                <div class="kpi-label">平均AI识别耗时</div>
+                <div class="kpi-value">168ms</div>
+                <div class="kpi-change">
+                  <span>较上期</span>
+                  <span class="change-good">
+                    <svg class="mini-down" viewBox="0 0 14 14" fill="none" aria-hidden="true">
+                      <path d="M7 2v9M3.5 8l3.5 3.5L10.5 8" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"></path>
+                    </svg>
+                    12ms
+                  </span>
+                </div>
+              </div>
+            </div>
+          </article>
+        </section>
+
+        <section class="panel details-panel" aria-label="统计明细">
+          <h2 class="details-title">统计明细</h2>
+          <span class="record-count">共 1,286 条统计记录</span>
+
+          <div class="table-actions">
+            <button class="small-export">
+              <svg class="button-icon" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+                <path d="M10 3v9M6.5 6.5 10 3l3.5 3.5M4 10.5v4.2c0 .7.6 1.3 1.3 1.3h9.4c.7 0 1.3-.6 1.3-1.3v-4.2" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"></path>
+              </svg>
+              <span>导出明细</span>
+            </button>
+            <button class="square-action" aria-label="设置">
+              <svg class="icon-svg" viewBox="0 0 24 24" fill="none">
+                <path d="m9.8 4.2.5-1.2h3.4l.5 1.2 1.4.8 1.3-.3 1.7 2.9-1 .9v1.6l1 .9-1.7 2.9-1.3-.3-1.4.8-.5 1.2h-3.4l-.5-1.2-1.4-.8-1.3.3-1.7-2.9 1-.9V8.5l-1-.9 1.7-2.9 1.3.3 1.4-.8Z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"></path>
+                <circle cx="12" cy="9.5" r="2.4" stroke="currentColor" stroke-width="1.5"></circle>
+              </svg>
+            </button>
+            <button class="square-action" aria-label="刷新">
+              <svg class="icon-svg" viewBox="0 0 24 24" fill="none">
+                <path d="M19 8.5A8 8 0 1 0 20 13" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"></path>
+                <path d="M19 4v4.5h-4.5" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"></path>
+              </svg>
+            </button>
+          </div>
+
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>统计日期</th>
+                <th>所属区域</th>
+                <th>违规事件总数</th>
+                <th>高风险事件</th>
+                <th>已处置数量</th>
+                <th>闭环数量</th>
+                <th>平均处置时长</th>
+                <th>治理环比</th>
+                <th>操作</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>2026-08-24</td>
+                <td>漕河区</td>
+                <td>896</td>
+                <td>312</td>
+                <td>812</td>
+                <td>738</td>
+                <td>32分钟</td>
+                <td><span class="green-rate"><svg class="mini-down" viewBox="0 0 14 14" fill="none"><path d="M7 2v9M3.5 8l3.5 3.5L10.5 8" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"></path></svg>28.6%</span></td>
+                <td><button class="detail-button">查看详情</button></td>
+              </tr>
+              <tr>
+                <td>2026-08-24</td>
+                <td>平桥区</td>
+                <td>742</td>
+                <td>246</td>
+                <td>653</td>
+                <td>594</td>
+                <td>34分钟</td>
+                <td><span class="green-rate"><svg class="mini-down" viewBox="0 0 14 14" fill="none"><path d="M7 2v9M3.5 8l3.5 3.5L10.5 8" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"></path></svg>25.3%</span></td>
+                <td><button class="detail-button">查看详情</button></td>
+              </tr>
+              <tr>
+                <td>2026-08-24</td>
+                <td>羊山新区</td>
+                <td>621</td>
+                <td>198</td>
+                <td>558</td>
+                <td>492</td>
+                <td>29分钟</td>
+                <td><span class="green-rate"><svg class="mini-down" viewBox="0 0 14 14" fill="none"><path d="M7 2v9M3.5 8l3.5 3.5L10.5 8" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"></path></svg>31.7%</span></td>
+                <td><button class="detail-button">查看详情</button></td>
+              </tr>
+              <tr>
+                <td>2026-08-24</td>
+                <td>高新区</td>
+                <td>538</td>
+                <td>165</td>
+                <td>463</td>
+                <td>401</td>
+                <td>28分钟</td>
+                <td><span class="green-rate"><svg class="mini-down" viewBox="0 0 14 14" fill="none"><path d="M7 2v9M3.5 8l3.5 3.5L10.5 8" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"></path></svg>24.9%</span></td>
+                <td><button class="detail-button">查看详情</button></td>
+              </tr>
+              <tr>
+                <td>2026-08-24</td>
+                <td>罗山县</td>
+                <td>412</td>
+                <td>126</td>
+                <td>356</td>
+                <td>309</td>
+                <td>36分钟</td>
+                <td><span class="green-rate"><svg class="mini-down" viewBox="0 0 14 14" fill="none"><path d="M7 2v9M3.5 8l3.5 3.5L10.5 8" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"></path></svg>22.1%</span></td>
+                <td><button class="detail-button">查看详情</button></td>
+              </tr>
+              <tr>
+                <td>2026-08-24</td>
+                <td>光山县</td>
+                <td>367</td>
+                <td>112</td>
+                <td>321</td>
+                <td>278</td>
+                <td>33分钟</td>
+                <td><span class="green-rate"><svg class="mini-down" viewBox="0 0 14 14" fill="none"><path d="M7 2v9M3.5 8l3.5 3.5L10.5 8" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"></path></svg>19.8%</span></td>
+                <td><button class="detail-button">查看详情</button></td>
+              </tr>
+            </tbody>
+          </table>
+
+          <div class="table-footer">
+            <span class="total-records">共 1,286 条</span>
+            <div class="page-size">
+              <span>10条/页</span>
+              <svg class="chevron-down" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                <path d="m4 6 4 4 4-4" stroke="#102d70" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"></path>
+              </svg>
+            </div>
+
+            <div class="pagination">
+              <button class="page-button" aria-label="上一页">
+                <svg class="chevron-down export-inline-style-2" viewBox="0 0 16 16" fill="none">
+                  <path d="m4 6 4 4 4-4" stroke="#102d70" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"></path>
+                </svg>
+              </button>
+              <span class="page-number current">1</span>
+              <span class="page-number">2</span>
+              <span class="page-number">3</span>
+              <span class="page-number">4</span>
+              <span class="page-number">5</span>
+              <span class="ellipsis">...</span>
+              <span class="page-number">129</span>
+              <button class="page-button" aria-label="下一页">
+                <svg class="chevron-down export-inline-style-3" viewBox="0 0 16 16" fill="none">
+                  <path d="m4 6 4 4 4-4" stroke="#102d70" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"></path>
+                </svg>
+              </button>
+            </div>
+
+            <div class="page-jump">
+              <span>前往</span>
+              <span class="jump-input">1</span>
+              <span>页</span>
+            </div>
+          </div>
+        </section>
+      </main>
+    </div>
+  </div>
+
+<script src="./script.js"></script><script src="../shared/product-nav.js?v=4.1"></script></body></html>

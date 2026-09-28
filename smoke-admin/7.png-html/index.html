@@ -1,0 +1,262 @@
+<!doctype html>
+<html lang="zh-CN"><head><meta charset="UTF-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>烟踪智治 · 事件报表</title>
+  
+<link rel="stylesheet" href="./styles.css"></head>
+<body>
+  <div class="fit-shell">
+    <div class="fit-box">
+      <main class="screen export-inline-style-1">
+        <header class="top-header">
+          <img class="brand-logo export-reference-asset-1" src="./assets/smoke_governance_logo.png" alt="smoke_governance_logo">
+
+          <nav class="main-nav" aria-label="主导航">
+            <div class="nav-item">态势总览</div>
+            <div class="nav-item active">事件中心</div>
+            <div class="nav-item">调度中心</div>
+            <div class="nav-item">全域地图</div>
+            <div class="nav-item">资源管理</div>
+            <div class="nav-item">AI治理</div>
+            <div class="nav-item">系统管理</div>
+          </nav>
+
+          <div class="event-menu" aria-label="事件中心菜单">
+            <div class="event-menu-item">告警中心</div>
+            <div class="event-menu-item selected">事件报表</div>
+          </div>
+
+          <div class="header-tools">
+            <div class="header-time">2026-08-24 11:26:48</div>
+            <svg class="notification" viewBox="0 0 24 28" aria-hidden="true">
+              <path class="icon-stroke" stroke-width="1.8" d="M6 20h12M7 20V11a5 5 0 0 1 10 0v9M4.5 20h15M9.5 24a3 3 0 0 0 5 0M9 4.5a3 3 0 0 1 6 0"></path>
+            </svg>
+            <div class="profile">
+              <img class="profile-avatar export-reference-asset-2" src="./assets/administrator_profile_avatar.png" alt="administrator_profile_avatar">
+              <div class="profile-name">超级管理员</div>
+            </div>
+            <button class="logout-button" type="button">退出</button>
+          </div>
+        </header>
+
+        <section class="toolbar" aria-label="报表操作">
+          <div class="toolbar-actions">
+            <button class="action-button preview-button" type="button">报表预览</button>
+            <button class="action-button excel-button" type="button">
+              <svg class="export-icon" width="18" height="18" viewBox="0 0 18 18" aria-hidden="true">
+                <rect x="1.5" y="1.5" width="15" height="15" rx="1.5" class="icon-stroke" stroke-width="1.5"></rect>
+                <path class="icon-stroke" stroke-width="1.4" d="M5 5.5l3 3-3 3M9.5 12h3.5"></path>
+              </svg>
+              导出 Excel
+            </button>
+            <button class="action-button pdf-button" type="button">
+              <svg class="export-icon" width="18" height="18" viewBox="0 0 18 18" aria-hidden="true">
+                <path class="icon-stroke" stroke="#fff" stroke-width="1.5" d="M3 2.5h8l4 4v9H3zM11 2.5v4h4M6 12.5h6M6 9.5h3"></path>
+              </svg>
+              导出 PDF
+            </button>
+          </div>
+        </section>
+
+        <section class="filter-panel" aria-label="报表筛选">
+          <h1 class="filter-title">报表筛选</h1>
+
+          <div class="filter-field date-field">
+            <span class="field-label">自定义时间</span>
+            <div class="field-control date-control">
+              2026-08-18
+              <span class="date-separator">至</span>
+              2026-08-24
+              <svg class="calendar-icon" viewBox="0 0 18 18" aria-hidden="true">
+                <rect x="2.5" y="3.5" width="13" height="12" rx="2" class="icon-stroke" stroke-width="1.3"></rect>
+                <path class="icon-stroke" stroke-width="1.3" d="M5 2v4M13 2v4M3 7h12M5 10h2M9 10h2M13 10h0"></path>
+              </svg>
+            </div>
+          </div>
+
+          <div class="filter-field region-field">
+            <span class="field-label">区域范围</span>
+            <div class="field-control region-control">
+              全部区域
+              <svg class="select-chevron" viewBox="0 0 16 16" aria-hidden="true">
+                <path class="icon-stroke" stroke-width="1.5" d="M3.5 6l4.5 4 4.5-4"></path>
+              </svg>
+            </div>
+          </div>
+
+          <button class="filter-button query-button" type="button">查询</button>
+          <button class="filter-button reset-button" type="button">重置</button>
+        </section>
+
+        <section class="metric-grid" aria-label="事件统计概览">
+          <article class="metric-card">
+            <img class="metric-icon export-reference-asset-3" src="./assets/event_total_clipboard_icon.png" alt="event_total_clipboard_icon">
+            <div class="metric-copy">
+              <div class="metric-label">事件总量</div>
+              <div class="metric-value">8,639</div>
+              <div class="metric-change">较上期 <span class="up">↑ 12.6%</span></div>
+            </div>
+          </article>
+
+          <article class="metric-card">
+            <img class="metric-icon export-reference-asset-4" src="./assets/processed_event_clipboard_icon.png" alt="processed_event_clipboard_icon">
+            <div class="metric-copy">
+              <div class="metric-label">已处置数量</div>
+              <div class="metric-value">7,986</div>
+              <div class="metric-change">较上期 <span class="up">↑ 9.8%</span></div>
+            </div>
+          </article>
+
+          <article class="metric-card">
+            <img class="metric-icon export-reference-asset-5" src="./assets/closed_event_checkmark_icon.png" alt="closed_event_checkmark_icon">
+            <div class="metric-copy">
+              <div class="metric-label">闭环数量</div>
+              <div class="metric-value">7,542</div>
+              <div class="metric-change">闭环率 <span class="down">87.3%</span></div>
+            </div>
+          </article>
+
+          <article class="metric-card">
+            <img class="metric-icon export-reference-asset-6" src="./assets/average_duration_clock_icon.png" alt="average_duration_clock_icon">
+            <div class="metric-copy">
+              <div class="metric-label">平均处置时长</div>
+              <div class="metric-value">38分钟</div>
+              <div class="metric-change">较上期 <span class="down">↓ 6.8%</span></div>
+            </div>
+          </article>
+        </section>
+
+        <section class="chart-card regional-chart" aria-label="各区域事件对比">
+          <h2 class="chart-title">各区域事件对比</h2>
+          <img class="chart-image export-reference-asset-7" src="./assets/regional_event_comparison_chart.png" alt="regional_event_comparison_chart">
+        </section>
+
+        <section class="chart-card violation-chart" aria-label="违规类型占比">
+          <h2 class="chart-title">违规类型占比</h2>
+          <img class="chart-image export-reference-asset-8" src="./assets/violation_type_distribution_chart.png" alt="violation_type_distribution_chart">
+        </section>
+
+        <section class="table-panel" aria-label="事件统计明细">
+          <div class="table-heading">
+            <strong>事件统计明细</strong>
+            <span>共 8,639 条记录</span>
+          </div>
+
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>统计日期</th>
+                <th>所属区域</th>
+                <th>事件总量</th>
+                <th>已处置</th>
+                <th>已闭环</th>
+                <th>待处置</th>
+                <th>闭环率</th>
+                <th>平均处置时长</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>2026-08-24</td>
+                <td>滨河区</td>
+                <td>1,826</td>
+                <td>1,694</td>
+                <td>1,586</td>
+                <td>132</td>
+                <td>86.9%</td>
+                <td>32分钟</td>
+              </tr>
+              <tr>
+                <td>2026-08-24</td>
+                <td>平桥区</td>
+                <td>1,452</td>
+                <td>1,325</td>
+                <td>1,228</td>
+                <td>127</td>
+                <td>84.6%</td>
+                <td>36分钟</td>
+              </tr>
+              <tr>
+                <td>2026-08-24</td>
+                <td>羊山新区</td>
+                <td>1,218</td>
+                <td>1,110</td>
+                <td>1,012</td>
+                <td>108</td>
+                <td>83.0%</td>
+                <td>40分钟</td>
+              </tr>
+              <tr>
+                <td>2026-08-24</td>
+                <td>高新区</td>
+                <td>1,045</td>
+                <td>960</td>
+                <td>892</td>
+                <td>85</td>
+                <td>85.4%</td>
+                <td>35分钟</td>
+              </tr>
+              <tr>
+                <td>2026-08-24</td>
+                <td>罗山县</td>
+                <td>822</td>
+                <td>745</td>
+                <td>681</td>
+                <td>77</td>
+                <td>82.8%</td>
+                <td>42分钟</td>
+              </tr>
+              <tr>
+                <td>2026-08-24</td>
+                <td>光山县</td>
+                <td>276</td>
+                <td>152</td>
+                <td>143</td>
+                <td>124</td>
+                <td>51.8%</td>
+                <td>45分钟</td>
+              </tr>
+            </tbody>
+          </table>
+
+          <div class="pagination">
+            <button class="page-size" type="button">
+              10条/页
+              <svg width="14" height="14" viewBox="0 0 14 14" aria-hidden="true">
+                <path class="icon-stroke" stroke-width="1.4" d="M3.5 5.5l3.5 3 3.5-3"></path>
+              </svg>
+            </button>
+
+            <div class="page-controls">
+              <button class="page-arrow" type="button" aria-label="上一页">
+                <svg width="14" height="14" viewBox="0 0 14 14" aria-hidden="true">
+                  <path class="icon-stroke" stroke-width="1.5" d="M8.5 3.5L5 7l3.5 3.5"></path>
+                </svg>
+              </button>
+              <span class="page-number current">1</span>
+              <span class="page-number">2</span>
+              <span class="page-number">3</span>
+              <span class="page-number">4</span>
+              <span class="page-number">5</span>
+              <span class="page-more">…</span>
+              <span class="page-number">864</span>
+              <button class="page-arrow" type="button" aria-label="下一页">
+                <svg width="14" height="14" viewBox="0 0 14 14" aria-hidden="true">
+                  <path class="icon-stroke" stroke-width="1.5" d="M5.5 3.5L9 7l-3.5 3.5"></path>
+                </svg>
+              </button>
+            </div>
+
+            <div class="page-total">
+              <span>前往</span>
+              <span class="page-total-input">1</span>
+              <span>页</span>
+            </div>
+          </div>
+        </section>
+      </main>
+    </div>
+  </div>
+
+<script src="./script.js"></script><script src="../shared/product-nav.js?v=4.1"></script></body></html>

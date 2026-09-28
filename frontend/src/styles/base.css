@@ -1,0 +1,163 @@
+/* ============================================================
+   烟踪智治 · 基础样式
+   仅包含 reset 与全局排版；业务样式一律写在组件 scoped 样式内。
+   ============================================================ */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background: var(--yz-viewport-bg);
+  font-family: var(--yz-font);
+  color: var(--yz-text-1);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+h1,
+h2,
+h3,
+h4,
+p,
+figure,
+blockquote {
+  margin: 0;
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+  color: inherit;
+}
+
+button {
+  cursor: pointer;
+}
+
+img {
+  display: block;
+}
+
+/**
+ * 注意：此处**不要**加 `max-width: 100%`。
+ *
+ * 设计稿大量使用「溢出容器的装饰图」：例如登录页 .feature-art 实际尺寸
+ * 241×217，而它所在的 .feature-card 只有 230×204 —— 图片本身是一张整卡
+ * 截图（含背景、边框、图标与内嵌文字），真实的 .feature-title 是精确叠在其
+ * 上对齐的。一旦用 max-width 把图片压到容器宽度，图片内容与真实文字就会
+ * 错位，出现"重影 + 删线"的错误观感。
+ * smoke-admin 各页的 styles.css 同样只有 `img { display: block }`。
+ */
+
+svg {
+  display: block;
+  overflow: visible;
+}
+
+ul,
+ol {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+a {
+  color: var(--yz-primary-deep);
+  text-decoration: none;
+}
+
+/* ---- 通用卡片（对应设计稿 .card） ---- */
+.yz-card {
+  position: relative;
+  background: var(--yz-surface);
+  border: 1px solid var(--yz-border-faint);
+  border-radius: var(--yz-radius-card);
+  box-shadow: var(--yz-shadow-card);
+}
+
+/* ---- 区块标题（对应设计稿 .section-title） ---- */
+.yz-section-title {
+  position: relative;
+  padding-left: 13px;
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 22px;
+  color: var(--yz-text-strong);
+}
+.yz-section-title::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 3px;
+  width: 4px;
+  height: 16px;
+  border-radius: 2px;
+  background: var(--yz-primary);
+}
+
+/* ---- 状态标签 ---- */
+.yz-tag {
+  display: inline-flex;
+  align-items: center;
+  height: 22px;
+  padding: 0 9px;
+  border-radius: var(--yz-radius-tag);
+  font-size: 12px;
+  line-height: 1;
+  white-space: nowrap;
+}
+.yz-tag--danger {
+  color: var(--yz-danger);
+  background: #fdecec;
+}
+.yz-tag--warning {
+  color: var(--yz-warning);
+  background: #fbf1e0;
+}
+.yz-tag--success {
+  color: var(--yz-success);
+  background: #e6f5f0;
+}
+.yz-tag--info {
+  color: var(--yz-primary);
+  background: var(--yz-primary-soft);
+}
+.yz-tag--muted {
+  color: var(--yz-text-muted);
+  background: #eef1f5;
+}
+
+/* ---- 数字字体（指标卡数值） ---- */
+.yz-num {
+  font-family: var(--yz-font-num);
+  font-variant-numeric: tabular-nums;
+}
+
+/* ---- Element Plus 外观微调，向设计稿靠拢 ---- */
+.el-table {
+  --el-table-border-color: var(--yz-border-faint);
+  --el-table-header-bg-color: #f4f9fd;
+  --el-table-header-text-color: var(--yz-text-strong);
+  --el-table-row-hover-bg-color: #f2f8fe;
+  font-size: 13px;
+}
+.el-table th.el-table__cell {
+  font-weight: 700;
+}
+.el-button {
+  font-weight: 400;
+}
+.el-pagination {
+  --el-pagination-font-size: 13px;
+}
