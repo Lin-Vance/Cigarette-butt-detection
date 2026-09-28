@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="zh-CN" data-end="index">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#0b1320" />
+    <meta
+      name="description"
+      content="烟踪智治：面向城市公共空间的扔烟头行为证据复核与环境治理平台。首页提供市民端、环卫工人端、管理员端、交警端四个独立入口。"
+    />
+    <link rel="icon" type="image/png" href="./favicon.png" />
+    <link rel="apple-touch-icon" href="./apple-touch-icon.png" />
+    <link rel="manifest" href="./manifest.webmanifest" />
+    <link rel="stylesheet" href="./end-switcher.css" />
+    <title>烟踪智治 · 入口</title>
+    <style>
+      html,
+      body,
+      #app {
+        margin: 0;
+        padding: 0;
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+        background: #dfe6ed;
+        font-family: "Microsoft YaHei", "PingFang SC", Arial, sans-serif;
+      }
+    </style>
+    <script type="module" crossorigin src="./assets/main-C6AO3Ewp.js"></script>
+    <link rel="stylesheet" crossorigin href="./assets/main-VjeQbtSJ.css">
+  </head>
+  <body>
+    <div id="app"></div>
+
+    <!-- 换端固定条（纯 HTML+CSS，挂在 #app 之外，不受 Vue 布局与定宽缩放影响）。
+         放在入口页：所有宽度都可见，窄屏贴底铺满，手机用户不会被锁在单一端里。 -->
+    <nav class="yz-ends" aria-label="切换端">
+      <span class="yz-ends-label">切换端</span>
+      <a class="on" href="./index.html">首页</a>
+      <a href="./auth.html">登录</a>
+      <a href="./citizen.html">市民端</a>
+      <a href="./worker.html">环卫端</a>
+      <a href="./admin.html">管理端</a>
+    </nav>
+
+  </body>
+</html>
