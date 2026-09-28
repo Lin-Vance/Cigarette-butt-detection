@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#0b1320" />
+    <meta name="description" content="烟踪智治 · 市民用户端：安全上报现场线索、查看治理进度、查询合规吸烟点与科普内容。" />
+    <link rel="icon" type="image/png" href="./favicon.png" />
+    <link rel="apple-touch-icon" href="./apple-touch-icon.png" />
+    <title>烟踪智治 · 市民用户端</title>
+    <style>
+      html,
+      body,
+      #app {
+        margin: 0;
+        padding: 0;
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+        background: #dfe6ed;
+        font-family: "Microsoft YaHei", "PingFang SC", Arial, sans-serif;
+      }
+    </style>
+    <script type="module" crossorigin src="./assets/main-Don8mlfU.js"></script>
+    <link rel="stylesheet" crossorigin href="./assets/main-ZqrIOZAX.css">
+  </head>
+  <body>
+    <div id="app"></div>
+
+    <script>
+      // 本页固定进入市民端；未登录时路由守卫会转到市民登录页
+      if (!location.hash) location.hash = '#/citizen'
+    </script>
+  </body>
+</html>
