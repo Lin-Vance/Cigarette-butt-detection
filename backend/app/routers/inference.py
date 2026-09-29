@@ -1,4 +1,4 @@
-"""市民素材智能预检：调用项目根目录 best.pt 做烟头目标检测。
+"""市民素材智能预检：调用项目根目录 cigarette-detector.pt 做烟头目标检测。
 
 产出的是**结构化 AI 报告**（而不是只有一个 detected 布尔值）：市民端当场展示，
 并把这份快照随上报一起落库，供管理端复核时对照。
@@ -10,6 +10,7 @@
   · 任何结果都不自动定责、不触发处罚，报告始终带免责说明。
 """
 
+import asyncio
 import os
 import time
 from pathlib import Path
@@ -19,6 +20,7 @@ from fastapi import APIRouter, File, UploadFile
 from fastapi.concurrency import run_in_threadpool
 
 from ..errors import ApiError
+from ..media_validation import validate_image_bytes
 
 # 必须在导入 ultralytics 之前设置：关闭联网检查（更新检查/字体下载）。
 # 内网或代理受限环境下，这些检查会各卡十几秒，把单次预检拖到 30s 以上。
@@ -26,9 +28,10 @@ os.environ.setdefault("ULTRALYTICS_OFFLINE", "1")
 os.environ.setdefault("YOLO_OFFLINE", "1")
 
 router = APIRouter(prefix="/public/ai", tags=["inference"])
-MODEL_PATH = Path(__file__).resolve().parents[3] / "best.pt"
+MODEL_PATH = Path(__file__).resolve().parents[3] / "cigarette-detector.pt"
 _model = None
 _device: str | None = None
+_inference_gate = asyncio.Semaphore(2)
 
 LABEL_ZH = {"cigarette": "烟头", "hand": "手部", "person": "人员"}
 NOTICE = "模型结果仅生成候选线索，不会自动认定违规或触发处罚；判定需授权人员人工复核。"
@@ -56,7 +59,7 @@ def get_model():
     if _model is not None:
         return _model
     if not MODEL_PATH.exists():
-        raise ApiError("AI_MODEL_MISSING", "未找到 best.pt 模型文件", 503)
+        raise ApiError("AI_MODEL_MISSING", "未找到 cigarette-detector.pt 模型文件", 503)
     try:
         from ultralytics import YOLO
     except ImportError as exc:
@@ -79,7 +82,7 @@ def warmup() -> dict:
     之后单次推理约 0.1 秒。不预热的话，市民第一次上传要等近 50 秒。
     """
     if not MODEL_PATH.exists():
-        return {"ok": False, "reason": "best.pt 不存在"}
+        return {"ok": False, "reason": "cigarette-detector.pt 不存在"}
     try:
         import numpy as np
 
@@ -87,7 +90,7 @@ def warmup() -> dict:
         model = get_model()
         device = _pick_device()
         blank = np.zeros((640, 640, 3), dtype=np.uint8)
-        model.predict(source=blank, conf=0.25, device=device, imgsz=640, verbose=False)
+        model.predict(source=blank, conf=0.10, device=device, imgsz=1280, verbose=False)
         return {"ok": True, "device": device, "seconds": round(time.perf_counter() - t0, 1)}
     except ApiError as exc:
         return {"ok": False, "reason": exc.message}
@@ -130,6 +133,7 @@ def _build_report(detections: list[dict], timings: dict) -> dict:
     """
     labels = [d["label"] for d in detections]
     cig = [d for d in detections if d["label"] == "cigarette"]
+    candidate_cig = [d for d in cig if d["confidence"] >= 60]
     top_cig = max((d["confidence"] for d in cig), default=0.0)
     top_all = max((d["confidence"] for d in detections), default=0.0)
 
@@ -159,11 +163,11 @@ def _build_report(detections: list[dict], timings: dict) -> dict:
         )
 
     return {
-        "engine": "best.pt · Ultralytics YOLO（cigarette / hand / person）",
+        "engine": "cigarette-detector.pt · Ultralytics YOLO（cigarette / hand / person）",
         "demo": True,
-        "detected": bool(cig),
+        "detected": bool(candidate_cig),
         "confidence": top_cig,
-        "count": len(cig),
+        "count": len(candidate_cig),
         "detections": detections[:12],
         "labels_seen": sorted(set(labels)),
         "verdict": verdict,
@@ -206,6 +210,10 @@ async def inspect_material(file: UploadFile = File(...)) -> dict:
         raise ApiError("AI_FILE_EMPTY", "上传文件为空", 422)
     if len(data) > 20 * 1024 * 1024:
         raise ApiError("AI_FILE_TOO_LARGE", "图片不能超过20MB", 422)
+    try:
+        validate_image_bytes(data)
+    except ValueError as exc:
+        raise ApiError("AI_IMAGE_INVALID", str(exc), 422) from exc
     t_read = time.perf_counter()
 
     suffix = Path(file.filename or "upload.jpg").suffix.lower()
@@ -225,11 +233,15 @@ async def inspect_material(file: UploadFile = File(...)) -> dict:
         def _infer():
             t0 = time.perf_counter()
             out = model.predict(
-                source=temp_path, conf=0.25, device=device, imgsz=640, verbose=False
+                # 烟头在手机远景照片里通常只占几十个像素。640 输入会把这类
+                # 小目标进一步压缩（实测用户样本在 640 下漏检、1280 下为 62.7%）。
+                # 0.10 用作“候选框”阈值，最终仍按 60% 区分明确候选与弱信号。
+                source=temp_path, conf=0.10, device=device, imgsz=1280, verbose=False
             )[0]
             return out, int((time.perf_counter() - t0) * 1000)
 
-        result, infer_ms = await run_in_threadpool(_infer)
+        async with _inference_gate:
+            result, infer_ms = await run_in_threadpool(_infer)
 
         names = result.names or {}
         detections: list[dict] = []
@@ -253,6 +265,8 @@ async def inspect_material(file: UploadFile = File(...)) -> dict:
             "infer_ms": infer_ms,
             "total_ms": int((time.perf_counter() - t_start) * 1000),
             "device": device,
+            "image_height": int(result.orig_shape[0]),
+            "image_width": int(result.orig_shape[1]),
         }
         return _build_report(detections, timings)
     finally:

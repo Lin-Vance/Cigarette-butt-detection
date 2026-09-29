@@ -2,9 +2,9 @@
 /**
  * 全站顶栏
  *
- * 结构沿用 smoke-admin/README.md 的「yz-dd v4 悬浮卡片菜单」规范：
+ * 顶部导航采用悬浮卡片菜单：
  * 点击钉住展开 / 悬停临时预览 / 当前页带「当前」徽标 / 内容区点击收起。
- * 坐标与尺寸取自 smoke-admin/2.png-html/styles.css 的 .topbar 系列规则。
+ * 坐标与尺寸由当前管理端布局变量统一控制。
  */
 import { computed, onBeforeUnmount, onMounted, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'

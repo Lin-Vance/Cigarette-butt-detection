@@ -30,22 +30,22 @@ function makeRng(seed: number) {
 
 const EVIDENCE_POOL = {
   holding: [
-    '/design-assets/6/pedestrian_smoke_camera_thumbnail.png',
-    '/design-assets/6/sidewalk_pedestrian_camera_thumbnail.png'
+    '/media/cameras/pedestrian-smoking.png',
+    '/media/cameras/sidewalk-pedestrian.png'
   ],
   throwing: [
-    '/design-assets/2/event_detection_evidence_photo.png',
-    '/design-assets/6/roadside_pedestrian_camera_thumbnail.png'
+    '/media/evidence/event-detection.png',
+    '/media/cameras/roadside-pedestrian.png'
   ],
   landed: [
-    '/design-assets/10/incident_cigarette_photo.png',
-    '/design-assets/6/urban_vehicle_camera_thumbnail.png'
+    '/media/evidence/incident-cigarette.png',
+    '/media/cameras/urban-vehicle.png'
   ]
 }
 
 const CLIP_POOL = [
-  '/design-assets/6/pedestrian_crosswalk_camera_thumbnail.png',
-  '/design-assets/6/roadside_vehicle_camera_thumbnail.png'
+  '/media/cameras/pedestrian-crosswalk.png',
+  '/media/cameras/roadside-vehicle.png'
 ]
 
 const STAFF_POOL = ['张建国', '李红梅', '王立新', '赵晓峰', '陈志远', '刘敏', '孙德海']

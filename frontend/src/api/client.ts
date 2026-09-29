@@ -5,7 +5,7 @@
  * 这样交付物在没有后端的环境里也能完整演示；打开开关后，
  * 登录、事件、工单、上报等状态改由后端提供，三端读同一份数据。
  *
- * 见 ../backend/README.md 与 docs/竞赛风险逐项解决规划.md §5。
+ * 接口契约与运行方式见 backend/README.md。
  */
 import axios, { AxiosError } from 'axios'
 
@@ -126,7 +126,7 @@ export function toFailure(err: unknown): ApiFailure {
     if (status === 0) {
       return {
         code: 'NETWORK_UNREACHABLE',
-        message: '无法连接后端服务（请确认 backend/ 已在 127.0.0.1:8000 启动）',
+        message: '无法连接后端服务（请确认 Spring Boot 已在 127.0.0.1:8080 启动）',
         status
       }
     }

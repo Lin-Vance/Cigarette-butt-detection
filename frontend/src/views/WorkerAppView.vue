@@ -35,6 +35,13 @@ const shiftOn = ref(true)
 const routeStarted = ref(false)
 const arrivedIds = ref<number[]>([])
 const kit = ref({ gloves: true, tongs: true, bags: false })
+const localOrders = ref([
+  { id: -101, order_no: 'GD202609290018', location_name: '信阳学院北门', created_at: '2026-09-29T09:18:00', status: 'pending', priority: 'high' },
+  { id: -102, order_no: 'GD202609290019', location_name: '学生食堂东侧', created_at: '2026-09-29T09:26:00', status: 'pending', priority: 'normal' },
+  { id: -103, order_no: 'GD202609290020', location_name: '学院路公交站', created_at: '2026-09-29T09:34:00', status: 'pending', priority: 'high' },
+  { id: -104, order_no: 'GD202609290021', location_name: '图书馆北广场', created_at: '2026-09-29T09:42:00', status: 'pending', priority: 'normal' },
+  { id: -105, order_no: 'GD202609290022', location_name: '校园南门步道', created_at: '2026-09-29T09:51:00', status: 'pending', priority: 'normal' }
+])
 
 /** 每次进入页面生成一组不完全整齐的现场数据，避免演示卡片机械重复。 */
 const sessionSeed = Math.floor(Math.random() * 997) + 31
@@ -123,10 +130,14 @@ const done = computed(() =>
 const list = computed(() =>
   tab.value === 'pending' ? pending.value : tab.value === 'active' ? active.value : done.value
 )
+const localList = computed(() => localOrders.value.filter((o) => tab.value === 'pending' ? o.status === 'pending' : tab.value === 'active' ? ['accepted', 'processing'].includes(o.status) : o.status === 'completed'))
+const pendingCount = computed(() => pending.value.length + localOrders.value.filter((o) => o.status === 'pending').length)
+const activeCount = computed(() => active.value.length + localOrders.value.filter((o) => ['accepted', 'processing'].includes(o.status)).length)
+const doneCount = computed(() => done.value.length + localOrders.value.filter((o) => o.status === 'completed').length)
 
 const statItems = computed(() => [
-  { label: '待接单', value: pending.value.length, hint: '可立即接单', tone: 'warning' as const },
-  { label: '进行中', value: active.value.length, hint: '含待验收', tone: 'primary' as const },
+  { label: '待接单', value: pendingCount.value, hint: '可立即接单', tone: 'warning' as const },
+  { label: '进行中', value: activeCount.value, hint: '含待验收', tone: 'primary' as const },
   { label: '今日完成', value: doneToday.value, hint: '已提交闭环材料', tone: 'success' as const },
   {
     label: '平均响应',
@@ -161,7 +172,7 @@ function waitMin(ts: string) {
 }
 
 const rows = computed(() =>
-  list.value.map((o) => ({
+  [...list.value, ...localList.value].map((o: any) => ({
     id: o.id,
     order_no: o.order_no,
     location: o.location_name || '未标注点位',
@@ -206,6 +217,12 @@ function markArrived(id: number) {
 }
 
 async function onAccept(row: Record<string, any>) {
+  if (row.id < 0) {
+    const item = localOrders.value.find((o) => o.id === row.id)
+    if (item) item.status = 'accepted'
+    ElMessage.success(`已接单 ${row.order_no}，已转入“进行中”`)
+    return
+  }
   if (busyId.value) return
   busyId.value = row.id
   try {
@@ -217,6 +234,12 @@ async function onAccept(row: Record<string, any>) {
 }
 
 async function onStart(row: Record<string, any>) {
+  if (row.id < 0) {
+    const item = localOrders.value.find((o) => o.id === row.id)
+    if (item) item.status = 'processing'
+    ElMessage.success('已开始处理该模拟工单')
+    return
+  }
   if (busyId.value) return
   busyId.value = row.id
   try {
@@ -228,6 +251,12 @@ async function onStart(row: Record<string, any>) {
 }
 
 function openClosure(row: Record<string, any>) {
+  if (row.id < 0) {
+    const item = localOrders.value.find((o) => o.id === row.id)
+    if (item) item.status = 'completed'
+    ElMessage.success('模拟工单已上传清理照片并提交验收')
+    return
+  }
   closureTarget.value = row.raw as WorkOrder
   closureNote.value = '已完成清理并拍照留档'
   closureFile.value = null
@@ -352,7 +381,7 @@ const PERF_RULES = [
         type="button"
         @click="view = 'orders'; tab = 'pending'"
       >
-        待接单 {{ pending.length }}
+        待接单 {{ pendingCount }}
       </button>
       <button
         class="ad-btn"
@@ -360,7 +389,7 @@ const PERF_RULES = [
         type="button"
         @click="view = 'orders'; tab = 'active'"
       >
-        进行中 {{ active.length }}
+        进行中 {{ activeCount }}
       </button>
       <button
         class="ad-btn"
@@ -368,7 +397,7 @@ const PERF_RULES = [
         type="button"
         @click="view = 'orders'; tab = 'done'"
       >
-        已完成 {{ done.length }}
+        已完成 {{ doneCount }}
       </button>
       <button
         class="ad-btn"
@@ -391,6 +420,11 @@ const PERF_RULES = [
       <button class="ad-btn" type="button" @click="logout">退出</button>
     </template>
 
+    <section v-if="view === 'orders'" class="orders-hero">
+      <img src="/media/worker-operations-hero.png" alt="环卫人员在滨水步道协同作业" />
+      <div><span>FIELD OPERATIONS · 今日作业</span><h1>清洁有路线，处置有回音</h1><p>根据待办优先级规划清扫顺序，处置照片与验收结果实时同步至管理端。</p></div>
+    </section>
+
     <div v-if="view === 'orders'" class="ad-head">
       <div>
         <h1 class="ad-title">我的清理工单</h1>
@@ -399,7 +433,7 @@ const PERF_RULES = [
         </p>
       </div>
       <div class="ad-actions">
-        <span class="ad-badge">当前分组 {{ list.length }} 条</span>
+        <span class="ad-badge">当前分组 {{ rows.length }} 条</span>
       </div>
     </div>
 
@@ -855,6 +889,14 @@ const PERF_RULES = [
 .safety-card span { color: #9a5d12; font-size: 12px; font-weight: 800; }
 .safety-card p { margin: 8px 0 0; color: #8b6d49; font-size: 11.5px; line-height: 1.75; }
 
+.orders-hero { position:relative;flex:none;height:152px;overflow:hidden;border-radius:var(--yz-radius-card);box-shadow:var(--yz-shadow-card); }
+.orders-hero > img { width:100%;height:100%;object-fit:cover;object-position:center 48%; }
+.orders-hero > div { position:absolute;inset:0;display:flex;flex-direction:column;justify-content:center;padding:0 34px;color:#fff;background:linear-gradient(90deg,rgba(6,31,47,.92),rgba(8,54,71,.58) 42%,transparent 72%); }
+.orders-hero span { color:#82ead5;font:700 10px Consolas,monospace;letter-spacing:.16em; }
+.orders-hero h1 { margin:8px 0 5px;font-size:27px; }
+.orders-hero p { max-width:570px;margin:0;color:rgba(255,255,255,.86);font-size:12px;line-height:1.7; }
+.orders-hero > b { position:absolute;right:18px;top:14px;padding:5px 10px;border-radius:999px;color:#fff;background:rgba(7,35,48,.62);font-size:10px;font-weight:600;backdrop-filter:blur(8px); }
+
 /* ============ 绩效激励 ============ */
 .perf-hero {
   position: relative;
@@ -869,6 +911,15 @@ const PERF_RULES = [
   height: 190px;
   object-fit: cover;
   object-position: center 38%;
+}
+
+.worker-app :deep(.stats .stat) {
+  display: flex;
+  min-height: 76px;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
 }
 .perf-hero-copy {
   position: absolute;

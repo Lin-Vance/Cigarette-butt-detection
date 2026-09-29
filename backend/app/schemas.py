@@ -19,7 +19,21 @@ class RefreshRequest(BaseModel):
 
 class CitizenLoginRequest(BaseModel):
     phone: str = Field(min_length=11, max_length=11)
-    code: str = Field(min_length=1, max_length=8)
+    code: str = Field(default="", max_length=8)
+    password: str = Field(default="", max_length=128)
+    method: Literal["code", "password"] = "code"
+    mode: Literal["login", "register"] = "login"
+
+
+class LoginCodeRequest(BaseModel):
+    target: str = Field(min_length=1, max_length=64)
+    role: Literal["citizen", "worker", "admin"]
+
+
+class CodeLoginRequest(BaseModel):
+    username: str = Field(min_length=1, max_length=64)
+    code: str = Field(min_length=6, max_length=6)
+    role: Literal["worker", "admin"]
 
 
 class UserCreate(BaseModel):

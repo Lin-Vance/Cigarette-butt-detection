@@ -13,6 +13,9 @@
   gap: 14px;
   padding: 20px 24px 24px;
   overflow: auto;
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 1.55;
 }
 
 .ad-head {
@@ -28,7 +31,8 @@
   color: var(--yz-text-strong);
 }
 .ad-sub {
-  font-size: 12px;
+  font-size: 13px;
+  font-weight: 500;
   color: var(--yz-text-muted);
   padding-bottom: 2px;
 }
@@ -105,7 +109,8 @@
 
 .ad-link {
   color: var(--yz-primary);
-  font-size: 12px;
+  font-size: 13px;
+  font-weight: 600;
   background: none;
   border: 0;
   padding: 0;
@@ -165,7 +170,8 @@ select.ad-ctrl {
   border-radius: var(--yz-radius-pill);
   border: 1px solid var(--yz-border-soft);
   background: #fff;
-  font-size: 11px;
+  font-size: 12px;
+  font-weight: 600;
   color: var(--yz-text-muted);
 }
 

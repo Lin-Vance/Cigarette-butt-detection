@@ -17,11 +17,12 @@ export interface ChannelHandle {
 
 export function openChannel(
   channel: Channel,
+  accessToken: string,
   onMessage: (msg: ChannelMessage) => void,
   onStatus?: (connected: boolean) => void,
 ): ChannelHandle {
   const proto = location.protocol === 'https:' ? 'wss' : 'ws'
-  const url = `${proto}://${location.host}/ws/${channel}`
+  const url = `${proto}://${location.host}/ws/${channel}?token=${encodeURIComponent(accessToken)}`
 
   let ws: WebSocket | null = null
   let heartbeat: number | undefined

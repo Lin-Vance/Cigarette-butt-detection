@@ -10,7 +10,7 @@ export default defineConfig({
    * 改不动代码里的运行时字符串。
    *
    * ⚠️ 因此构建产物**不能** `file://` 双击打开（缺陷 D-09）：
-   * 页面里 `/design-assets/...`、`/media/...` 是绝对路径，
+   * 页面里 `/media/...` 是绝对路径，
    * 双击打开时协议是 file://，这些请求会全部 404，设计稿图片全丢。
    *
    * 正确打开方式：用本地静态服务（见 `start-frontend.bat` / `preview-build.bat`）。
@@ -28,18 +28,7 @@ export default defineConfig({
     // 这里显式拒绝自动换端口，让问题在启动瞬间就暴露，而不是变成运行期 403。
     strictPort: true,
     host: '127.0.0.1',
-    /**
-     * 三条代理**统一指向同一个后端**（缺陷 D-03）。
-     *
-     * 历史配置把 `/api` 指向 `backend-java:8080`，而 `/storage`、`/ws` 指向
-     * `backend:8000`。实测探测 14 个前端必需接口，**11 个在 8080 是 404**
-     * （`backend-java` 只实现了约四成接口），而 `8000` 的 FastAPI 后端清单完整
-     * （`/events`、`/workorders`、`/stats`、`/users`、`/audit`、`/ai`…全部齐备），
-     * 且 8080 侧没有任何 `/storage` 静态映射。两个后端混用会让 API 模式处于半瘫状态。
-     *
-     * 选型结论（本轮收敛）：**以 `backend/`（FastAPI, 8000）为唯一后端**。
-     * `backend-java/` 保留为备选实现，但不再被前端代理引用。
-     */
+    /** 所有 HTTP、文件和 WebSocket 请求统一使用 FastAPI，避免双后端状态与权限不一致。 */
     proxy: {
       '/api': {
         target: 'http://127.0.0.1:8000',

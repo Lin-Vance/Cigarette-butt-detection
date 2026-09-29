@@ -3,6 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https://*.is.autonavi.com; media-src 'self' blob:; connect-src 'self' ws: wss:; font-src 'self' data:; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'" />
     <meta name="theme-color" content="#0b1320" />
     <meta name="description" content="烟踪智治 · 环卫工人端：接单、现场处置、上传清理后照片、提交验收。" />
     <link rel="icon" type="image/png" href="./favicon.png" />
@@ -26,9 +27,6 @@
   <body>
     <div id="app"></div>
 
-    <script>
-      if (!location.hash) location.hash = '#/worker'
-    </script>
     <script type="module" src="/src/main.ts"></script>
   </body>
 </html>

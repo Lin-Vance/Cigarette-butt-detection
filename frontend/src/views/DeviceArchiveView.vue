@@ -12,7 +12,30 @@ import { AREAS, buildDeviceRows } from '@/mock/pages'
 const demo = useDemoStore()
 demo.init()
 
-const all = computed(() => buildDeviceRows(demo.cameras))
+const all = computed(() => {
+  const base = buildDeviceRows(demo.cameras)
+  const places = ['信阳学院北门', '图书馆东侧', '学生食堂广场', '体育馆西门', '学院路公交站', '城市书房', '羊山公园南门', '人民路步行街', '新七大道路口', '浉河北岸步道', '政务广场', '社区公园']
+  const areas = ['浉河区', '平桥区', '羊山新区', '高新区', '罗山县', '光山县']
+  const rows = [...base]
+  for (let i = rows.length; i < 24; i++) {
+    const seed = base[i % Math.max(1, base.length)]
+    const status = i % 9 === 0 ? 'alarm' : i % 7 === 0 ? 'offline' : 'online'
+    rows.push({
+      ...(seed ?? {}),
+      id: `CAM-${String(121 + i).padStart(3, '0')}`,
+      name: `${places[i % places.length]}环境摄像机`,
+      address: `${areas[i % areas.length]} · ${places[i % places.length]}`,
+      gis: `${(114.036 + (i % 8) * .0017).toFixed(6)}, ${(32.141 + (i % 6) * .0015).toFixed(6)}`,
+      rtsp: `rtsp://demo.local/camera/${String(121 + i).padStart(3, '0')}`,
+      area: areas[i % areas.length],
+      status,
+      statusText: status === 'online' ? '在线' : status === 'offline' ? '离线' : '需巡检',
+      statusTone: status === 'online' ? 'success' : status === 'offline' ? 'muted' : 'danger',
+      statusNote: status === 'online' ? '运行正常' : status === 'offline' ? '网络断开' : '画面抖动'
+    } as any)
+  }
+  return rows
+})
 
 const filter = ref({ area: '', status: '', kw: '' })
 

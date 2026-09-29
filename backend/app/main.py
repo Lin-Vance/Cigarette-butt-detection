@@ -9,7 +9,7 @@ import asyncio
 import logging
 from contextlib import asynccontextmanager
 
-from fastapi import FastAPI, Request
+from fastapi import Depends, FastAPI, Request
 from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
@@ -19,10 +19,12 @@ from starlette.exceptions import HTTPException as StarletteHTTPException
 from .config import BACKEND_DIR, get_settings
 from .db import get_session_factory, init_db
 from .generator import ensure_pool
+from .deps import require_roles
+from .models import User
 from .routers import audit, auth, camera, decision, event, inference, report, stats, workorder
 from .routers import activity as activity_router
 from .routers import ws as ws_router
-from .seed import seed_all
+from .seed import ensure_demo_citizen, seed_all
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
 logger = logging.getLogger("yanzong")
@@ -32,6 +34,11 @@ settings = get_settings()
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
+    if settings.environment.lower() == "production" and (
+        settings.jwt_secret == "yanzong-development-only-secret-change-before-production-2026"
+        or len(settings.jwt_secret) < 32
+    ):
+        raise RuntimeError("生产环境必须配置至少 32 位的随机 JWT_SECRET")
     await init_db()
     ensure_pool()
     if settings.seed_on_startup:
@@ -41,10 +48,12 @@ async def lifespan(app: FastAPI):
                 logger.info("演示数据已存在，跳过种子化")
             else:
                 logger.info("演示数据已灌入：%s", result)
+            if settings.environment.lower() == "development":
+                await ensure_demo_citizen(session)
     logger.info("证据目录：%s", settings.evidence_dir)
     logger.info("数据库：%s", settings.database_url.split("@")[-1])
 
-    # 预热 best.pt：把 torch 导入与首次前向的耗时挪到启动阶段，
+    # 预热 cigarette-detector.pt：把 torch 导入与首次前向的耗时挪到启动阶段，
     # 否则会全部落在市民第一次上传上（超过前端 3.5s 预检超时）。失败不影响服务启动。
     #
     # ⚠️ 必须放到**后台线程**（2026-09-28 复核新发现 D-23）：
@@ -58,7 +67,7 @@ async def lifespan(app: FastAPI):
     async def _warm_model() -> None:
         warm = await asyncio.to_thread(inference.warmup)
         if warm.get("ok"):
-            logger.info("AI 预检已预热：best.pt · device=%s", warm.get("device"))
+            logger.info("AI 预检已预热：cigarette-detector.pt · device=%s", warm.get("device"))
         else:
             logger.warning(
                 "AI 预检未就绪：%s（上传接口会返回 503，前端将回退本地预检）", warm.get("reason")
@@ -68,7 +77,7 @@ async def lifespan(app: FastAPI):
     if settings.ai_warmup:
         warm_task = asyncio.create_task(_warm_model())
     else:
-        logger.info("已按配置跳过 best.pt 预热（ai_warmup=0）：启动更快，首次上传会慢")
+        logger.info("已按配置跳过模型预热（ai_warmup=0）：启动更快，首次上传会慢")
     try:
         yield
     finally:
@@ -86,6 +95,8 @@ app = FastAPI(
         "不代表真实识别结果。"
     ),
     lifespan=lifespan,
+    docs_url=None if settings.environment.lower() == "production" else "/docs",
+    redoc_url=None if settings.environment.lower() == "production" else "/redoc",
 )
 
 app.add_middleware(
@@ -100,6 +111,17 @@ app.add_middleware(
 # 证据文件（替代 MinIO）
 settings.storage_dir.mkdir(parents=True, exist_ok=True)
 app.mount("/storage", StaticFiles(directory=str(settings.storage_dir)), name="storage")
+
+
+@app.middleware("http")
+async def security_headers(request: Request, call_next):
+    response = await call_next(request)
+    response.headers["X-Content-Type-Options"] = "nosniff"
+    response.headers["X-Frame-Options"] = "DENY"
+    response.headers["Referrer-Policy"] = "strict-origin-when-cross-origin"
+    response.headers["Permissions-Policy"] = "camera=(), microphone=(), geolocation=(self)"
+    response.headers["Cache-Control"] = "no-store" if request.url.path.startswith(api) else "no-cache"
+    return response
 
 
 # ---------------- 统一错误响应 ----------------
@@ -170,7 +192,10 @@ async def healthz() -> dict:
 
 
 @app.post(api + "/admin/reseed", tags=["meta"])
-async def reseed(force: bool = True) -> dict:
+async def reseed(
+    force: bool = True,
+    _: User = Depends(require_roles("admin")),
+) -> dict:
     """重建演示数据（答辩前重置现场用）。"""
     async with get_session_factory()() as session:
         result = await seed_all(session, force=force)

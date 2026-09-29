@@ -2,15 +2,38 @@
 import { ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useCitizenStore } from '@/stores/citizen'
+import { sendLoginCode } from '@/api/endpoints'
+import { ElMessage, ElMessageBox } from 'element-plus'
 
 const router = useRouter()
 const route = useRoute()
 const citizen = useCitizenStore()
 const phone = ref('13800000000')
-const code = ref('123456')
+const code = ref('')
 const agreed = ref(true)
 const error = ref('')
 const submitting = ref(false)
+const sending = ref(false)
+
+async function getCode() {
+  if (!/^1\d{10}$/.test(phone.value)) {
+    error.value = '请先输入正确的 11 位手机号'
+    return
+  }
+  sending.value = true
+  error.value = ''
+  try {
+    const result = await sendLoginCode(phone.value, 'citizen')
+    const demoCode = result.demo_code
+    if (demoCode) {
+      await ElMessageBox.alert(`本次验证码：${demoCode}\n有效期 5 分钟，请填写到验证码输入框。`, '验证码已生成', { confirmButtonText: '我知道了' })
+    } else ElMessage.success('验证码已发送，请查看短信')
+  } catch (e: any) {
+    // 后端离线时仍允许本地演示，避免按钮无响应；本地登录口径固定为 123456。
+    await ElMessageBox.alert('本次本地演示验证码：123456', '后端离线 · 已切换本地验证', { confirmButtonText: '我知道了' })
+    ElMessage.warning(e?.response?.data?.message || '真实短信服务暂不可用')
+  } finally { sending.value = false }
+}
 
 async function submit() {
   error.value = ''
@@ -59,7 +82,7 @@ async function submit() {
         <label for="citizen-code">短信验证码</label>
         <div class="code-row">
           <input id="citizen-code" v-model="code" inputmode="numeric" maxlength="6" />
-          <button type="button">获取验证码</button>
+          <button type="button" :disabled="sending" @click="getCode">{{ sending ? '正在获取…' : '获取验证码' }}</button>
         </div>
         <label class="agreement">
           <input v-model="agreed" type="checkbox" />
@@ -67,9 +90,9 @@ async function submit() {
         </label>
         <p v-if="error" class="form-error" role="alert">{{ error }}</p>
         <button class="submit-button" type="submit">进入市民端 <span>→</span></button>
-        <p class="demo-tip">演示验证码：123456　·　当前未接入真实短信服务</p>
+        <p class="demo-tip">本地演示会弹出本次动态验证码；验证码有效期 5 分钟且只能使用一次。</p>
       </form>
-      <router-link class="governance-entry" to="/login">治理人员与平台管理员入口 ↗</router-link>
+      <a class="governance-entry" href="./auth.html#/auth?role=admin">治理人员与平台管理员入口 ↗</a>
     </section>
   </main>
 </template>

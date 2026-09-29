@@ -7,7 +7,6 @@ import { useCitizenStore } from '@/stores/citizen'
 import AdminLayout from '@/layouts/AdminLayout.vue'
 import PortalView from '@/views/PortalView.vue'
 import AuthView from '@/views/AuthView.vue'
-import LoginView from '@/views/LoginView.vue'
 import CitizenLoginView from '@/views/CitizenLoginView.vue'
 import CitizenAppView from '@/views/CitizenAppView.vue'
 import WorkerAppView from '@/views/WorkerAppView.vue'
@@ -16,6 +15,7 @@ import PagePlaceholder from '@/views/PagePlaceholder.vue'
 /** 已迁移到 Vue3 的页面（18 页全部迁移完成） */
 const MIGRATED_VIEWS: Record<string, () => Promise<{ default: Component }>> = {
   overview: () => import('@/views/OverviewView.vue'),
+  'monitor-wall': () => import('@/views/MonitorWallView.vue'),
   governance: () => import('@/views/GovernanceView.vue'),
   'device-status': () => import('@/views/DeviceStatusView.vue'),
   workboard: () => import('@/views/WorkboardView.vue'),
@@ -63,6 +63,12 @@ const END_BY_ROLE: Record<string, string> = {
 
 const CURRENT_END =
   (typeof document !== 'undefined' && document.documentElement.dataset.end) || 'index'
+
+// CSP 禁止 HTML 内联脚本；因此由受构建管线管理的模块代码设置各端默认路由。
+// 这也保证直接访问 auth.html / citizen.html / worker.html / admin.html 时不会误落到官网首页。
+if (typeof window !== 'undefined' && !window.location.hash) {
+  window.location.hash = `#${END_HOME[CURRENT_END] ?? '/'}`
+}
 
 const childRoutes: RouteRecordRaw[] = ALL_PAGES.map((page) => {
   const loader = MIGRATED_VIEWS[page.name]
@@ -116,9 +122,18 @@ const routes: RouteRecordRaw[] = [
     meta: { citizenAuth: true, title: '市民用户端' }
   },
   {
+    // 旧版管理员专用登录页已取消。历史链接统一换到三端共用登录页，
+    // 自动选中“管理端”，并保留原本想访问的管理页面。
     path: '/login',
     name: 'login',
-    component: LoginView,
+    component: AuthView,
+    beforeEnter: (to) => {
+      const target = typeof to.query.redirect === 'string' && to.query.redirect.startsWith('/platform/')
+        ? to.query.redirect
+        : '/platform/overview'
+      window.location.replace(`./auth.html#/auth?role=admin&redirect=${encodeURIComponent(target)}`)
+      return false
+    },
     meta: { public: true, title: '管理员登录' }
   },
   {
@@ -151,11 +166,13 @@ router.beforeEach(async (to) => {
     await auth.login(to.name === 'worker' ? 'worker01' : 'admin', '123456')
   }
   if (import.meta.env.DEV && to.query.autologin === 'citizen' && !citizen.isLoggedIn) {
-    await citizen.login('13800000000', '123456')
+    // 本地回归直达使用演示账户密码；短信验证码是动态、一次性的，不能写死在代码中。
+    await citizen.login('13800000000', '123456', 'password')
   }
 
   if (to.meta.citizenAuth) {
-    if (!citizen.isLoggedIn) return { name: 'citizen-login', query: { redirect: to.fullPath } }
+    // App 模式允许先浏览首页/地图/科普，真正提交或查看个人数据时再弹登录。
+    if (!citizen.isLoggedIn && to.query.app !== '1') return { name: 'citizen-login', query: { redirect: to.fullPath } }
     return true
   }
 
@@ -166,7 +183,10 @@ router.beforeEach(async (to) => {
   }
 
   if (!auth.isLoggedIn) {
-    return { name: 'login', query: { redirect: to.fullPath } }
+    // 管理端不再保留第二套登录页，失效/未登录一律进入统一登录注册页面。
+    const target = to.fullPath.startsWith('/platform/') ? to.fullPath : '/platform/overview'
+    window.location.replace(`./auth.html#/auth?role=admin&redirect=${encodeURIComponent(target)}`)
+    return false
   }
 
   const name = String(to.name ?? '')

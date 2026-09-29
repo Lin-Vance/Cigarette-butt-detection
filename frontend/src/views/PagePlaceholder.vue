@@ -2,7 +2,7 @@
 /**
  * 未迁移页面的占位视图
  *
- * 18 页按批次从 smoke-admin/ 设计稿迁移到 Vue3。尚未迁移的路由渲染此组件，
+ * 页面迁移期间的兜底组件；正常菜单页均应由真实视图渲染。
  * 明确标注设计稿页号与待实现要点，避免"看起来像坏了"。
  */
 import { computed } from 'vue'
@@ -40,7 +40,7 @@ const siblings = computed(() => moduleDef.value?.pages ?? [])
         <ol class="ph-list">
           <li>
             <b>还原版式</b> —— 以
-            <code>smoke-admin/{{ pageNo }}.png-html/styles.css</code>
+            <code>页面编号 {{ pageNo }}</code>
             为像素级参照，Element Plus 只提供行为（分页 / 校验 / 弹窗），外观按设计令牌覆盖。
           </li>
           <li>

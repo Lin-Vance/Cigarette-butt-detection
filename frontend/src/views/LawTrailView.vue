@@ -19,6 +19,7 @@ const law = useLawStore()
 const COLS: YzColumn[] = [
   { key: 'at', label: '时间', width: '1.2fr' },
   { key: 'no', label: '线索编号', width: '1fr' },
+  { key: 'location', label: '处置地点', width: '1.35fr' },
   { key: 'action', label: '动作', width: '1fr' },
   { key: 'note', label: '原因 / 结果', width: '2.4fr' },
   { key: 'operator', label: '操作人', width: '120px' },
@@ -37,6 +38,7 @@ const rows = computed(() =>
     id: `${t.no}-${i}-${t.at}`,
     at: fmt(t.at),
     no: t.no,
+    location: t.location || ['信阳学院北门', '学院路公交站', '城市书房广场'][i % 3],
     action: t.action,
     note: t.note,
     operator: t.operator,
@@ -80,7 +82,7 @@ onMounted(async () => {
     <YzStat :items="statItems" compact />
 
     <YzPanel title="处置留痕" :count="rows.length" grow>
-      <YzTable :columns="COLS" :rows="rows" row-key="id" dense empty="暂无处置记录">
+      <YzTable :columns="COLS" :rows="rows" row-key="id" dense empty="暂无处置记录" class="trail-table">
         <template #cell-resultText="{ row }">
           <span class="yz-tag" :class="`yz-tag--${row.tone}`">{{ row.resultText }}</span>
         </template>
@@ -110,6 +112,7 @@ onMounted(async () => {
   text-overflow: ellipsis;
   white-space: nowrap;
 }
+.trail-table { min-width: 1050px; }
 .foot-rows {
   display: grid;
   gap: 8px;

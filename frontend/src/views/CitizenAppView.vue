@@ -1,11 +1,14 @@
 <script setup lang="ts">
 import { computed, onBeforeUnmount, onMounted, ref } from 'vue'
+import { useRoute } from 'vue-router'
 import EndShell from '@/layouts/EndShell.vue'
 import GaodeTileMap from '@/components/GaodeTileMap.vue'
 import SmokeStory from '@/components/citizen/SmokeStory.vue'
 import AiReportCard from '@/components/citizen/AiReportCard.vue'
 import type { AiReportBlock, AiState } from '@/components/citizen/AiReportCard.vue'
 import { useCitizenStore } from '@/stores/citizen'
+import { sendLoginCode } from '@/api/endpoints'
+import { ElMessage, ElMessageBox } from 'element-plus'
 import { useSpeech, SPEECH_RATES, type SpeechSegment } from '@/composables/useSpeech'
 import { http, toFailure } from '@/api/client'
 
@@ -13,20 +16,31 @@ type Tab = 'home' | 'map' | 'report' | 'records' | 'tasks' | 'science' | 'profil
 type Audience = 'teen' | 'youth' | 'senior'
 
 const citizen = useCitizenStore()
+const route = useRoute()
+const forceMobileApp = computed(() => route.query.app === '1')
 
-const activeTab = ref<Tab>('home')
+const TAB_KEYS: Tab[] = ['home', 'map', 'report', 'records', 'tasks', 'science', 'profile']
+const requestedTab = String(route.query.tab || '') as Tab
+const activeTab = ref<Tab>(TAB_KEYS.includes(requestedTab) ? requestedTab : 'home')
 const selectedPoint = ref(1)
 const reportStep = ref(1)
 const fileName = ref('')
 const mediaPreview = ref('')
 const mediaInspection = ref<{ status: 'idle' | 'checking' | 'candidate' | 'scene' | 'rejected'; title: string; detail: string; confidence?: number }>({ status: 'idle', title: '等待添加素材', detail: '上传后将先检查格式、画面质量与内容相关性。' })
-const reportType = ref('行为视频线索')
+const reportType = ref('烟蒂垃圾短视频')
 const location = ref('浉河区 · 人民路演示点位')
 const safeConfirmed = ref(false)
 const reportError = ref('')
 const taskDone = ref(false)
 const submitting = ref(false)
 const submittedNo = ref('')
+const loginGate = ref(false)
+const loginPhone = ref('13800000000')
+const loginCode = ref('')
+const loginError = ref('')
+const loginBusy = ref(false)
+const codeBusy = ref(false)
+const pendingTab = ref<Tab | null>(null)
 
 /* ================= 轮播图 ================= */
 const slides = [
@@ -78,7 +92,7 @@ function touchEnd(e: TouchEvent) {
 /* ================= 文明积分 ================= */
 const points = ref(citizen.profile?.contribution ?? 36)
 const ledger = ref<{ label: string; delta: number; time: string }[]>([
-  { label: '情景问答 · 照片能定责吗', delta: 5, time: '09-26' },
+  { label: '情景问答 · 怎样安全拍烟蒂垃圾', delta: 5, time: '09-26' },
   { label: '学习「小小烟头的环境影响」', delta: 3, time: '09-25' },
   { label: '文明打卡 · 连续第 2 天', delta: 5, time: '09-25' }
 ])
@@ -223,18 +237,18 @@ const ARTICLES: SciArticle[] = [
     id: 4, title: '合规吸烟点怎么用？', category: '文明吸烟',
     desc: '吸烟请至合规吸烟点，烟蒂投入阻燃收集设施，不在楼道、绿化带吸烟。',
     seniorDesc: '想抽烟请到吸烟亭，抽完把烟头掐灭放进收集桶，别扔在绿化带里。',
-    minutes: 3, points: 3,
+    minutes: 3, points: 3, cover: '/media/news-upgrade-alt.jpg',
     order: { teen: 6, youth: 6, senior: 4 }
   },
   {
-    id: 5, title: '单张烟头照片能证明是谁扔的吗？', category: '烟头危害',
-    desc: '动作判断需要连续视频证据，照片只能记录现场状态。',
-    seniorDesc: '一张照片说不清是谁扔的，要看连续的视频，还要人工确认。',
-    minutes: 2, points: 5,
+    id: 5, title: '怎样安全拍摄烟蒂垃圾？', category: '烟头危害',
+    desc: '镜头对准地面烟蒂和周边环境即可，不需要拍摄路人或追踪任何人。',
+    seniorDesc: '只拍地上的烟头和周围位置，别拍人、别追人，保护好自己和他人隐私。',
+    minutes: 2, points: 5, cover: '/media/banner-shoot.png',
     quiz: {
-      options: ['能，照片拍得很清楚', '不能，照片说明不了动作过程'],
-      answer: 1,
-      explain: '不能。照片只能说明现场状态，无法证明完整抛掷动作；判定需要连续视频证据并经过人工复核。'
+      options: ['对准地面烟蒂和环境', '跟拍路人直到看清身份'],
+      answer: 0,
+      explain: '正确。只需记录烟蒂垃圾和现场位置，平台不需要也不会识别人脸或人员身份。'
     },
     order: { teen: 1, youth: 1, senior: 6 }
   },
@@ -243,29 +257,29 @@ const ARTICLES: SciArticle[] = [
     desc: '二手烟暴露没有安全水平，老人、儿童与孕妇是敏感人群。',
     seniorDesc: '二手烟对老人、小孩、孕妇伤害最大，公共场所请克制。',
     dataPoint: '二手烟含 69 种已知致癌物',
-    minutes: 4, points: 3,
+    minutes: 4, points: 3, cover: '/media/news-block.png',
     order: { teen: 7, youth: 7, senior: 3 }
   },
   {
-    id: 7, title: '安全参与：不跟拍、不传播', category: '文明吸烟',
-    desc: '不要为了取证跟拍、拦截陌生人；素材不上传到公开平台，平台会替你把关。',
-    seniorDesc: '看见有人扔烟头，别去拦、别去追，拍个远景交给平台就行。',
-    minutes: 3, points: 3,
+    id: 7, title: '安全参与：只拍垃圾，不拍人', category: '文明吸烟',
+    desc: '镜头只对准烟蒂垃圾与公共设施，不跟拍、不拦截，也不要公开传播含路人的画面。',
+    seniorDesc: '发现烟头垃圾，只拍地面和位置，别去拦人、追人或拍人。',
+    minutes: 3, points: 3, cover: '/media/banner-park.png',
     order: { teen: 5, youth: 2, senior: 7 }
   },
   {
     id: 8, title: '烟蒂与城市水环境（数据解读）', category: '城市环保',
     desc: '从雨污分流角度看烟蒂入河路径，理解前端收集设施为什么划算。',
     dataPoint: '打捞 1kg 河道烟蒂成本 ≈ 前端收集的 20 倍',
-    minutes: 5, points: 3,
+    minutes: 5, points: 3, cover: '/media/teen-water-club.png',
     order: { teen: 8, youth: 8, senior: 8 }
   }
 ]
 
 const NEWS_BY_AUDIENCE: Record<Audience, { title: string; cover: string; meta: string; desc: string }[]> = {
   teen: [
-    { title: '校园消防课：一枚烟头为什么能点燃落叶', cover: '/media/sci-fire.png', meta: '3分钟 · 校园安全', desc: '用温度实验和互动问答认识未熄灭烟头的火灾风险。' },
-    { title: '环保社团观察：烟蒂会沿雨水口去哪里', cover: '/media/sci-life.png', meta: '4分钟 · 观察实践', desc: '跟着城市水循环路线，记录小垃圾对河流环境的影响。' }
+    { title: '校园消防课：一枚烟头为什么能点燃落叶', cover: '/media/teen-fire-lab.png', meta: '3分钟 · 校园安全', desc: '用温度实验和互动问答认识未熄灭烟头的火灾风险。' },
+    { title: '环保社团观察：烟蒂会沿雨水口去哪里', cover: '/media/teen-water-club.png', meta: '4分钟 · 观察实践', desc: '跟着城市水循环路线，记录小垃圾对河流环境的影响。' }
   ],
   youth: [
     { title: '城市更新观察：46处公共设施完成升级', cover: '/media/news-upgrade.png', meta: '2分钟 · 城市治理', desc: '从选址、使用率和维护成本理解公共空间设施如何运营。' },
@@ -300,6 +314,13 @@ const filteredArticles = computed(() => {
 const readIds = ref<number[]>([])
 const quizPicked = ref<Record<number, number>>({})
 const lifeExpanded = ref(false)
+const reading = ref<{ title: string; cover: string; meta: string; desc: string; category: string; article?: SciArticle } | null>(null)
+type ProfilePanel = 'privacy' | 'notifications' | 'rules' | 'accessibility' | null
+const profilePanel = ref<ProfilePanel>(null)
+const reduceMotion = ref(false)
+const allowLocation = ref(true)
+const allowMaterial = ref(true)
+const allowNotice = ref(true)
 
 const LIFE_STAGES = [
   { t: '点燃', d: '吸烟过程中，滤嘴吸附尼古丁与焦油。' },
@@ -313,6 +334,24 @@ function readArticle(a: SciArticle) {
   readIds.value.push(a.id)
   earn(a.points, `学习「${a.title}」`)
 }
+function openArticle(a: SciArticle) {
+  reading.value = { title: a.title, cover: a.cover || '/media/banner-park.png', meta: `${a.minutes}分钟 · ${a.category}`, desc: audience.value === 'senior' && a.seniorDesc ? a.seniorDesc : a.desc, category: a.category, article: a }
+}
+function openNews(n: { title: string; cover: string; meta: string; desc: string }) {
+  reading.value = { ...n, category: '近期新闻' }
+}
+const readingParagraphs = computed(() => {
+  if (!reading.value) return []
+  const x = reading.value
+  return [
+    x.desc,
+    `烟蒂垃圾看似很小，却会影响公共空间整洁、消防安全与雨水系统。发现问题时，应优先保证自身安全，只记录地面垃圾、设施状态和大致位置，不拍摄或追踪任何人。`,
+    x.category === '火灾安全'
+      ? '未完全熄灭的烟头遇到枯叶、纸屑和绿化带时存在引燃风险。发现冒烟或明火应立即远离，并联系现场管理人员或消防部门。'
+      : '治理平台会把有效环境线索转为复核任务。经管理人员确认后，工单会进入环卫端；清理完成并通过验收后，结果会回告提交人。',
+    '文明参与不是“拍到谁”，而是帮助城市更快发现并处理环境问题。所有模型判断都只是清扫候选线索，最终结果由授权人员复核。'
+  ]
+})
 function pickQuiz(a: SciArticle, idx: number) {
   if (!a.quiz || quizPicked.value[a.id] !== undefined) return
   quizPicked.value = { ...quizPicked.value, [a.id]: idx }
@@ -422,14 +461,36 @@ async function runAiInspect(file: File) {
     form.append('file', file)
     const { data } = await http.post<AiReportBlock>('/public/ai/inspect', form, { timeout: 150000 })
     if (token !== aiToken) return
-    aiReport.value = data
+    // 市民端只展示“烟蒂垃圾 / 环境状态”结果。即使底层模型返回了 hand / person
+    // 等通用标签，也不在公众端保留、展示或参与结论，避免形成拍人和身份研判导向。
+    const litterDetections = data.detections.filter((d) =>
+      /(cigarette|butt|litter|烟头|烟蒂|垃圾|facility)/i.test(`${d.label} ${d.label_zh ?? ''}`)
+    )
+    const publicReport: AiReportBlock = {
+      ...data,
+      engine: '烟蒂垃圾环境检测模型',
+      detections: litterDetections,
+      count: litterDetections.length,
+      stages: [
+        { key: 'scene', label: '公共空间画面', state: 'hit', note: '画面可用于环境状态判断' },
+        { key: 'litter', label: '烟蒂垃圾', state: data.detected ? 'hit' : 'miss', note: data.detected ? '发现疑似烟蒂垃圾' : '未发现明确烟蒂垃圾' },
+        { key: 'dispatch', label: '清扫需求', state: data.detected ? 'hit' : 'unknown', note: '仅生成清扫候选线索' }
+      ],
+      summary: data.detected
+        ? `发现疑似烟蒂垃圾 ${Math.max(1, litterDetections.length)} 处，可提交清扫线索；系统不识别人脸、不判断人员身份。`
+        : '未发现明确烟蒂垃圾。若现场确有环境问题，可继续提交并由工作人员复核。',
+      evidence: { frames: 1, chain: '环境状态截图', note: '只记录烟蒂垃圾及周边环境，不用于识别或追踪自然人。' },
+      risk_notes: ['镜头请对准地面烟蒂、垃圾或设施，避免拍摄路人。', '结果仅用于清扫调度与环境治理。'],
+      notice: 'AI 结果是环境清扫候选线索，不识别人脸、不判断人员身份，也不会自动触发处罚。'
+    }
+    aiReport.value = publicReport
     aiState.value = 'done'
     // 同步一下表单里的轻量预检文案，保持两处口径一致
     mediaInspection.value = {
-      status: data.detected ? 'candidate' : 'scene',
-      title: data.verdict_label,
-      detail: data.summary,
-      confidence: data.confidence
+      status: publicReport.detected ? 'candidate' : 'scene',
+      title: publicReport.detected ? '发现疑似烟蒂垃圾' : '未发现明确烟蒂垃圾',
+      detail: publicReport.summary,
+      confidence: publicReport.confidence
     }
   } catch (err) {
     if (token !== aiToken) return
@@ -467,7 +528,7 @@ function toAiReport(raw: unknown): AiReportBlock | null {
 
 /** 无后端时的演示报告：保证「治理进度」里也能看到 AI 报告的样子 */
 const DEMO_AI_REPORT: AiReportBlock = {
-  engine: 'best.pt · Ultralytics YOLO（cigarette / hand / person）',
+  engine: '烟蒂垃圾环境检测模型 · 演示',
   demo: true,
   detected: true,
   confidence: 87.3,
@@ -476,20 +537,43 @@ const DEMO_AI_REPORT: AiReportBlock = {
   verdict: 'candidate',
   verdict_label: '疑似烟头目标',
   verdict_tone: 'ok',
-  summary:
-    '模型检出 1 个相关目标，最高置信度 87.3%。可作为候选线索进入人工复核；单张图片只能说明现场状态，不能证明完整抛掷动作。',
+  summary: '发现疑似烟蒂垃圾 1 处，可作为清扫候选线索；系统不识别人脸、不判断人员身份。',
   stages: [
-    { key: 'holding', label: '持烟 · 点燃', state: 'hit', note: '检出烟头目标' },
-    { key: 'throw', label: '抛掷动作', state: 'unknown', note: '静态图片无法判定动作过程' },
-    { key: 'landing', label: '落地 · 现场状态', state: 'hit', note: '可见落地痕迹' }
+    { key: 'scene', label: '公共空间画面', state: 'hit', note: '画面可用于环境状态判断' },
+    { key: 'litter', label: '烟蒂垃圾', state: 'hit', note: '检出疑似烟蒂垃圾' },
+    { key: 'dispatch', label: '清扫需求', state: 'hit', note: '建议进入清扫复核' }
   ],
   evidence: {
     frames: 1,
-    chain: '不完整',
-    note: '本次素材为单张图片：可记录现场状态，不足以证明完整抛掷动作。'
+    chain: '环境状态截图',
+    note: '只记录烟蒂垃圾及周边环境，不用于识别或追踪自然人。'
   },
-  risk_notes: ['不要为了取证跟拍、拦截或靠近陌生人。', '素材仅用于治理研判，不会公开传播他人画面。'],
-  notice: '模型结果仅生成候选线索，不会自动认定违规或触发处罚；判定需授权人员人工复核。'
+  risk_notes: ['镜头请对准地面烟蒂、垃圾或设施，避免拍摄路人。', '素材仅用于清扫调度和环境治理。'],
+  notice: 'AI 结果是环境清扫候选线索，不识别人脸、不判断人员身份，也不会自动触发处罚。'
+}
+
+/** 视频上传后的即时演示报告：模拟关键帧抽取，只给环境清扫判断。 */
+function buildVideoLitterReport(file: File, detected: boolean): AiReportBlock {
+  const confidence = detected ? 83.6 : 62.4
+  return {
+    engine: '视频关键帧环境检测 · 本地演示', demo: true, detected, confidence,
+    count: detected ? 3 : 0,
+    detections: detected ? [{ label: 'cigarette_butt_litter', label_zh: '疑似烟蒂垃圾', confidence }] : [],
+    verdict: detected ? 'candidate' : 'scene',
+    verdict_label: detected ? '疑似烟蒂垃圾' : '未发现明确烟蒂垃圾',
+    verdict_tone: detected ? 'warn' : 'muted',
+    summary: detected
+      ? `已对“${file.name}”完成关键帧预检，发现疑似烟蒂垃圾 3 处，建议提交清扫复核。`
+      : `已对“${file.name}”完成关键帧预检，暂未发现明确烟蒂垃圾，可由工作人员再次复核。`,
+    stages: [
+      { key: 'frames', label: '关键帧抽取', state: 'hit', note: '已完成画面抽取' },
+      { key: 'litter', label: '烟蒂垃圾', state: detected ? 'hit' : 'miss', note: detected ? '发现疑似烟蒂垃圾' : '未发现明确目标' },
+      { key: 'privacy', label: '隐私保护', state: 'hit', note: '不启用人脸识别与身份追踪' }
+    ],
+    evidence: { frames: 12, chain: '视频关键帧环境状态', note: '仅分析烟蒂垃圾、满溢和地面卫生状态。' },
+    risk_notes: ['镜头请对准地面或垃圾设施，不要跟拍路人。'],
+    notice: '本结果仅用于环境清扫辅助判断，不识别人脸、不判断人员身份、不自动定责。'
+  }
 }
 
 async function sendAiFeedback(no: string, agree: boolean) {
@@ -524,6 +608,11 @@ const tabs: { key: Tab; label: string; icon: string }[] = [
 ]
 
 function switchTab(tab: Tab) {
+  if (!citizen.isLoggedIn && ['report', 'records', 'profile'].includes(tab)) {
+    pendingTab.value = tab
+    loginGate.value = true
+    return
+  }
   activeTab.value = tab
   window.scrollTo({ top: 0, behavior: 'smooth' })
 }
@@ -538,8 +627,8 @@ async function onFile(event: Event) {
 }
 
 /**
- * 素材入库前的统一处理：类型/大小校验 → 本地即时预检 → 图片再走真实模型当场出 AI 报告。
- * 表单的「上传素材」与 App 底部中间的「监督拍照」都走这一条，避免两套口径。
+ * 素材入库前的统一处理：类型/大小校验 → 环境相关性预检 → 生成烟蒂垃圾判断报告。
+ * 表单上传与 App 底部中间的「拍烟蒂垃圾」都走这一条，避免两套口径。
  */
 async function processFile(file: File) {
   reportError.value = ''
@@ -573,24 +662,30 @@ async function processFile(file: File) {
     await runAiInspect(file)
     return
   }
-  // 视频：模型不做即时检测，标注为「待抽帧分析」，先走本地安全预检
-  aiState.value = 'skipped'
-  aiReport.value = null
+  // 视频：即时模拟抽取关键帧并给出环境判断；不做人脸识别、人物追踪或责任认定。
   if (unrelated) {
+    aiState.value = 'idle'
+    aiReport.value = null
     mediaInspection.value = { status: 'rejected', title: '素材与上报场景不符', detail: '未识别到烟头、烟蒂设施或公共空间环境，请检查是否选错文件。' }
-  } else if (isVideo || related) {
-    mediaInspection.value = { status: 'candidate', title: '发现疑似相关线索', detail: '检测到烟头/抛掷场景候选区域，仍需授权人员人工复核，系统不会自动定责。', confidence: 83.6 }
   } else {
-    mediaInspection.value = { status: 'scene', title: '画面有效，未确认违规动作', detail: '单张照片只能作为现场环境线索，无法证明完整抛掷动作；可提交用于清理与热点治理。', confidence: 61.2 }
+    const report = buildVideoLitterReport(file, related || isVideo)
+    aiReport.value = report
+    aiState.value = 'done'
+    mediaInspection.value = {
+      status: report.detected ? 'candidate' : 'scene',
+      title: report.verdict_label,
+      detail: report.summary,
+      confidence: report.confidence
+    }
   }
 }
 
-/* ================= 手机 App 版：底部导航 + 中间「监督拍照」 ================= */
+/* ================= 手机 App 版：底部导航 + 中间「拍烟蒂垃圾」 ================= */
 /** App 底栏五项，中间一项是突出的相机按钮（对齐参考稿：中间最大、最显眼） */
 const APP_TABS: { key: Tab | 'capture'; label: string; icon: string }[] = [
   { key: 'home', label: '首页', icon: '⌂' },
   { key: 'map', label: '点位', icon: '⌖' },
-  { key: 'capture', label: '监督拍照', icon: '' },
+  { key: 'capture', label: '拍烟蒂垃圾', icon: '' },
   { key: 'science', label: '科普', icon: '◇' },
   { key: 'profile', label: '我的', icon: '○' }
 ]
@@ -599,7 +694,41 @@ const appCaptureRef = ref<HTMLInputElement | null>(null)
 
 /** 中间相机按钮：优先直接调起系统相机（capture），桌面端则退化为选择文件 */
 function tapCapture() {
+  if (!citizen.isLoggedIn) {
+    pendingTab.value = 'report'
+    loginGate.value = true
+    return
+  }
   appCaptureRef.value?.click()
+}
+
+async function getAppCode() {
+  loginError.value = ''
+  if (!/^1\d{10}$/.test(loginPhone.value)) { loginError.value = '请输入正确的 11 位手机号'; return }
+  codeBusy.value = true
+  try {
+    const result = await sendLoginCode(loginPhone.value, 'citizen')
+    if (result.demo_code) await ElMessageBox.alert(`本次验证码：${result.demo_code}`, '验证码已生成', { confirmButtonText: '填写验证码' })
+    else ElMessage.success('验证码已发送')
+  } catch (e: any) {
+    await ElMessageBox.alert('本次本地演示验证码：123456', '后端离线 · 已切换本地验证', { confirmButtonText: '填写验证码' })
+    loginError.value = e?.response?.data?.message || '真实短信服务暂不可用，可使用本地演示验证码'
+  } finally { codeBusy.value = false }
+}
+
+async function completeAppLogin() {
+  loginError.value = ''
+  loginBusy.value = true
+  try {
+    const result = await citizen.login(loginPhone.value, loginCode.value, 'code')
+    if (!result.ok) { loginError.value = result.message; return }
+    loginGate.value = false
+    ElMessage.success('登录成功')
+    const target = pendingTab.value
+    pendingTab.value = null
+    if (target === 'report') { activeTab.value = 'report'; window.setTimeout(() => appCaptureRef.value?.click(), 120) }
+    else if (target) activeTab.value = target
+  } finally { loginBusy.value = false }
 }
 
 async function onAppCapture(event: Event) {
@@ -607,7 +736,7 @@ async function onAppCapture(event: Event) {
   const file = input.files?.[0]
   input.value = ''
   // 先进上报页：用户能看到 AI 报告与提交表单，而不是停留在首页不知所措
-  reportType.value = '现场卫生照片'
+  reportType.value = '烟蒂垃圾照片'
   switchTab('report')
   if (file) {
     await processFile(file)
@@ -820,7 +949,7 @@ function logout() {
 
 <template>
   <EndShell
-    class="citizen-app"
+    :class="['citizen-app', { 'force-mobile-app': forceMobileApp, 'reduce-motion': reduceMotion }]"
     end="citizen"
     title="市民用户端"
     subtitle="烟踪智治 · 安全上报与治理进度"
@@ -851,6 +980,20 @@ function logout() {
       </header>
 
       <div class="demo-banner"><span>DEMO</span> 当前为演示模式，不代表真实点位、案件或治理结果</div>
+
+      <div v-if="loginGate" class="app-login-mask" @click.self="loginGate = false">
+        <section class="app-login-sheet" role="dialog" aria-modal="true" aria-label="市民登录">
+          <button class="sheet-close" type="button" aria-label="关闭" @click="loginGate = false">×</button>
+          <img src="/logo-horizontal.png" alt="烟踪智治" />
+          <span>继续使用市民端</span><h2>登录后完成这项操作</h2>
+          <p>首页、地图和科普可以直接浏览；提交线索和查看个人进度需要验证手机号。</p>
+          <label>手机号<input v-model="loginPhone" inputmode="tel" maxlength="11" /></label>
+          <label>短信验证码<div><input v-model="loginCode" inputmode="numeric" maxlength="6" /><button type="button" :disabled="codeBusy" @click="getAppCode">{{ codeBusy ? '获取中' : '获取验证码' }}</button></div></label>
+          <small v-if="loginError">{{ loginError }}</small>
+          <button class="sheet-submit" type="button" :disabled="loginBusy" @click="completeAppLogin">{{ loginBusy ? '正在登录…' : '验证并继续' }}</button>
+          <em>不跟拍、不拦截、不公开传播他人画面</em>
+        </section>
+      </div>
 
       <!-- ================= 首页 ================= -->
       <div v-if="activeTab === 'home'" class="portal-page home-page">
@@ -978,7 +1121,7 @@ function logout() {
             <article class="knowledge-card">
               <div class="section-title"><span>一分钟了解</span><button type="button" @click="switchTab('science')">更多科普 ›</button></div>
               <ul>
-                <li><i>01</i><div><b>照片不能证明完整动作</b><p>行为研判需要连续视频、时间码和人工复核。</p></div></li>
+                <li><i>01</i><div><b>镜头只需对准垃圾</b><p>拍清地面烟蒂、垃圾或设施状态即可，不需要拍摄任何人。</p></div></li>
                 <li><i>02</i><div><b>不要为了取证追拍</b><p>优先保护自身安全，环境问题仍可单独上报。</p></div></li>
                 <li><i>03</i><div><b>AI只生成候选线索</b><p>系统不会依据模型结果自动认定责任或处罚。</p></div></li>
               </ul>
@@ -1084,21 +1227,21 @@ function logout() {
 
       <!-- ================= 安全上报 ================= -->
       <div v-else-if="activeTab === 'report'" class="portal-page report-page">
-        <header class="page-heading"><span>SAFE REPORT</span><h1>安全提交线索</h1><p>不要为了取证跟拍、拦截或靠近陌生人。不能确认人物身份时，线索仍可用于清理和热点治理。</p></header>
+        <header class="page-heading"><span>LITTER REPORT</span><h1>烟蒂垃圾随手拍</h1><p>镜头只对准地面烟蒂、散落垃圾或满溢设施。无需拍摄路人，平台也不识别人脸和人员身份。</p></header>
 
         <div v-if="reportStep === 1" class="report-workspace">
           <section class="report-form">
-            <div class="form-section"><span>01</span><div><h2>选择线索类型</h2><div class="choice-row"><button v-for="item in ['行为视频线索','现场卫生照片']" :key="item" type="button" :class="{ active: reportType === item }" @click="reportType = item">{{ item }}</button></div></div></div>
-            <div class="form-section"><span>02</span><div><h2>添加素材并智能预检</h2><label class="upload-zone" :class="`inspect-${mediaInspection.status}`"><input type="file" :accept="reportType.includes('视频') ? 'video/*' : 'image/*'" @change="onFile" /><i>{{ mediaInspection.status === 'checking' ? '…' : fileName ? '✓' : '＋' }}</i><b>{{ fileName || (reportType.includes('视频') ? '录制或上传短视频' : '拍摄或上传现场照片') }}</b><small>支持格式检查、画面质量检查和场景相关性预检</small></label><div class="inline-inspection" :class="mediaInspection.status"><b>{{ mediaInspection.title }}</b><p>{{ mediaInspection.detail }}</p><em v-if="mediaInspection.confidence">候选置信度 {{ mediaInspection.confidence }}%</em></div><AiReportCard :report="aiReport" :state="aiState" :elapsed="aiElapsed" :error="aiError" @retry="retryAiInspect" /></div></div>
+            <div class="form-section"><span>01</span><div><h2>选择环境素材</h2><div class="choice-row"><button v-for="item in ['烟蒂垃圾短视频','烟蒂垃圾照片']" :key="item" type="button" :class="{ active: reportType === item }" @click="reportType = item">{{ item }}</button></div></div></div>
+            <div class="form-section"><span>02</span><div><h2>添加素材并判断环境状态</h2><label class="upload-zone" :class="`inspect-${mediaInspection.status}`"><input type="file" :accept="reportType.includes('视频') ? 'video/*' : 'image/*'" @change="onFile" /><i>{{ mediaInspection.status === 'checking' ? '…' : fileName ? '✓' : '＋' }}</i><b>{{ fileName || (reportType.includes('视频') ? '录制或上传烟蒂垃圾短视频' : '拍摄或上传烟蒂垃圾照片') }}</b><small>镜头对准地面或垃圾设施；系统不做人脸识别</small></label><div class="inline-inspection" :class="mediaInspection.status"><b>{{ mediaInspection.title }}</b><p>{{ mediaInspection.detail }}</p><em v-if="mediaInspection.confidence">环境候选置信度 {{ mediaInspection.confidence }}%</em></div><AiReportCard :report="aiReport" :state="aiState" :elapsed="aiElapsed" :error="aiError" @retry="retryAiInspect" /></div></div>
             <div class="form-section"><span>03</span><div><h2>确认地点</h2><input v-model="location" class="location-input" /><small class="field-note">当前位置为演示值，可以手动修改</small></div></div>
             <div class="form-section"><span>04</span><div><h2>安全与隐私确认</h2><label class="safety-check"><input v-model="safeConfirmed" type="checkbox" /><span>我确认素材不是通过跟拍、拦截、争执等危险方式取得，也不会在公开平台传播他人画面。</span></label></div></div>
             <p v-if="reportError" class="report-error" role="alert">{{ reportError }}</p>
             <button class="report-submit" type="button" :disabled="submitting" @click="submitReport">{{ submitting ? '提交中…' : '提交演示线索' }} <span>→</span></button>
           </section>
           <aside class="report-aside">
-            <section class="report-boundary"><span>先保护自己，再提供线索</span><h2>平台会做什么？</h2><ol><li><b>1</b>检查素材格式与隐私风险</li><li><b>2</b>生成候选动作或现场线索</li><li><b>3</b>授权人员人工复核</li><li><b>4</b>转为清理、巡查或协同线索</li></ol><p>AI结果不会自动触发处罚。</p></section>
-            <section class="aside-result" :class="mediaInspection.status"><header><span>AI 报告怎么读</span><i>口径说明</i></header><h3>候选线索，不是处罚结论</h3><p>模型只标出疑似目标与置信度，动作过程需要连续视频与人工复核。若你不同意这次判断，可在「治理进度」里提交反馈，会同步到管理端。</p><div class="result-scale"><span :style="{ width: `${mediaInspection.confidence || 0}%` }"></span></div></section>
-            <section class="aside-tips"><h3>合格素材建议</h3><ul><li>画面包含现场环境和烟蒂位置</li><li>视频保持连续，不剪辑关键动作</li><li>不要追拍、拦截或公开传播他人画面</li><li>选错文件时系统会阻止提交并提醒更换</li></ul></section>
+            <section class="report-boundary"><span>只看环境，不拍人</span><h2>平台会做什么？</h2><ol><li><b>1</b>检查格式、清晰度与隐私风险</li><li><b>2</b>判断烟蒂垃圾和设施状态</li><li><b>3</b>生成清扫候选线索</li><li><b>4</b>由工作人员复核并安排清理</li></ol><p>不识别人脸、不判断人员身份、不自动处罚。</p></section>
+            <section class="aside-result" :class="mediaInspection.status"><header><span>环境报告怎么读</span><i>口径说明</i></header><h3>清扫候选，不是人员定责</h3><p>模型只标出疑似烟蒂垃圾、散落或设施满溢及置信度。若你不同意判断，可在「治理进度」提交反馈并同步到管理端。</p><div class="result-scale"><span :style="{ width: `${mediaInspection.confidence || 0}%` }"></span></div></section>
+            <section class="aside-tips"><h3>合格素材建议</h3><ul><li>镜头对准地面烟蒂、垃圾或设施</li><li>短视频缓慢扫过现场，避免拍摄路人</li><li>不要跟拍、拦截或公开传播他人画面</li><li>选错文件时系统会阻止提交并提醒更换</li></ul></section>
           </aside>
         </div>
 
@@ -1144,7 +1287,7 @@ function logout() {
                 <textarea
                   v-model="feedbackDraft[r.report_no]"
                   rows="2"
-                  placeholder="例如：画面里只是路边的烟蒂设施，并没有抛掷动作"
+                  placeholder="例如：画面里只是正常设施，没有烟蒂垃圾或满溢"
                 ></textarea>
                 <div class="fb-acts">
                   <button type="button" :disabled="feedbackBusy === r.report_no" @click="sendAiFeedback(r.report_no, false)">
@@ -1177,7 +1320,7 @@ function logout() {
             <template v-else>
               <b>对 AI 判断有异议？</b>
               <p>模型只做候选判定。本次为本地演示模式，反馈只在前端记录，不会真实提交。</p>
-              <textarea v-model="feedbackDraft['XZ-DEMO-260917']" rows="2" placeholder="例如：画面里只是路边的烟蒂设施，并没有抛掷动作"></textarea>
+              <textarea v-model="feedbackDraft['XZ-DEMO-260917']" rows="2" placeholder="例如：画面里只是正常设施，没有烟蒂垃圾或满溢"></textarea>
               <div class="fb-acts">
                 <button type="button" @click="sendAiFeedback('XZ-DEMO-260917', false)">我不同意</button>
                 <button type="button" class="ghost" @click="sendAiFeedback('XZ-DEMO-260917', true)">判断合理</button>
@@ -1192,6 +1335,7 @@ function logout() {
       <!-- ================= 任务中心（积分 + 排行） ================= -->
       <div v-else-if="activeTab === 'tasks'" class="portal-page tasks-page">
         <header class="simple-page-head"><h1>任务中心</h1><p>完成文明学习与公共空间打卡，积累个人文明贡献。</p></header>
+        <section class="section-visual tasks-visual"><img src="/media/citizen-tasks-hero-v2.png" alt="市民与环卫人员共同参与公共空间清洁" /><div><span>CIVIC MISSIONS</span><h2>每一次参与，都让城市更清洁</h2><p>文明学习、点位打卡与环境反馈共同积累文明贡献。</p></div></section>
 
         <section class="task-summary">
           <div class="task-ring"><strong>{{ points }}</strong><small>我的文明积分</small></div>
@@ -1214,7 +1358,7 @@ function logout() {
             </article>
             <article>
               <span class="task-check" :class="{ done: readIds.includes(5) }">{{ readIds.includes(5) ? '✓' : '!' }}</span>
-              <div><b>情景问答 · 照片能定责吗</b><p>了解照片、视频与行为证据的区别</p></div>
+              <div><b>情景问答 · 怎样安全拍垃圾</b><p>学会只拍烟蒂垃圾和环境，不拍路人</p></div>
               <em>+5</em>
               <button type="button" @click="switchTab('science')">去完成</button>
             </article>
@@ -1267,6 +1411,7 @@ function logout() {
           <h1>文明科普</h1>
           <p>同一批知识，按不同人群的阅读习惯统筹编排。</p>
         </header>
+        <section class="section-visual science-visual"><img src="/media/citizen-science-hero-v2.png" alt="烟蒂滤嘴对土壤和水体影响的科普示意" /><div><span>ENVIRONMENT LAB</span><h2>看见一枚烟蒂留下的环境痕迹</h2><p>从滤嘴纤维到土壤、水体，用看得懂的方式学习科学处置。</p></div></section>
 
         <!-- 人群切换 -->
         <div class="audience-bar" role="tablist" aria-label="选择适合人群">
@@ -1317,6 +1462,16 @@ function logout() {
           <input v-model="sciSearch" type="search" placeholder="搜索烟头危害、火灾安全、城市环保" />
         </label>
 
+        <!-- 互动剧情前置：它是科普页的核心参与环节。 -->
+        <SmokeStory
+          :senior="audience === 'senior'"
+          :speaking-id="speakingId"
+          :speech-supported="speechSupported"
+          :nickname="citizen.profile?.displayName ?? '热心市民'"
+          @earn="earn"
+          @speak="speakSegment"
+        />
+
         <!-- 近期新闻 -->
         <section v-if="!sciSearch && sciCategory === '全部'" class="news-section">
           <h2 class="block-title">近期新闻</h2>
@@ -1325,6 +1480,10 @@ function logout() {
               v-for="(n, i) in NEWS_BY_AUDIENCE[audience]"
               :key="`${audience}-${i}`"
               :class="{ 'is-reading': speakingId === `news-${audience}-${i}` }"
+              role="button"
+              tabindex="0"
+              @click="openNews(n)"
+              @keydown.enter="openNews(n)"
             >
               <img :src="n.cover" :alt="n.title" />
               <div>
@@ -1337,23 +1496,13 @@ function logout() {
                     type="button"
                     class="speak-btn mini"
                     :disabled="!speechSupported"
-                    @click="readNewsAloud(n, i)"
+                    @click.stop="readNewsAloud(n, i)"
                   >🔊 朗读</button>
                 </div>
               </div>
             </article>
           </div>
         </section>
-
-        <!-- 互动剧情：烟的一生（用户自行选择结局，见 components/citizen/SmokeStory.vue） -->
-        <SmokeStory
-          :senior="audience === 'senior'"
-          :speaking-id="speakingId"
-          :speech-supported="speechSupported"
-          :nickname="citizen.profile?.displayName ?? '热心市民'"
-          @earn="earn"
-          @speak="speakSegment"
-        />
 
         <!-- 分类 -->
         <div class="sci-categories">
@@ -1402,8 +1551,8 @@ function logout() {
                   :title="speechSupported ? '朗读这篇（再点一次重新朗读）' : speechMessage"
                   @click="readArticleAloud(a)"
                 >🔊 朗读</button>
-                <button type="button" class="read-btn" :disabled="readIds.includes(a.id)" @click="readArticle(a)">
-                  {{ readIds.includes(a.id) ? '已学习 ✓' : '学习本文' }}
+                <button type="button" class="read-btn" @click="openArticle(a)">
+                  {{ readIds.includes(a.id) ? '再次阅读' : '学习本文' }}
                 </button>
               </div>
             </div>
@@ -1417,21 +1566,71 @@ function logout() {
         <header class="profile-hero"><div class="profile-avatar">{{ citizen.profile?.displayName.slice(-2) }}</div><div><span>已登录账户</span><h1>{{ citizen.profile?.displayName }}</h1><p>{{ citizen.profile?.phone.replace(/(\d{3})\d{4}(\d{4})/, '$1****$2') }} · {{ citizen.profile?.district }}</p></div></header>
         <section class="profile-stats">
           <div><strong>{{ points }}</strong><span>文明积分</span></div>
-          <div><strong>2</strong><span>有效线索</span></div>
+          <div><strong>{{ Math.max(2, citizen.reports.length) }}</strong><span>有效线索</span></div>
           <div><strong>{{ readIds.length + 3 }}</strong><span>完成学习</span></div>
         </section>
         <section class="profile-menu">
           <button type="button" @click="switchTab('tasks')"><span>我的积分与排行</span><i>→</i></button>
-          <button type="button"><span>隐私与素材授权</span><i>→</i></button>
-          <button type="button"><span>我的通知</span><em>2</em><i>→</i></button>
-          <button type="button"><span>线索提交规则</span><i>→</i></button>
-          <button type="button"><span>无障碍与减少动效</span><i>→</i></button>
+          <button type="button" @click="profilePanel = 'privacy'"><span>隐私与素材授权</span><i>→</i></button>
+          <button type="button" @click="profilePanel = 'notifications'"><span>我的通知</span><em>{{ Math.max(2, citizen.reports.length) }}</em><i>→</i></button>
+          <button type="button" @click="profilePanel = 'rules'"><span>线索提交规则</span><i>→</i></button>
+          <button type="button" @click="profilePanel = 'accessibility'"><span>无障碍与减少动效</span><i>→</i></button>
         </section>
         <div class="account-boundary"><b>账户说明</b><p>后台授权角色可以依据职责查看举报人账户信息，但任何角色都不能查看你的明文密码。演示版本未接入真实实名认证。</p></div>
         <button class="logout-button" type="button" @click="logout">退出当前账户</button>
       </div>
 
-      <!-- 手机 App 版底部导航：中间「监督拍照」最大最突出（对齐参考稿的信息层级） -->
+      <!-- 正式文章阅读层：沿用新闻客户端的“题图—导语—正文—学习完成”结构 -->
+      <div v-if="reading" class="reading-modal" role="dialog" aria-modal="true" :aria-label="reading.title">
+        <article class="reading-sheet">
+          <button class="modal-close" type="button" aria-label="关闭文章" @click="reading = null">×</button>
+          <img class="reading-cover" :src="reading.cover" :alt="reading.title" />
+          <div class="reading-content">
+            <span class="reading-channel">烟踪智治 · {{ reading.category }}</span>
+            <h1>{{ reading.title }}</h1>
+            <p class="reading-meta">{{ reading.meta }} · 发布于 2026-09-29</p>
+            <p class="reading-lead">{{ reading.desc }}</p>
+            <p v-for="(paragraph, index) in readingParagraphs" :key="index">{{ paragraph }}</p>
+            <blockquote>只拍烟蒂垃圾与设施状态，不拍人、不跟踪、不公开传播他人画面。</blockquote>
+            <div class="reading-actions">
+              <button type="button" @click="speakSegment('reading-current', `${reading.title}。${readingParagraphs.join('。')}`)">朗读全文</button>
+              <button v-if="reading.article" type="button" class="primary" :disabled="readIds.includes(reading.article.id)" @click="readArticle(reading.article)">{{ readIds.includes(reading.article.id) ? '学习已完成 ✓' : `完成学习 +${reading.article.points}积分` }}</button>
+              <button v-else type="button" class="primary" @click="reading = null">阅读完成</button>
+            </div>
+          </div>
+        </article>
+      </div>
+
+      <!-- “我的”页面功能面板 -->
+      <div v-if="profilePanel" class="profile-modal" role="dialog" aria-modal="true">
+        <section class="profile-sheet">
+          <header><div><span>ACCOUNT CENTER</span><h2>{{ profilePanel === 'privacy' ? '隐私与素材授权' : profilePanel === 'notifications' ? '我的通知' : profilePanel === 'rules' ? '线索提交规则' : '无障碍与减少动效' }}</h2></div><button type="button" @click="profilePanel = null">×</button></header>
+          <template v-if="profilePanel === 'privacy'">
+            <p class="panel-intro">你可以随时调整授权。关闭某项权限不会删除已提交记录；申请删除历史素材需进入对应线索提交申请。</p>
+            <label class="setting-row"><div><b>提交时使用大致位置</b><span>只保存到街道/公共点位，不公开精确坐标</span></div><input v-model="allowLocation" type="checkbox" /></label>
+            <label class="setting-row"><div><b>授权素材用于治理复核</b><span>仅授权管理人员查看，公开端不展示原素材</span></div><input v-model="allowMaterial" type="checkbox" /></label>
+            <label class="setting-row"><div><b>接收处置状态通知</b><span>受理、派单、清理、验收时提醒</span></div><input v-model="allowNotice" type="checkbox" /></label>
+          </template>
+          <template v-else-if="profilePanel === 'notifications'">
+            <div class="notice-list">
+              <article><i>验</i><div><b>清理结果已通过验收</b><p>你提交的体育馆西广场线索已完成清扫，感谢参与。</p><time>今天 10:48</time></div></article>
+              <article><i>派</i><div><b>线索已生成清扫工单</b><p>图书馆北门设施问题已派给附近环卫班组。</p><time>今天 09:26</time></div></article>
+              <article v-for="r in citizen.reports.slice(0, 5)" :key="r.report_no"><i>线</i><div><b>{{ r.status_label }} · {{ r.report_no }}</b><p>{{ r.location }}</p><time>{{ r.submitted_at }}</time></div></article>
+            </div>
+          </template>
+          <template v-else-if="profilePanel === 'rules'">
+            <ol class="rule-list"><li><b>只记录环境问题</b><span>镜头对准地面烟蒂、散落垃圾和设施状态。</span></li><li><b>禁止危险取证</b><span>不跟拍、不拦截、不争执，也不要公开传播路人画面。</span></li><li><b>系统先做环境预检</b><span>判断素材格式、场景相关性和清扫需求，不识别人脸。</span></li><li><b>授权人员人工复核</b><span>有效线索才会生成工单；AI 不自动定责或处罚。</span></li><li><b>结果完整回告</b><span>工单完成且验收通过后，通知会回到你的账户。</span></li></ol>
+          </template>
+          <template v-else>
+            <label class="setting-row"><div><b>减少页面动效</b><span>关闭轮播过渡、扫描和弹性动画</span></div><input v-model="reduceMotion" type="checkbox" /></label>
+            <button class="access-btn" type="button" @click="audience = 'senior'; profilePanel = null; switchTab('science')">进入长者大字与语音模式</button>
+            <button class="access-btn" type="button" @click="speakSegment('access-help', '无障碍帮助。你可以开启减少动效，或者进入长者大字与语音模式。')">朗读本页帮助</button>
+          </template>
+          <footer><button type="button" @click="profilePanel = null">完成</button></footer>
+        </section>
+      </div>
+
+      <!-- 手机 App 版底部导航：中间「拍烟蒂垃圾」最大最突出 -->
       <nav class="mobile-nav app-tabbar" aria-label="市民端底部导航">
         <template v-for="t in APP_TABS" :key="t.key">
           <button
@@ -1486,9 +1685,14 @@ function logout() {
 
 <style scoped>
 /* ============ 基础 ============ */
-.citizen-app { --ink:#0b1320;--paper:#f4f6f9;--paper2:#ffffff;--line:#e7ebf1;--ember:#ff6847;--cyan:#38c8d4;--moss:#3e9b72;--gold:#f0a92e;--blue:#2f7cf6; display:flex;flex-direction:column;width:100%;height:100vh;overflow:hidden;color:var(--ink);background:var(--paper);font-family:"Noto Sans SC","Microsoft YaHei",system-ui,sans-serif; }
+.citizen-app { --ink:#0b1320;--paper:#f4f6f9;--paper2:#ffffff;--line:#e7ebf1;--ember:#ff6847;--cyan:#38c8d4;--moss:#3e9b72;--gold:#f0a92e;--blue:#2f7cf6; display:flex;flex-direction:column;width:100%;height:100vh;overflow:hidden;overscroll-behavior:none;color:var(--ink);background:var(--paper);font-family:"Noto Sans SC","Microsoft YaHei",system-ui,sans-serif;container-name:citizenApp;container-type:inline-size; }
+.force-mobile-app { width:min(430px,100vw);margin:0 auto;box-shadow:0 0 50px rgba(21,49,79,.18); }
+.force-mobile-app .mobile-header,.force-mobile-app .mobile-nav { left:50%;right:auto;width:min(430px,100vw);transform:translateX(-50%); }
 .portal-shell { min-height:100%;overflow:visible; }
 .mobile-header,.mobile-nav { display:none; }
+.app-capture-input { display:none !important; }
+.app-login-mask{position:fixed;inset:0;z-index:1000;display:flex;align-items:flex-end;justify-content:center;padding:20px;background:rgba(10,24,42,.52);backdrop-filter:blur(5px)}
+.app-login-sheet{position:relative;width:min(430px,100%);padding:28px 24px 24px;border-radius:24px 24px 18px 18px;background:#fff;box-shadow:0 -18px 60px rgba(15,43,72,.24)}.app-login-sheet>img{width:148px}.app-login-sheet>span{display:block;margin-top:22px;color:#16896f;font-size:12px;font-weight:700}.app-login-sheet h2{margin:7px 0 7px;color:#17283e;font-size:25px}.app-login-sheet>p{margin:0 0 20px;color:#7c8a9a;font-size:13px;line-height:1.6}.app-login-sheet label{display:block;margin-top:13px;color:#33475d;font-size:13px;font-weight:700}.app-login-sheet input{width:100%;height:46px;margin-top:7px;padding:0 13px;border:1px solid #d9e4ee;border-radius:11px;background:#f7f9fc}.app-login-sheet label>div{display:grid;grid-template-columns:1fr auto;gap:8px}.app-login-sheet label>div button{margin-top:7px;padding:0 14px;border:0;border-radius:11px;color:#147e6a;background:#e7f6f1;font-weight:700}.app-login-sheet>small{display:block;margin-top:10px;color:#d64f45}.sheet-submit{width:100%;height:48px;margin-top:18px;border:0;border-radius:12px;color:#fff;background:linear-gradient(100deg,#15906f,#258bd6);font-size:15px;font-weight:800}.app-login-sheet>em{display:block;margin-top:12px;color:#96a1ad;font-size:11px;font-style:normal;text-align:center}.sheet-close{position:absolute;right:17px;top:17px;width:32px;height:32px;border:0;border-radius:50%;background:#f0f4f7;color:#647488;font-size:21px}
 .demo-banner { position:relative;z-index:1;display:flex;gap:10px;align-items:center;min-height:34px;margin:0 20px;padding:6px 22px;color:#74451d;background:#fff0c9;font-size:12px; }
 .demo-banner span { padding:2px 5px;color:#fff;background:#936213;font:9px Consolas,monospace; }
 .portal-page { width:100%;max-width:none;margin:0 auto;padding:24px 20px; }
@@ -1758,6 +1962,7 @@ function logout() {
 .simple-page-head { padding:4px 2px 14px; }
 .simple-page-head h1 { margin:0;color:#1c2d44;font-size:27px; }
 .simple-page-head p { margin:7px 0 0;color:#7d8999;font-size:13px;line-height:1.6; }
+.section-visual{position:relative;height:190px;margin-bottom:16px;overflow:hidden;border-radius:18px;background:#123c58;box-shadow:0 10px 28px rgba(31,69,104,.16)}.section-visual img{width:100%;height:100%;object-fit:cover;object-position:center}.section-visual::after{content:'';position:absolute;inset:0;background:linear-gradient(90deg,rgba(7,37,57,.9),rgba(7,44,64,.58) 42%,transparent 72%)}.section-visual>div{position:absolute;z-index:2;left:28px;top:50%;max-width:46%;transform:translateY(-50%);color:#fff}.section-visual span{color:#76ead8;font:700 10px Consolas,monospace;letter-spacing:.16em}.section-visual h2{margin:9px 0 6px;font-size:23px;line-height:1.35}.section-visual p{margin:0;color:rgba(255,255,255,.84);font-size:12px;line-height:1.65}.science-visual img{object-position:center 54%}.science-visual span{color:#7ee5f0}
 .task-summary { position:relative;display:flex;gap:22px;align-items:center;overflow:hidden;padding:20px;border:1px solid var(--line);border-radius:17px;background:var(--paper2);box-shadow:0 7px 22px rgba(39,72,111,.055); }
 .task-ring { display:grid;place-items:center;flex:0 0 104px;width:104px;height:104px;border:9px solid #fff3df;border-top-color:var(--gold);border-radius:50%;background:#fffdf7;text-align:center; }
 .task-ring strong { color:#d98a1e;font:700 26px Consolas,monospace; }
@@ -1912,13 +2117,43 @@ function logout() {
 .profile-menu button span { flex:1;color:#37465a;text-align:left; }
 .profile-menu button em { margin-right:8px;padding:1px 8px;border-radius:999px;color:#fff;background:#f05a4e;font-size:11px;font-style:normal; }
 .profile-menu button i { color:#a3adba;font-style:normal; }
+.news-grid article { cursor:pointer;transition:transform .18s ease,box-shadow .18s ease; }
+.news-grid article:hover { transform:translateY(-2px);box-shadow:0 12px 30px rgba(34,70,110,.12); }
+.reading-modal,.profile-modal { position:fixed;inset:0;z-index:1200;display:grid;place-items:center;padding:24px;background:rgba(6,18,32,.7);backdrop-filter:blur(8px); }
+.reading-sheet { position:relative;width:min(880px,100%);max-height:92vh;overflow:auto;border-radius:22px;background:#fff;box-shadow:0 32px 90px rgba(4,19,38,.35); }
+.modal-close { position:absolute;right:16px;top:16px;z-index:2;display:grid;place-items:center;width:38px;height:38px;border:0;border-radius:50%;color:#fff;background:rgba(5,19,34,.65);font-size:25px;cursor:pointer; }
+.reading-cover { width:100%;height:280px;object-fit:cover; }
+.reading-content { max-width:720px;margin:0 auto;padding:34px 32px 42px; }
+.reading-channel { color:#138b7c;font-size:12px;font-weight:800;letter-spacing:.08em; }
+.reading-content h1 { margin:10px 0 0;color:#17283e;font-size:34px;line-height:1.28; }
+.reading-meta { margin:12px 0 0!important;padding-bottom:18px;border-bottom:1px solid #e8edf3;color:#8b98a8!important;font-size:12px!important; }
+.reading-content>p { margin:20px 0 0;color:#34465a;font-size:16px;line-height:2;text-align:justify; }
+.reading-content .reading-lead { padding:16px 18px;border-left:4px solid #1ab09d;background:#f1faf8;color:#536879;font-weight:600; }
+.reading-content blockquote { margin:24px 0 0;padding:17px 20px;border-radius:12px;background:#edf5ff;color:#376080;font-size:14px;line-height:1.7; }
+.reading-actions { position:sticky;bottom:0;display:flex;justify-content:flex-end;gap:10px;margin-top:28px;padding:14px 0 0;background:linear-gradient(180deg,transparent,#fff 28%); }
+.reading-actions button,.access-btn { padding:11px 18px;border:1px solid #cfe0ec;border-radius:10px;color:#27607e;background:#fff;cursor:pointer; }
+.reading-actions .primary { border:0;color:#fff;background:linear-gradient(90deg,#149276,#27a9d2);font-weight:700; }
+.reading-actions button:disabled { opacity:.55;cursor:default; }
+.profile-sheet { width:min(680px,100%);max-height:88vh;overflow:auto;padding:26px;border:1px solid #dce7ef;border-radius:22px;background:#f8fbfd;box-shadow:0 30px 90px rgba(4,19,38,.32); }
+.profile-sheet>header { display:flex;align-items:flex-start;justify-content:space-between;padding-bottom:18px;border-bottom:1px solid #e0e9f0; }
+.profile-sheet>header span { color:#269c92;font:700 10px Consolas;letter-spacing:.16em; }
+.profile-sheet>header h2 { margin:5px 0 0;color:#17283e;font-size:24px; }
+.profile-sheet>header button { width:34px;height:34px;border:0;border-radius:50%;background:#e9f0f5;color:#526a7c;font-size:23px;cursor:pointer; }
+.panel-intro { margin:18px 0;color:#6d7e8e;font-size:13px;line-height:1.8; }
+.setting-row { display:flex;align-items:center;gap:18px;margin-top:10px;padding:16px;border:1px solid #e0e9f0;border-radius:13px;background:#fff; }
+.setting-row>div { flex:1 }.setting-row b,.setting-row span { display:block }.setting-row b { color:#263a50;font-size:14px }.setting-row span { margin-top:5px;color:#8493a1;font-size:11px;line-height:1.5 }.setting-row input { width:38px;height:20px;accent-color:#149b85; }
+.notice-list { display:grid;gap:10px;margin-top:18px; }.notice-list article { display:flex;gap:12px;padding:15px;border:1px solid #e0e9f0;border-radius:13px;background:#fff; }.notice-list i { display:grid;place-items:center;flex:0 0 34px;height:34px;border-radius:10px;color:#fff;background:linear-gradient(135deg,#2888ed,#20b68f);font-style:normal;font-weight:800; }.notice-list b,.notice-list p,.notice-list time { display:block }.notice-list b { color:#263a50;font-size:13px }.notice-list p { margin:5px 0 0;color:#6d7f90;font-size:12px }.notice-list time { margin-top:6px;color:#a0acb7;font-size:10px; }
+.rule-list { display:grid;gap:10px;margin:18px 0 0;padding:0;counter-reset:rules;list-style:none; }.rule-list li { position:relative;padding:15px 15px 15px 56px;border:1px solid #e0e9f0;border-radius:13px;background:#fff;counter-increment:rules; }.rule-list li::before { content:counter(rules);position:absolute;left:15px;top:15px;display:grid;place-items:center;width:28px;height:28px;border-radius:9px;color:#fff;background:#2f7cf6;font-weight:800; }.rule-list b,.rule-list span { display:block }.rule-list b { color:#263a50;font-size:13px }.rule-list span { margin-top:5px;color:#738596;font-size:11px;line-height:1.6; }
+.access-btn { display:block;width:100%;margin-top:11px;text-align:left;background:#fff; }
+.profile-sheet>footer { display:flex;justify-content:flex-end;margin-top:20px; }.profile-sheet>footer button { min-width:110px;padding:10px;border:0;border-radius:9px;color:#fff;background:#148f7a;font-weight:700;cursor:pointer; }
+.reduce-motion * { scroll-behavior:auto!important;animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important; }
 .account-boundary { margin-top:14px;padding:15px 17px;border:1px dashed #c9d6e4;border-radius:13px;background:#f8fbfd; }
 .account-boundary b { color:#37465a;font-size:12.5px; }
 .account-boundary p { margin:6px 0 0;color:#7d8999;font-size:12px;line-height:1.7; }
 .logout-button { margin-top:16px;width:100%;padding:13px 0;border:1px solid #f3c2bd;border-radius:13px;color:#d84a3f;background:#fdf1ef;font-size:14px;cursor:pointer; }
 
 /* ============ 窄屏 ============ */
-@media (max-width: 860px) {
+@container citizenApp (max-width: 860px) {
   .citizen-app { background:#f3f6fa; }
   .citizen-app :deep(.es-bar) { display:none; }
   .citizen-app :deep(.es-main) { padding:0 0 calc(76px + env(safe-area-inset-bottom));scrollbar-gutter:auto;overscroll-behavior-y:contain; }
@@ -1999,7 +2234,13 @@ function logout() {
   .profile-stats { gap:7px; }
   .profile-stats > div { padding:12px 5px; }
 }
-@media (max-width: 560px) {
+@container citizenApp (max-width: 560px) {
+  .reading-modal,.profile-modal { padding:0;place-items:end center; }
+  .reading-sheet,.profile-sheet { width:100%;max-height:94vh;border-radius:20px 20px 0 0; }
+  .reading-cover { height:190px; }
+  .reading-content { padding:24px 20px 32px; }
+  .reading-content h1 { font-size:25px; }
+  .reading-content>p { font-size:15px;line-height:1.9; }
   .home-carousel { height:182px; }
   .slide-copy h2 { font-size:17px; }
   .slide-copy p { font-size:10.5px; }

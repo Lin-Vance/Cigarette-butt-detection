@@ -10,16 +10,22 @@ import YzStat from '@/components/ui/YzStat.vue'
 import YzFilter from '@/components/ui/YzFilter.vue'
 import YzPager from '@/components/ui/YzPager.vue'
 import { useDemoStore } from '@/stores/demo'
-import { AREAS, buildAreaMetrics, fmtDate, rand, VIOLATION_TYPES } from '@/mock/pages'
+import { buildAreaMetrics, fmtDate, rand, VIOLATION_TYPES } from '@/mock/pages'
 
 const demo = useDemoStore()
 demo.init()
 
-const areaMetrics = buildAreaMetrics(17)
+const REPORT_AREAS = ['浉河区', '平桥区', '羊山新区', '高新区', '罗山县', '光山县', '潢川县', '固始县', '息县', '淮滨县', '商城县', '新县']
+const baseAreaMetrics = buildAreaMetrics(17)
+const areaMetrics = REPORT_AREAS.map((area, i) => {
+  const base = baseAreaMetrics[i % baseAreaMetrics.length]
+  const bump = i < baseAreaMetrics.length ? 0 : 18 + i * 7
+  return { ...base, area, total: base.total + bump, handled: base.handled + Math.round(bump * .9), closed: base.closed + Math.round(bump * .82) }
+})
 
 const filter = ref({ area: '' })
 const FIELDS = [
-  { key: 'area', label: '区域范围', type: 'select' as const, placeholder: '全部区域', options: AREAS.map((a) => ({ label: a, value: a })), width: '150px' }
+  { key: 'area', label: '区域范围', type: 'select' as const, placeholder: '全部区域', options: REPORT_AREAS.map((a) => ({ label: a, value: a })), width: '150px' }
 ]
 
 const stats = computed(() => [
@@ -84,8 +90,8 @@ const detail = computed(() => {
   const out: Record<string, any>[] = []
   for (let i = 0; i < 36; i++) {
     const d = new Date()
-    d.setDate(d.getDate() - Math.floor(i / AREAS.length))
-    const area = AREAS[i % AREAS.length]
+    d.setDate(d.getDate() - Math.floor(i / REPORT_AREAS.length))
+    const area = REPORT_AREAS[i % REPORT_AREAS.length]
     const total = 60 + Math.round(r() * 220)
     const handled = Math.round(total * (0.86 + r() * 0.12))
     const closed = Math.round(handled * (0.9 + r() * 0.09))
@@ -149,7 +155,8 @@ const COLS: YzColumn[] = [
       </YzPanel>
     </div>
 
-    <YzPanel title="事件统计明细" :count="detail.length" grow>
+    <YzPanel title="事件统计明细（12 个地区对比）" :count="detail.length" grow class="detail-panel">
+      <div class="detail-scroll">
       <YzTable :columns="COLS" :rows="paged" row-key="id" dense>
         <template #cell-rate="{ row }">
           <span class="bar-cell">
@@ -159,6 +166,7 @@ const COLS: YzColumn[] = [
         </template>
         <template #cell-avgMin="{ row }">{{ row.avgMin }} 分钟</template>
       </YzTable>
+      </div>
       <YzPager v-model:page="page" v-model:size="size" :total="detail.length" :size-options="[6, 10, 20]" />
     </YzPanel>
   </div>
@@ -197,4 +205,7 @@ const COLS: YzColumn[] = [
 .bar-cell b {
   font-size: 12px;
 }
+.detail-panel { min-height: 360px; }
+.detail-scroll { flex: 1; min-height: 220px; overflow: auto; }
+.detail-scroll :deep(.table) { min-width: 900px; }
 </style>

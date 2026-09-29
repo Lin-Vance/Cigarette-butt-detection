@@ -2,7 +2,7 @@
  * 模拟数据引擎 · 类型定义
  *
  * 字段命名严格对齐 PRD §7.1「AI → 全栈 事件输出协议」与 §8.3 数据字典，
- * 以便后端接入时零改动替换（见 docs/烟踪智治-文档缺陷与修订说明.md 第三节）。
+ * 以便后端接入时保持字段兼容。
  */
 
 export type EventStage = 'HOLDING' | 'THROWING' | 'LANDED' | 'THROW_CONFIRMED'

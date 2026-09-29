@@ -74,6 +74,37 @@ async def _is_seeded(session: AsyncSession) -> bool:
     return bool(total)
 
 
+async def ensure_demo_citizen(session: AsyncSession) -> None:
+    """保证本地演示账号可重复登录，不影响其他市民账号。"""
+    user = (
+        await session.execute(
+            select(User).where(
+                User.username == DEMO_CITIZEN_PHONE,
+                User.role == "citizen",
+            )
+        )
+    ).scalar_one_or_none()
+    password_hash, salt = hash_password(DEMO_PASSWORD)
+    if user is None:
+        session.add(
+            User(
+                username=DEMO_CITIZEN_PHONE,
+                password_hash=password_hash,
+                password_salt=salt,
+                real_name="演示市民",
+                role="citizen",
+                phone=DEMO_CITIZEN_PHONE,
+                enabled=True,
+                created_at=iso(now_cn()),
+            )
+        )
+    else:
+        user.password_hash = password_hash
+        user.password_salt = salt
+        user.enabled = True
+    await session.commit()
+
+
 async def _clear(session: AsyncSession) -> None:
     from sqlalchemy import delete
 
@@ -295,7 +326,7 @@ def _ai_snapshot(verdict: str) -> dict:
         "scene": "未检出烟头目标",
     }[verdict]
     return {
-        "engine": "best.pt · Ultralytics YOLO（cigarette / hand / person）",
+        "engine": "cigarette-detector.pt · Ultralytics YOLO（cigarette / hand / person）",
         "demo": True,
         "detected": hit,
         "confidence": top,

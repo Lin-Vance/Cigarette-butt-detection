@@ -51,6 +51,7 @@ export interface LawTrailItem {
   operator: string
   at: string
   result: 'success' | 'returned' | 'rejected'
+  location?: string
 }
 
 /** 处置动作 -> 目标状态与留痕结果的映射 */
@@ -100,17 +101,31 @@ export const useLawStore = defineStore('law', () => {
       }
     })
     // 已完成的线索补一条历史留痕，让「处置留痕」页一进来就有内容
+    const trailPlaces = ['信阳学院北门', '学院路公交站', '城市书房广场', '体育馆西广场', '人民路步行街', '羊山公园南门', '新七大道路口', '浉河北岸步道']
     trail.value = cases.value
       .filter((c) => c.status === 'done' || c.status === 'rejected')
       .slice(0, 6)
-      .map((c) => ({
+      .map((c, i) => ({
         no: c.no,
         action: c.status === 'done' ? '处理完成' : '不予处理',
         note: c.note || '已完成现场处置并回复',
         operator,
         at: c.updatedAt,
-        result: c.status === 'done' ? ('success' as const) : ('rejected' as const)
+        result: c.status === 'done' ? ('success' as const) : ('rejected' as const),
+        location: trailPlaces[i % trailPlaces.length]
       }))
+    while (trail.value.length < 8) {
+      const i = trail.value.length
+      trail.value.push({
+        no: `JF2026${String(i + 21).padStart(4, '0')}`,
+        action: i % 3 === 0 ? '退回补充材料' : i % 4 === 0 ? '不予处理' : '处理完成',
+        note: i % 3 === 0 ? '关键帧不足，已通知补充环境全景' : '已完成现场核查、清扫与结果回复',
+        operator: `${['浉河执法一组', '学院路协同组', '羊山巡查组', '平台复核员'][i % 4]}`,
+        at: new Date(Date.now() - i * 42 * 60 * 1000).toISOString(),
+        result: i % 3 === 0 ? 'returned' : i % 4 === 0 ? 'rejected' : 'success',
+        location: trailPlaces[i % trailPlaces.length]
+      })
+    }
     initialized.value = true
   }
 
@@ -150,7 +165,8 @@ export const useLawStore = defineStore('law', () => {
       note: '已认领，准备现场核查',
       operator,
       at: c.updatedAt,
-      result: 'success'
+      result: 'success',
+      location: c.area
     })
     return true
   }
@@ -169,7 +185,8 @@ export const useLawStore = defineStore('law', () => {
       note: c.note || '—',
       operator,
       at: c.updatedAt,
-      result: cfg.result
+      result: cfg.result,
+      location: c.area
     })
     return true
   }

@@ -47,14 +47,15 @@ defineProps<{
 }
 
 .title {
-  font-size: 14px;
-  font-weight: 700;
+  font-size: 15px;
+  font-weight: 800;
   color: var(--yz-text-strong);
   white-space: nowrap;
 }
 
 .count {
-  font-size: 11px;
+  font-size: 12px;
+  font-weight: 600;
   color: var(--yz-text-muted);
 }
 
@@ -80,7 +81,5 @@ defineProps<{
 .grow .body > :deep(.table) {
   flex: 1;
 }
-.grow .body > :deep(.table > .tr:not(.th)) {
-  flex: 1 0 32px;
-}
+.grow .body > :deep(.table > .tr:not(.th)) { flex: 0 0 auto; }
 </style>

@@ -1,4 +1,8 @@
-"""认证与账号管理：POST /auth/login、/auth/refresh、/auth/me、市民登录；/users CRUD。"""
+"""认证与账号管理：口令/动态验证码登录、市民注册登录与账号管理。"""
+
+import hmac
+import secrets
+import time
 
 from fastapi import APIRouter, Depends, Request
 from sqlalchemy import func, select
@@ -8,7 +12,17 @@ from ..db import get_session
 from ..deps import CurrentUser, require_roles
 from ..errors import invalid_credentials, not_found, token_invalid
 from ..models import User
-from ..schemas import CitizenLoginRequest, LoginRequest, PasswordReset, RefreshRequest, UserCreate, UserUpdate
+from ..config import get_settings
+from ..schemas import (
+    CitizenLoginRequest,
+    CodeLoginRequest,
+    LoginCodeRequest,
+    LoginRequest,
+    PasswordReset,
+    RefreshRequest,
+    UserCreate,
+    UserUpdate,
+)
 from ..security import (
     ROLE_LABELS,
     ROLE_PAGES,
@@ -25,6 +39,33 @@ from ..timeutil import iso, now_cn
 
 router = APIRouter(prefix="/auth", tags=["auth"])
 users_router = APIRouter(prefix="/users", tags=["users"])
+
+CODE_TTL_SECONDS = 300
+CODE_COOLDOWN_SECONDS = 60
+_login_codes: dict[str, tuple[str, float, float]] = {}
+_login_failures: dict[str, list[float]] = {}
+
+
+def _code_key(target: str, role: str) -> str:
+    return f"{role}:{target.strip()}"
+
+
+def _consume_code(target: str, role: str, supplied: str) -> bool:
+    item = _login_codes.pop(_code_key(target, role), None)
+    if item is None:
+        return False
+    code, expires_at, _ = item
+    return time.time() <= expires_at and hmac.compare_digest(code, supplied)
+
+
+def _login_result(user: User) -> dict:
+    return {
+        "access_token": create_access_token(user.id, user.username, user.role),
+        "refresh_token": create_refresh_token(user.id, user.username, user.role),
+        "token_type": "bearer",
+        "expires_in": 7200,
+        "user": user_dict(user),
+    }
 
 
 def user_dict(user: User) -> dict:
@@ -47,12 +88,21 @@ async def login(
     request: Request,
     session: AsyncSession = Depends(get_session),
 ) -> dict:
+    ip = client_ip(request)
+    failure_key = f"{ip}:{payload.username.strip()}"
+    now_ts = time.time()
+    recent = [stamp for stamp in _login_failures.get(failure_key, []) if now_ts - stamp < 300]
+    if len(recent) >= 5:
+        from ..errors import ApiError
+
+        raise ApiError("AUTH_RATE_LIMITED", "登录失败次数过多，请 5 分钟后重试", 429)
     user = (
         await session.execute(select(User).where(User.username == payload.username.strip()))
     ).scalar_one_or_none()
 
-    ip = client_ip(request)
     if user is None or not verify_password(payload.password, user.password_hash, user.password_salt):
+        recent.append(now_ts)
+        _login_failures[failure_key] = recent
         await write_audit(
             session,
             "AUTH_LOGIN",
@@ -78,6 +128,8 @@ async def login(
         await session.commit()
         raise invalid_credentials()
 
+    _login_failures.pop(failure_key, None)
+
     await write_audit(
         session,
         "AUTH_LOGIN",
@@ -88,13 +140,65 @@ async def login(
     )
     await session.commit()
 
-    return {
-        "access_token": create_access_token(user.id, user.username, user.role),
-        "refresh_token": create_refresh_token(user.id, user.username, user.role),
-        "token_type": "bearer",
-        "expires_in": 7200,
-        "user": user_dict(user),
+    return _login_result(user)
+
+
+@router.post("/code/send")
+async def send_login_code(
+    payload: LoginCodeRequest,
+    session: AsyncSession = Depends(get_session),
+) -> dict:
+    target = payload.target.strip()
+    phone = target
+    if payload.role == "citizen":
+        if not (target.isdigit() and len(target) == 11):
+            raise invalid_credentials()
+    else:
+        user = (
+            await session.execute(select(User).where(User.username == target, User.enabled.is_(True)))
+        ).scalar_one_or_none()
+        if user is None or (payload.role == "worker" and user.role != "worker") or (
+            payload.role == "admin" and user.role == "worker"
+        ):
+            raise invalid_credentials()
+        phone = user.phone
+        if not (phone.isdigit() and len(phone) == 11):
+            raise invalid_credentials()
+
+    key = _code_key(target, payload.role)
+    now = time.time()
+    previous = _login_codes.get(key)
+    if previous and now - previous[2] < CODE_COOLDOWN_SECONDS:
+        from ..errors import ApiError
+
+        raise ApiError("AUTH_CODE_TOO_FREQUENT", "验证码发送过于频繁，请稍后再试", 429)
+    code = f"{secrets.randbelow(1_000_000):06d}"
+    _login_codes[key] = (code, now + CODE_TTL_SECONDS, now)
+    result = {
+        "status": "sent",
+        "expires_in": CODE_TTL_SECONDS,
+        "masked_target": f"{phone[:3]}****{phone[-4:]}",
     }
+    if get_settings().expose_demo_codes:
+        result["demo_code"] = code
+    return result
+
+
+@router.post("/code/login")
+async def login_by_code(
+    payload: CodeLoginRequest,
+    session: AsyncSession = Depends(get_session),
+) -> dict:
+    if not _consume_code(payload.username, payload.role, payload.code):
+        raise invalid_credentials()
+    user = (
+        await session.execute(select(User).where(User.username == payload.username, User.enabled.is_(True)))
+    ).scalar_one_or_none()
+    if user is None or (payload.role == "worker" and user.role != "worker") or (
+        payload.role == "admin" and user.role == "worker"
+    ):
+        raise invalid_credentials()
+    return _login_result(user)
 
 
 @router.post("/refresh")
@@ -135,12 +239,56 @@ async def logout(request: Request, user: CurrentUser, session: AsyncSession = De
 
 
 @router.post("/citizen/login")
-async def citizen_login(payload: CitizenLoginRequest) -> dict:
-    """演示验证码 123456。真实短信通道未接入。"""
+async def citizen_login(
+    payload: CitizenLoginRequest,
+    session: AsyncSession = Depends(get_session),
+) -> dict:
     if not (payload.phone.isdigit() and len(payload.phone) == 11):
         raise invalid_credentials()
-    if payload.code != "123456":
-        raise invalid_credentials()
+    user = (
+        await session.execute(
+            select(User).where(User.username == payload.phone, User.role == "citizen")
+        )
+    ).scalar_one_or_none()
+    if payload.method == "password":
+        if payload.mode == "register":
+            if len(payload.password) < 6 or not _consume_code(payload.phone, "citizen", payload.code):
+                raise invalid_credentials()
+            password_hash, salt = hash_password(payload.password)
+            if user is None:
+                user = User(
+                    username=payload.phone,
+                    password_hash=password_hash,
+                    password_salt=salt,
+                    real_name=f"市民 {payload.phone[-4:]}",
+                    role="citizen",
+                    phone=payload.phone,
+                    enabled=True,
+                    created_at=iso(now_cn()),
+                )
+                session.add(user)
+            else:
+                user.password_hash, user.password_salt, user.enabled = password_hash, salt, True
+            await session.commit()
+        elif user is None or not verify_password(payload.password, user.password_hash, user.password_salt):
+            raise invalid_credentials()
+    else:
+        if not _consume_code(payload.phone, "citizen", payload.code):
+            raise invalid_credentials()
+        if user is None:
+            password_hash, salt = hash_password(secrets.token_urlsafe(18))
+            user = User(
+                username=payload.phone,
+                password_hash=password_hash,
+                password_salt=salt,
+                real_name=f"市民 {payload.phone[-4:]}",
+                role="citizen",
+                phone=payload.phone,
+                enabled=True,
+                created_at=iso(now_cn()),
+            )
+            session.add(user)
+            await session.commit()
     return {
         "access_token": create_citizen_token(payload.phone),
         "token_type": "bearer",

@@ -2,10 +2,10 @@
  * 页面与导航注册表
  *
  * 全站唯一的数据源：路由、顶栏下拉、二级菜单、侧边栏均从此处生成。
- * `no` 字段对应 smoke-admin/ 下设计稿的页号（1..18），用于与设计稿对照。
+ * `no` 字段保留页面序号，用于导航排序与页面标识。
  * `icon` 为 @element-plus/icons-vue 的组件名（已在 main.ts 全局注册）。
  *
- * 模块结构沿用 smoke-admin/README.md「三、导航体系」的 7 模块划分。
+ * 模块结构按当前七个业务域划分。
  */
 
 export interface PageDef {
@@ -48,6 +48,16 @@ export const MODULES: ModuleDef[] = [
         short: '事件总览',
         icon: 'Odometer',
         migrated: true
+      },
+      {
+        no: 21,
+        name: 'monitor-wall',
+        path: 'monitor-wall',
+        title: '区域环境监控研判大屏',
+        short: '监控大屏',
+        icon: 'VideoCamera',
+        migrated: true,
+        note: '多路区域视频轮巡 + 烟蒂垃圾与设施状态辅助判断；演示流明确标注'
       },
       {
         no: 3,
@@ -139,7 +149,7 @@ export const MODULES: ModuleDef[] = [
     /**
      * 执法协同：原「交警端」并入管理端后的模块。
      * 这两页没有对应的设计稿页号（设计稿只到 18 页），`no` 从 19 起排，
-     * 仅用于菜单排序，不与 smoke-admin/ 的页号对照。
+     * 仅用于菜单排序。
      */
     key: 'law',
     label: '执法协同',

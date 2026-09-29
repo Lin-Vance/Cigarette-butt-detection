@@ -124,7 +124,14 @@ async def main() -> int:
             )
 
         # ---------- 7. 市民端登录 + 提交 ----------
-        r = await c.post(f"{API}/auth/citizen/login", json={"phone": DEMO_PHONE, "code": "123456"})
+        code_res = await c.post(
+            f"{API}/auth/code/send", json={"target": DEMO_PHONE, "role": "citizen"}
+        )
+        demo_code = code_res.json().get("demo_code", "")
+        r = await c.post(
+            f"{API}/auth/citizen/login",
+            json={"phone": DEMO_PHONE, "code": demo_code, "method": "code", "mode": "login"},
+        )
         check(r.status_code == 200, "市民端登录", f"{r.status_code}")
         citizen = auth(r.json()["access_token"])
 
@@ -318,7 +325,8 @@ async def _ws_case(c: httpx.AsyncClient, admin: dict, before: dict) -> None:
 
     received: list[dict] = []
     try:
-        async with websockets.connect("ws://127.0.0.1:8000/ws/alerts") as ws:
+        token = admin["Authorization"].removeprefix("Bearer ")
+        async with websockets.connect(f"ws://127.0.0.1:8000/ws/alerts?token={token}") as ws:
             hello = json.loads(await asyncio.wait_for(ws.recv(), timeout=5))
             check(hello.get("type") == "connected", "WebSocket 连接", hello.get("channel", ""))
 

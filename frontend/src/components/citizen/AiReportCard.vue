@@ -84,7 +84,7 @@ const confidenceText = computed(() => {
   return c > 0 ? `${c}%` : '未检出'
 })
 
-const stageStateText = (s: string) => (s === 'hit' ? '命中' : s === 'miss' ? '未检出' : '需视频')
+const stageStateText = (s: string) => (s === 'hit' ? '已完成' : s === 'miss' ? '未检出' : '待复核')
 </script>
 
 <template>
@@ -100,7 +100,7 @@ const stageStateText = (s: string) => (s === 'hit' ? '命中' : s === 'miss' ? '
           <i></i><span>{{ s }}</span>
         </li>
       </ol>
-      <p class="ac-note">{{ slowHint || '正在调用 best.pt 做烟头目标检测，结果只作为候选线索。' }}</p>
+      <p class="ac-note">{{ slowHint || '正在检测烟蒂垃圾与设施状态，不启用人脸识别。' }}</p>
     </template>
 
     <!-- ============ 完成 ============ -->
@@ -168,18 +168,18 @@ const stageStateText = (s: string) => (s === 'hit' ? '命中' : s === 'miss' ? '
       <button type="button" class="ac-retry" @click="emit('retry')">重试模型复检</button>
     </template>
 
-    <!-- ============ 视频 / 未上传 ============ -->
+    <!-- ============ 兼容旧数据：视频尚未完成分析 ============ -->
     <template v-else-if="state === 'skipped'">
       <header class="ac-head">
-        <span class="ac-badge muted">视频素材 · 待抽帧分析</span>
+        <span class="ac-badge muted">视频素材 · 待环境分析</span>
       </header>
       <p class="ac-summary">
-        当前模型只对图片做即时检测。视频会先按本地预检放行，提交后由授权人员在复核环节抽帧。
+        视频将抽取关键帧判断烟蒂垃圾与设施状态；不识别人脸、不判断人员身份。
       </p>
     </template>
 
     <template v-else>
-      <p class="ac-summary empty">上传素材后，这里会当场给出模型检测报告。</p>
+      <p class="ac-summary empty">上传烟蒂垃圾照片或短视频后，这里会当场给出环境检测报告。</p>
     </template>
   </section>
 </template>

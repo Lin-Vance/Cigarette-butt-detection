@@ -3,6 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https://*.is.autonavi.com; media-src 'self' blob:; connect-src 'self' ws: wss:; font-src 'self' data:; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'" />
     <meta name="theme-color" content="#0b1320" />
     <meta name="description" content="烟踪智治 · 市民用户端：安全上报现场线索、查看治理进度、查询合规吸烟点与科普内容。" />
     <link rel="icon" type="image/png" href="./favicon.png" />
@@ -26,10 +27,6 @@
   <body>
     <div id="app"></div>
 
-    <script>
-      // 本页固定进入市民端；未登录时路由守卫会转到市民登录页
-      if (!location.hash) location.hash = '#/citizen'
-    </script>
     <script type="module" src="/src/main.ts"></script>
   </body>
 </html>

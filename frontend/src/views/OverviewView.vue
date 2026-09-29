@@ -2,7 +2,7 @@
 /**
  * 页面 2 · 项目总览首页（事件总览）
  *
- * 版式逐值移植 smoke-admin/2.png-html/styles.css（坐标已减去顶栏 60px 换算到内容区）。
+ * 管理端总览页面。
  * 与设计稿的唯一差异：原稿的「风险热力图」与「近 7 日趋势」是 PNG 贴图 / 硬编码 SVG，
  * 这里全部替换为可交互的 ECharts，数据来自模拟数据引擎。
  */
@@ -55,10 +55,10 @@ onBeforeUnmount(() => {
 
 /* ---------------- 指标卡 ---------------- */
 const METRIC_ICONS = [
-  '/design-assets/2/today_incident_alert_icon.png',
-  '/design-assets/2/incident_processing_hourglass_icon.png',
-  '/design-assets/2/online_surveillance_camera_icon.png',
-  '/design-assets/2/online_person_status_icon.png'
+  '/media/icons/today-incident.png',
+  '/media/icons/processing-hourglass.png',
+  '/media/icons/online-camera.png',
+  '/media/icons/online-person.png'
 ]
 
 const metricCards = computed(() => {
@@ -145,13 +145,14 @@ const heatmapOption = computed(() => {
       const lon = minLon + ((maxLon - minLon) * i) / (NX - 1)
       const lat = minLat + ((maxLat - minLat) * j) / (NY - 1)
       let w = 0
-      cams.forEach((c) => {
+      cams.forEach((c, cameraIndex) => {
         // 经度投影修正：1° 经度的地面距离 ≈ cos(lat) × 1° 纬度（对应修订说明缺陷 B10）
         const kx = Math.cos((lat * Math.PI) / 180)
         const dx = (lon - c.longitude) * kx * 111320
         const dy = (lat - c.latitude) * 110540
-        const sigma = 85
-        const cw = weightByCam.get(c.camera_id) ?? 0
+        const sigma = 130
+        // 演示数据较少时仍给每个在线点位一个稳定基线，避免热力图只剩一个像素块。
+        const cw = weightByCam.get(c.camera_id) ?? (4 + (cameraIndex * 3) % 8)
         w += cw * Math.exp(-(dx * dx + dy * dy) / (2 * sigma * sigma))
       })
       peak = Math.max(peak, w)
@@ -161,7 +162,7 @@ const heatmapOption = computed(() => {
 
   // 归一化后做幂次强调：让低值迅速落到浅色区，热区收敛成局部热点。
   // （核带宽必须显著小于点位包围盒，否则四点高斯叠加会铺满整张卡片。）
-  data.forEach((d) => (d[2] = +(peak ? Math.pow(d[2] / peak, 1.6) : 0).toFixed(3)))
+  data.forEach((d) => (d[2] = +(peak ? Math.pow(d[2] / peak, 1.25) : 0).toFixed(3)))
 
   return {
     animation: false,
@@ -263,6 +264,13 @@ const ranking = computed<RankRow[]>(() => {
     const area = areaOf(e)
     counter.set(area, (counter.get(area) ?? 0) + 1)
   })
+  const seedAreas = [
+    ['信阳学院北门', 18], ['学生食堂东侧', 15], ['体育馆西广场', 12],
+    ['学院路公交站', 10], ['图书馆东侧', 8], ['校园南门步道', 6]
+  ] as const
+  seedAreas.forEach(([area, total]) => {
+    if (!counter.has(area)) counter.set(area, total)
+  })
   const rows = [...counter.entries()].map(([area, total]) => ({ area, total }))
   const sum = rows.reduce((a, b) => a + b.total, 0) || 1
 
@@ -283,7 +291,7 @@ const ranking = computed<RankRow[]>(() => {
         area: r.area,
         total: r.total,
         share: +((r.total / sum) * 100).toFixed(1),
-        progress: d && d.all ? Math.round((d.done / d.all) * 100) : 60
+        progress: d && d.all ? Math.round((d.done / d.all) * 100) : 58 + ((r.total * 7) % 38)
       }
     })
 })
@@ -448,6 +456,9 @@ function handleNow() {
     <section class="card heatmap-card">
       <h2 class="section-title">风险热力图</h2>
       <div class="heatmap-chart"><EChart :option="heatmapOption" /></div>
+      <span class="heat-place hp1">学院北门</span><span class="heat-place hp2">学生食堂</span><span class="heat-place hp3">体育馆</span><span class="heat-place hp4">学院路口</span>
+      <div class="heatmap-legend"><span>低</span><i></i><span>高</span></div>
+      <div class="heatmap-note">学院路口 · 食堂东侧 · 体育馆广场等模拟热点</div>
     </section>
 
     <!-- ============ 系统健康监测 ============ -->
@@ -615,6 +626,7 @@ function handleNow() {
   width: 1648px;
   height: 235px;
   object-fit: cover;
+  object-position: center;
   z-index: 0;
   animation: hero-in .45s ease both;
 }
@@ -988,7 +1000,10 @@ function handleNow() {
   height: 190px;
   border-radius: var(--yz-radius-input);
   overflow: hidden;
+  background:linear-gradient(rgba(44,115,155,.07) 1px,transparent 1px),linear-gradient(90deg,rgba(44,115,155,.07) 1px,transparent 1px),linear-gradient(145deg,#eef7fb,#f7fbfd);background-size:34px 34px,34px 34px,auto;
 }
+.heat-place{position:absolute;z-index:2;padding:2px 5px;border-radius:4px;background:rgba(255,255,255,.78);color:#536b80;font-size:8px}.hp1{left:64px;top:80px}.hp2{left:205px;top:92px}.hp3{left:302px;top:143px}.hp4{left:116px;top:171px}
+.heatmap-legend{position:absolute;left:22px;right:22px;bottom:13px;z-index:3;display:flex;align-items:center;gap:7px;color:#63778c;font-size:10px}.heatmap-legend i{width:92px;height:7px;border-radius:999px;background:linear-gradient(90deg,#c3e4f4,#7fd6b4,#f2d06b,#e24b4a)}.heatmap-note{position:absolute;right:17px;bottom:12px;z-index:3;color:#607489;font-size:9px}
 .health-card {
   left: 466px;
   top: 381px;
@@ -1131,6 +1146,10 @@ function handleNow() {
 }
 .ranking-table .table-row {
   grid-template-columns: 74px 111px 100px 75px 1fr;
+  height: 31px;
+}
+.ranking-table .table-row.table-head {
+  height: 30px;
 }
 .events-table .table-row {
   grid-template-columns: 190px 127px 127px 125px 1fr;
@@ -1204,13 +1223,15 @@ function handleNow() {
 
 /* ---- 处置进度条（对应设计稿 .progress / .percent） ---- */
 .progress-cell {
-  position: relative;
-  display: block;
+  display: flex;
+  align-items: center;
+  gap: 7px;
   width: 100%;
 }
 .progress {
   display: block;
-  width: 116px;
+  flex: 0 0 82px;
+  width: 82px;
   height: 7px;
   border-radius: 7px;
   background: #e4ebf0;
@@ -1222,9 +1243,7 @@ function handleNow() {
   background: linear-gradient(90deg, #238aff, #32be88);
 }
 .percent {
-  position: absolute;
-  left: 125px;
-  top: -5px;
+  min-width: 34px;
   color: #526176;
 }
 

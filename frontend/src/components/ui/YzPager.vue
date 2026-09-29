@@ -98,7 +98,10 @@ function jump(e: Event) {
   align-items: center;
   gap: 8px;
   padding-top: 10px;
-  font-size: 12px;
+  flex-wrap: wrap;
+  flex: none;
+  font-size: 13px;
+  font-weight: 600;
   color: var(--yz-text-muted);
 }
 
@@ -120,7 +123,8 @@ function jump(e: Event) {
   border-radius: 6px;
   background: #fff;
   color: var(--yz-text-2);
-  font-size: 12px;
+  font-size: 13px;
+  cursor: pointer;
 }
 
 .pg:hover:not(:disabled) {
@@ -156,5 +160,10 @@ function jump(e: Event) {
   padding: 0 6px;
   text-align: center;
   font-size: 12px;
+}
+
+@media (max-width: 1100px) {
+  .pager { gap: 5px; }
+  .total { flex-basis: 100%; }
 }
 </style>

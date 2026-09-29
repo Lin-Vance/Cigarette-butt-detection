@@ -23,8 +23,8 @@ if not exist "%YZ_PY%" (
 
 echo.
 echo  Starting backend  http://127.0.0.1:8000    docs: /docs
-echo  First start warms up best.pt (about 10-40s).
-echo  Ready when you see: "AI ... best.pt ... device=0"
+echo  First start warms up cigarette-detector.pt (about 10-40s).
+echo  Ready when you see: "AI ... cigarette-detector.pt ... device=0"
 echo  Keep only ONE instance running.
 echo.
 

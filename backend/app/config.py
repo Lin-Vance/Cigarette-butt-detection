@@ -1,13 +1,4 @@
-"""全局配置。
-
-依据 docs/烟踪智治-文档缺陷与修订说明.md「三、修订后的技术基线」：
-- 后端 FastAPI 单体
-- 数据库 PostgreSQL 单库；本工程默认 SQLite 以便零依赖启动，
-  通过 DATABASE_URL 环境变量即可切换 PostgreSQL（见 .env.example）
-- 对象存储降级为本地目录，由 FastAPI StaticFiles 暴露
-- 无 Redis：进程内字典 + asyncio
-- WebSocket 2 个频道：/ws/alerts、/ws/workorders
-"""
+"""FastAPI 服务的集中配置。"""
 
 from functools import lru_cache
 from pathlib import Path
@@ -27,16 +18,19 @@ class Settings(BaseSettings):
     app_name: str = "烟踪智治 · 后端服务"
     api_prefix: str = "/api/v1"
     version: str = "0.1.0"
+    environment: str = "development"
 
     # 默认 SQLite：零外部依赖即可启动（交付要求「可本地启动」）。
     # 切 PostgreSQL：postgresql+asyncpg://yanzong:pwd@127.0.0.1:5432/yanzong
     database_url: str = f"sqlite+aiosqlite:///{(BACKEND_DIR / 'data' / 'yanzong.db').as_posix()}"
 
     # JWT（演示用固定密钥，生产必须换）
-    jwt_secret: str = "yanzong-demo-secret-change-me"
+    jwt_secret: str = "yanzong-development-only-secret-change-before-production-2026"
     jwt_algorithm: str = "HS256"
     access_token_ttl_sec: int = 7200
     refresh_token_ttl_sec: int = 14 * 24 * 3600
+    # 仅本地演示时把动态验证码回显给前端；部署时必须设为 false 并接短信网关。
+    expose_demo_codes: bool = True
 
     # 证据文件本地目录（替代 MinIO）
     storage_dir: Path = BACKEND_DIR / "storage"
@@ -45,14 +39,14 @@ class Settings(BaseSettings):
     # 首帧素材来源：复用主站已归档的设计稿实景图作为演示证据帧。
     # 首次启动时会把候选图片复制进 storage/evidence/_pool/，
     # 之后即使本目录不存在也能独立运行（找不到时退化为生成 SVG 帧）。
-    asset_source_dir: Path = BACKEND_DIR.parent / "frontend" / "public" / "design-assets"
+    asset_source_dir: Path = BACKEND_DIR.parent / "frontend" / "public" / "media"
 
     # 启动时灌入演示数据（幂等：已有数据则跳过）
     seed_on_startup: bool = True
     # 演示数据量级：design（设计稿量级）/ pilot（2-4 路摄像头试点量级）
     default_scale_mode: str = "pilot"
 
-    # 启动时预热 best.pt（torch 导入 + 首次前向）。
+    # 启动时预热 cigarette-detector.pt（torch 导入 + 首次前向）。
     #
     # ⚠️ 实测代价很大（2026-09-28）：CPU 环境下这段预热要 **约 80 秒**，
     # 期间进程内存涨到约 0.5–1GB，而且因为它持有 GIL，

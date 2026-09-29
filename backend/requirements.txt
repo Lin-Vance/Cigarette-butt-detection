@@ -8,6 +8,7 @@ pydantic-settings>=2.4
 python-multipart>=0.0.9
 PyJWT>=2.9
 ultralytics>=8.3
+Pillow>=10.0
 
 # 切换到 PostgreSQL 时取消注释（并把 DATABASE_URL 改成 postgresql+asyncpg://...）
 # asyncpg>=0.30

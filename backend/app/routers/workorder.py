@@ -15,6 +15,7 @@ from ..config import get_settings
 from ..db import get_session
 from ..deps import CurrentUser, require_pages, require_roles
 from ..errors import duplicate_submission, upload_invalid, workorder_conflict, workorder_not_found
+from ..media_validation import validate_image_bytes
 from ..models import User, WorkOrder
 from ..orders import is_overdue
 from ..services import client_ip, paged, workorder_dict, write_audit
@@ -212,6 +213,10 @@ async def complete_workorder(
             raise upload_invalid("上传文件为空")
         if len(data) > MAX_PHOTO_BYTES:
             raise upload_invalid("闭环照片不得超过 10MB")
+        try:
+            validate_image_bytes(data)
+        except ValueError as exc:
+            raise upload_invalid(str(exc)) from exc
 
         target_dir = settings.evidence_dir / order.event_id
         target_dir.mkdir(parents=True, exist_ok=True)

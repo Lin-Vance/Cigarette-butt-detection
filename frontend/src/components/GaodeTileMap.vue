@@ -31,7 +31,7 @@ const props = withDefaults(
 const emit = defineEmits<{ (e: 'move', center: [number, number]): void }>()
 
 const MIN_ZOOM = 12
-const MAX_ZOOM = 17
+const MAX_ZOOM = 19
 
 const wrapEl = ref<HTMLDivElement | null>(null)
 const size = ref({ w: 600, h: 200 })
@@ -274,8 +274,9 @@ defineExpose({
     </div>
 
     <div v-if="interactive" class="gd-ctrl">
-      <button type="button" aria-label="放大" @click.stop="zoomBy(1)">＋</button>
-      <button type="button" aria-label="缩小" @click.stop="zoomBy(-1)">－</button>
+      <button type="button" aria-label="放大" :disabled="zoom >= MAX_ZOOM" @click.stop="zoomBy(1)">＋</button>
+      <button type="button" aria-label="缩小" :disabled="zoom <= MIN_ZOOM" @click.stop="zoomBy(-1)">－</button>
+      <small>{{ zoom }}级</small>
     </div>
     <span class="gd-credit">© 高德地图</span>
   </div>
@@ -432,6 +433,7 @@ defineExpose({
   box-shadow: 0 2px 8px rgba(20, 50, 80, 0.18);
   cursor: pointer;
 }
+.gd-ctrl button:hover:not(:disabled){background:#1677e8;color:#fff}.gd-ctrl button:disabled{opacity:.38;cursor:not-allowed}.gd-ctrl small{color:#44586d;font-size:9px;text-align:center;text-shadow:0 1px 2px #fff}
 .gd-credit {
   position: absolute;
   left: 8px;

@@ -136,12 +136,18 @@ export interface ReportSubmitPayload {
 export const login = (username: string, password: string) =>
   apiPost<LoginResult>('/auth/login', { username, password })
 
+export const sendLoginCode = (target: string, role: 'citizen' | 'worker' | 'admin') =>
+  apiPost<{ status: string; expires_in: number; masked_target: string; demo_code?: string }>('/auth/code/send', { target, role })
+
+export const loginByCode = (username: string, code: string, role: 'worker' | 'admin') =>
+  apiPost<LoginResult>('/auth/code/login', { username, code, role })
+
 export const currentUser = () => apiGet<{ user: BackendUser }>('/auth/me')
 
 export const logout = () => apiPost<{ status: string }>('/auth/logout')
 
-export const citizenLogin = (phone: string, code: string) =>
-  apiPost<{ access_token: string; profile: CitizenProfile }>('/auth/citizen/login', { phone, code })
+export const citizenLogin = (phone: string, credential: string, method: 'code' | 'password' = 'code', mode: 'login' | 'register' = 'login', verificationCode = '') =>
+  apiPost<{ access_token: string; profile: CitizenProfile }>('/auth/citizen/login', method === 'password' ? { phone, password: credential, code: verificationCode, method, mode } : { phone, code: credential, method, mode })
 
 /* ---------------- 摄像头 ---------------- */
 

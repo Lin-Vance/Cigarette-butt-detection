@@ -312,10 +312,12 @@ function downloadPoster() {
 
 watch(open, (v) => {
   if (!v) poster.value = ''
+  document.documentElement.style.overflow = v ? 'hidden' : ''
 })
 
 onBeforeUnmount(() => {
   poster.value = ''
+  document.documentElement.style.overflow = ''
 })
 </script>
 
@@ -541,6 +543,31 @@ onBeforeUnmount(() => {
 /* ---------------- 剧场 ---------------- */
 .story-stage {
   padding: 14px;
+}
+.story.open {
+  position: fixed;
+  z-index: 120;
+  inset: 72px 3vw 18px;
+  margin: 0;
+  overflow: auto;
+  border: 1px solid rgba(143, 240, 208, .3);
+  border-radius: 20px;
+  background: #07121d;
+  box-shadow: 0 26px 90px rgba(1, 8, 16, .58), 0 0 0 9999px rgba(3, 10, 18, .68);
+}
+.story.open .story-stage {
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr) auto;
+  min-height: 100%;
+}
+.story.open .st-frame,
+.story.open .st-text { min-height: min(52vh, 430px); }
+.story.open .st-foot {
+  position: sticky;
+  z-index: 5;
+  bottom: -14px;
+  padding: 12px 8px 10px;
+  background: linear-gradient(180deg, rgba(7,18,29,.84), #07121d 34%);
 }
 .st-bar {
   display: flex;
@@ -855,6 +882,10 @@ onBeforeUnmount(() => {
 .senior .st-end-acts button { font-size: 16px; padding: 13px 26px; }
 
 @media (max-width: 860px) {
+  .story.open { inset: 8px 8px 76px; border-radius: 16px; }
+  .story.open .story-stage { padding: 9px; }
+  .story.open .st-frame,
+  .story.open .st-text { min-height: min(49vh, 360px); }
   .story-cover { min-height: 220px; padding: 20px; }
   .sc-copy h2 { font-size: 23px; }
   .st-frame,

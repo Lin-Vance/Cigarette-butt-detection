@@ -14,11 +14,13 @@
  * 另支持分角色入口：`auth.html?role=citizen|worker|admin`
  * —— 进入对应身份的单角色登录视图（隐藏跨端入口）。
  */
-import { computed, onMounted, ref, watch } from 'vue'
+import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import { ElMessage } from 'element-plus'
 import { useAuthStore } from '@/stores/auth'
 import { useCitizenStore } from '@/stores/citizen'
+import { sendLoginCode } from '@/api/endpoints'
+import { toFailure } from '@/api/client'
 
 const route = useRoute()
 const auth = useAuthStore()
@@ -26,6 +28,8 @@ const citizen = useCitizenStore()
 
 type Identity = 'citizen' | 'worker' | 'admin'
 type Mode = 'login' | 'register'
+type CitizenMethod = 'code' | 'password'
+type StaffMethod = 'password' | 'code'
 
 const IDENTITIES: { key: Identity; name: string; en: string; tip: string; icon: string }[] = [
   { key: 'citizen', name: '市民', en: 'CITIZEN', tip: '上报线索 · 查看进度', icon: '◎' },
@@ -36,13 +40,19 @@ const IDENTITIES: { key: Identity; name: string; en: string; tip: string; icon: 
 /** 左栏品牌面板上的三条价值点 */
 const FEATURES = [
   { no: '01', t: '一条事件，三个端同步', d: '市民上报、环卫处置、管理研判共享同一份状态' },
-  { no: '02', t: '动作还原成时间线', d: '持烟、抛掷、落地逐帧留痕，缺失区间如实标注' },
-  { no: '03', t: '先保护人，再谈取证', d: '不跟拍、不拦截，素材脱敏后才进入研判' }
+  { no: '02', t: '环境问题形成时间线', d: '提交、复核、派单、清扫与验收全程留痕' },
+  { no: '03', t: '只看垃圾，不识别人', d: '不跟拍、不拦截，素材脱敏后才进入治理流程' }
 ]
 
 const mode = ref<Mode>('login')
 const identity = ref<Identity>('citizen')
+const citizenMethod = ref<CitizenMethod>('code')
+const staffMethod = ref<StaffMethod>('password')
 const roleEntry = computed(() => ['citizen', 'worker', 'admin'].includes(String(route.query.role || '')))
+const adminRedirect = computed(() => {
+  const value = String(route.query.redirect || '')
+  return value.startsWith('/platform/') ? value : '/platform/overview'
+})
 const identityName = computed(() => IDENTITIES.find((item) => item.key === identity.value)?.name ?? '市民')
 const identityIntro = computed(() => {
   if (identity.value === 'worker') return '使用环卫工号进入作业工作台，接收任务、记录到场并提交闭环材料。'
@@ -51,7 +61,7 @@ const identityIntro = computed(() => {
 })
 
 const phone = ref('13800000000')
-const code = ref('123456')
+const code = ref('')
 const account = ref('')
 const password = ref('')
 const confirm = ref('')
@@ -59,6 +69,13 @@ const agreed = ref(true)
 const revealed = ref(false)
 const busy = ref(false)
 const error = ref('')
+const codeSentFor = ref('')
+const codeCooldown = ref(0)
+const sendingCode = ref(false)
+const captchaA = ref(3)
+const captchaB = ref(5)
+const captchaAnswer = ref('')
+let codeTimer: ReturnType<typeof setInterval> | undefined
 
 const panel = ref<HTMLElement | null>(null)
 const root = ref<HTMLElement | null>(null)
@@ -69,6 +86,10 @@ watch(identity, (v) => {
   if (v === 'worker') account.value = 'worker01'
   else if (v === 'admin') account.value = 'admin'
   password.value = v === 'citizen' ? '' : '123456'
+  code.value = ''
+  codeSentFor.value = ''
+  staffMethod.value = 'password'
+  refreshCaptcha()
 })
 
 const isCitizen = computed(() => identity.value === 'citizen')
@@ -83,10 +104,38 @@ function goPanel(next: Mode) {
   panel.value?.scrollIntoView({ behavior: 'smooth', block: 'start' })
 }
 
+function refreshCaptcha() {
+  captchaA.value = 2 + Math.floor(Math.random() * 7)
+  captchaB.value = 1 + Math.floor(Math.random() * 8)
+  captchaAnswer.value = ''
+}
+
+async function requestCode() {
+  const target = isCitizen.value ? phone.value.trim() : account.value.trim()
+  if (isCitizen.value && !/^1\d{10}$/.test(target)) { error.value = '请先输入正确的 11 位手机号'; return }
+  if (!isCitizen.value && !target) { error.value = '请先输入账号'; return }
+  sendingCode.value = true
+  error.value = ''
+  try {
+    const res = await sendLoginCode(target, identity.value)
+    codeSentFor.value = target
+    code.value = ''
+    codeCooldown.value = 60
+    if (codeTimer) clearInterval(codeTimer)
+    codeTimer = setInterval(() => {
+      codeCooldown.value -= 1
+      if (codeCooldown.value <= 0 && codeTimer) { clearInterval(codeTimer); codeTimer = undefined }
+    }, 1000)
+    ElMessage.success(`验证码已发送至 ${res.masked_target}${res.demo_code ? `；本地联调码 ${res.demo_code}` : ''}`)
+  } catch (err) {
+    error.value = toFailure(err).message
+  } finally { sendingCode.value = false }
+}
+
 function jumpToEnd(kind: Identity) {
   if (kind === 'citizen') location.href = './citizen.html'
   else if (kind === 'worker') location.href = './worker.html'
-  else location.href = './admin.html'
+  else location.href = `./admin.html#${adminRedirect.value}`
 }
 
 async function doCitizenLogin() {
@@ -94,11 +143,25 @@ async function doCitizenLogin() {
     error.value = '请输入 11 位手机号'
     return
   }
-  if (!/^\d{6}$/.test(code.value.trim())) {
-    error.value = '请输入 6 位验证码（演示固定 123456）'
+  const usePassword = mode.value === 'register' || citizenMethod.value === 'password'
+  if (usePassword) {
+    if (password.value.length < 6) {
+      error.value = '密码至少需要 6 位'
+      return
+    }
+    if (mode.value === 'register' && password.value !== confirm.value) {
+      error.value = '两次输入的密码不一致'
+      return
+    }
+    if (mode.value === 'register' && (!/^\d{6}$/.test(code.value.trim()) || codeSentFor.value !== phone.value.trim())) {
+      error.value = '注册前请先获取并填写当前手机号收到的验证码'
+      return
+    }
+  } else if (!/^\d{6}$/.test(code.value.trim()) || codeSentFor.value !== phone.value.trim()) {
+    error.value = '请先获取并填写当前手机号收到的 6 位验证码'
     return
   }
-  const res = await citizen.login(phone.value.trim(), code.value.trim())
+  const res = await citizen.login(phone.value.trim(), usePassword ? password.value : code.value.trim(), usePassword ? 'password' : 'code', mode.value, mode.value === 'register' ? code.value.trim() : '')
   if (!res.ok) {
     error.value = res.message
     return
@@ -112,11 +175,13 @@ async function doStaffLogin() {
     error.value = '请输入账号'
     return
   }
-  if (!password.value) {
-    error.value = '请输入密码'
-    return
+  if (staffMethod.value === 'password' && !password.value) { error.value = '请输入密码'; return }
+  if (staffMethod.value === 'code' && (!/^\d{6}$/.test(code.value.trim()) || codeSentFor.value !== account.value.trim())) {
+    error.value = '请先获取并填写该账号绑定手机收到的验证码'; return
   }
-  const res = await auth.login(account.value.trim(), password.value)
+  const res = staffMethod.value === 'password'
+    ? await auth.login(account.value.trim(), password.value)
+    : await auth.loginByCode(account.value.trim(), code.value.trim(), identity.value as 'worker' | 'admin')
   if (!res.ok) {
     error.value = res.message
     return
@@ -144,6 +209,11 @@ async function onSubmit() {
   if (busy.value) return
   if (!agreed.value) {
     error.value = '请先阅读并同意隐私说明'
+    return
+  }
+  if (Number(captchaAnswer.value) !== captchaA.value + captchaB.value) {
+    error.value = '安全验证计算错误，请重新填写'
+    refreshCaptcha()
     return
   }
 
@@ -180,6 +250,9 @@ function applyRouteRole() {
   if (['citizen', 'worker', 'admin'].includes(requested)) {
     identity.value = requested
     mode.value = 'login'
+    if (requested === 'worker') account.value = 'worker01'
+    else if (requested === 'admin') account.value = 'admin'
+    if (requested !== 'citizen') password.value = '123456'
   }
 }
 
@@ -188,6 +261,7 @@ watch(() => route.query.role, applyRouteRole, { immediate: true })
 onMounted(() => {
   requestAnimationFrame(() => root.value?.classList.add('ready'))
 })
+onBeforeUnmount(() => { if (codeTimer) clearInterval(codeTimer) })
 </script>
 
 <template>
@@ -202,9 +276,7 @@ onMounted(() => {
       </a>
       <nav class="au-nav" aria-label="页面导航">
         <a href="./index.html">首页</a>
-        <a href="./citizen.html">市民端</a>
-        <a href="./worker.html">环卫端</a>
-        <a href="./admin.html">管理端</a>
+        <a href="./citizen.html#/citizen?app=1">市民 App</a>
       </nav>
       <div class="au-bar-acts">
         <button class="au-text" type="button" @click="goPanel('login')">登录</button>
@@ -334,8 +406,12 @@ onMounted(() => {
             </div>
 
             <form class="au-form" novalidate @submit.prevent="onSubmit">
-              <!-- 市民：手机号 + 验证码 -->
+              <!-- 市民：验证码 / 密码双登录，注册时设置密码 -->
               <template v-if="isCitizen">
+                <div v-if="mode === 'login'" class="citizen-method" aria-label="市民登录方式">
+                  <button type="button" :class="{ on: citizenMethod === 'code' }" @click="citizenMethod = 'code'; error = ''">验证码登录</button>
+                  <button type="button" :class="{ on: citizenMethod === 'password' }" @click="citizenMethod = 'password'; error = ''">密码登录</button>
+                </div>
                 <label class="au-field">
                   <span>手机号</span>
                   <input
@@ -347,7 +423,7 @@ onMounted(() => {
                     placeholder="请输入 11 位手机号"
                   />
                 </label>
-                <label class="au-field">
+                <label v-if="mode === 'login' && citizenMethod === 'code'" class="au-field">
                   <span>短信验证码</span>
                   <div class="au-code">
                     <input
@@ -357,15 +433,39 @@ onMounted(() => {
                       maxlength="6"
                       placeholder="6 位验证码"
                     />
-                    <button type="button" @click="ElMessage.info('演示环境：验证码固定为 123456')">
-                      获取验证码
+                    <button type="button" :disabled="sendingCode || codeCooldown > 0" @click="requestCode">
+                      {{ codeCooldown > 0 ? `${codeCooldown}s` : sendingCode ? '发送中' : '获取验证码' }}
+                    </button>
+                  </div>
+                </label>
+                <label v-else class="au-field">
+                  <span>{{ mode === 'register' ? '设置登录密码' : '密码' }}</span>
+                  <div class="au-code">
+                    <input v-model="password" :type="revealed ? 'text' : 'password'" autocomplete="current-password" placeholder="请输入至少 6 位密码" />
+                    <button type="button" @click="revealed = !revealed">{{ revealed ? '隐藏' : '显示' }}</button>
+                  </div>
+                </label>
+                <label v-if="mode === 'register'" class="au-field">
+                  <span>确认密码</span>
+                  <input v-model="confirm" type="password" autocomplete="new-password" placeholder="再次输入密码" />
+                </label>
+                <label v-if="mode === 'register'" class="au-field">
+                  <span>注册验证码</span>
+                  <div class="au-code">
+                    <input v-model="code" inputmode="numeric" maxlength="6" placeholder="先获取验证码" />
+                    <button type="button" :disabled="sendingCode || codeCooldown > 0" @click="requestCode">
+                      {{ codeCooldown > 0 ? `${codeCooldown}s` : sendingCode ? '发送中' : '获取验证码' }}
                     </button>
                   </div>
                 </label>
               </template>
 
-              <!-- 环卫 / 管理员：账号 + 密码 -->
+              <!-- 环卫 / 管理员：账号密码 / 绑定手机验证码双登录 -->
               <template v-else>
+                <div v-if="mode === 'login'" class="citizen-method" :aria-label="`${identityName}登录方式`">
+                  <button type="button" :class="{ on: staffMethod === 'password' }" @click="staffMethod = 'password'; error = ''">密码登录</button>
+                  <button type="button" :class="{ on: staffMethod === 'code' }" @click="staffMethod = 'code'; error = ''">验证码登录</button>
+                </div>
                 <label class="au-field">
                   <span>{{ identity === 'worker' ? '环卫工号' : '管理员账号' }}</span>
                   <input
@@ -375,7 +475,7 @@ onMounted(() => {
                     :placeholder="identity === 'worker' ? '例如 worker01' : '例如 admin'"
                   />
                 </label>
-                <label class="au-field">
+                <label v-if="staffMethod === 'password' || mode === 'register'" class="au-field">
                   <span>密码</span>
                   <div class="au-code">
                     <input
@@ -389,11 +489,28 @@ onMounted(() => {
                     </button>
                   </div>
                 </label>
+                <label v-else class="au-field">
+                  <span>绑定手机验证码</span>
+                  <div class="au-code">
+                    <input v-model="code" inputmode="numeric" maxlength="6" placeholder="请输入 6 位验证码" />
+                    <button type="button" :disabled="sendingCode || codeCooldown > 0" @click="requestCode">
+                      {{ codeCooldown > 0 ? `${codeCooldown}s` : sendingCode ? '发送中' : '获取验证码' }}
+                    </button>
+                  </div>
+                </label>
                 <label v-if="mode === 'register'" class="au-field">
                   <span>确认密码</span>
                   <input v-model="confirm" type="password" placeholder="再次输入密码" />
                 </label>
               </template>
+
+              <label class="au-field">
+                <span>安全验证</span>
+                <div class="au-code au-captcha">
+                  <input v-model="captchaAnswer" inputmode="numeric" placeholder="请输入计算结果" />
+                  <button type="button" title="点击更换题目" @click="refreshCaptcha">{{ captchaA }} + {{ captchaB }} = ?</button>
+                </div>
+              </label>
 
               <label class="au-check">
                 <input v-model="agreed" type="checkbox" />
@@ -408,10 +525,10 @@ onMounted(() => {
 
               <p class="au-tip">
                 <template v-if="isCitizen">
-                  演示验证码 <code>123456</code> · 未接入真实短信服务
+                  验证码由后端动态生成，5 分钟有效且使用一次后失效
                 </template>
                 <template v-else-if="identity === 'worker'">
-                  演示账号 <code>worker01 / 123456</code>
+                  演示账号 <code>worker01 / 123456</code> · 验证码发送至绑定手机
                 </template>
                 <template v-else>
                   演示账号 <code>admin / 123456</code>，另可试 <code>manager</code> / <code>ai_dev</code>
@@ -622,6 +739,10 @@ onMounted(() => {
   color: #102f64;
   background: transparent;
   box-shadow: none;
+  align-self: center;
+  height: min(470px, calc(100vh - 130px));
+  min-height: 390px;
+  justify-content: center;
 }
 .au-side-grid {
   display: none;
@@ -828,6 +949,31 @@ onMounted(() => {
   border-radius: 24px;
   background: #fff;
   box-shadow: 0 26px 60px -40px rgba(16, 32, 47, 0.42);
+}
+
+.citizen-method {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px;
+  margin-top: 12px;
+  padding: 3px;
+  border: 1px solid var(--line);
+  border-radius: 11px;
+  background: #f6f8fa;
+}
+.citizen-method button {
+  height: 32px;
+  border: 0;
+  border-radius: 8px;
+  color: var(--muted);
+  background: transparent;
+  cursor: pointer;
+}
+.citizen-method button.on {
+  color: var(--brand);
+  background: #fff;
+  box-shadow: 0 2px 8px rgba(16, 32, 47, .08);
+  font-weight: 600;
 }
 
 /* 模式切换 */
@@ -1120,6 +1266,31 @@ onMounted(() => {
   border-top: 1px solid var(--line-soft);
   text-align: center;
 }
+.au-foot { display: none; }
+
+@media (min-width: 1021px) and (max-height: 860px) {
+  .au-main { min-height: calc(100vh - 62px); padding-top: 16px; padding-bottom: 16px; gap: clamp(32px, 4vw, 60px); }
+  .au-side { height: 430px; min-height: 0; gap: 10px; padding: 0; }
+  .au-side-copy h1 { margin-top: 8px; font-size: clamp(38px, 4vw, 53px); }
+  .au-sub { margin-top: 8px; line-height: 1.65; }
+  .au-viz { margin-top: 4px; padding: 7px 18px; }
+  .au-viz svg { height: 68px; }
+  .au-auth-head p { margin-top: 5px; line-height: 1.5; }
+  .au-box { margin-top: 8px; padding: 12px 20px 14px; }
+  .au-seg button { padding: 6px 0; }
+  .au-ids { margin-top: 8px; }
+  .au-id { gap: 3px; padding: 8px 10px 9px; }
+  .au-form { margin-top: 6px; }
+  .citizen-method { margin-top: 7px; }
+  .au-field { margin-top: 7px; }
+  .au-field > span { margin-bottom: 3px; }
+  .au-field input { height: 38px; }
+  .au-check { margin-top: 8px; }
+  .au-submit { height: 40px; margin-top: 8px; }
+  .au-tip { margin-top: 5px; }
+  .au-switch { margin-top: 7px; padding-top: 7px; }
+  .au-quick { margin-top: 6px; }
+}
 .au-foot img {
   height: 26px;
   width: auto;
@@ -1140,6 +1311,8 @@ onMounted(() => {
   }
   .au-side {
     gap: 20px;
+    height: auto;
+    min-height: 0;
   }
   .au-viz,
   .au-side-note {

@@ -46,16 +46,16 @@ EVIDENCE_TYPES = ("holding", "throwing", "landed")
 # 证据帧素材池（复用主站已归档的设计稿实景图，来源可追溯）
 POOL_SOURCES: dict[str, list[str]] = {
     "holding": [
-        "6/pedestrian_smoke_camera_thumbnail.png",
-        "6/sidewalk_pedestrian_camera_thumbnail.png",
+        "cameras/pedestrian-smoking.png",
+        "cameras/sidewalk-pedestrian.png",
     ],
     "throwing": [
-        "2/event_detection_evidence_photo.png",
-        "6/roadside_pedestrian_camera_thumbnail.png",
+        "evidence/event-detection.png",
+        "cameras/roadside-pedestrian.png",
     ],
     "landed": [
-        "10/incident_cigarette_photo.png",
-        "6/urban_vehicle_camera_thumbnail.png",
+        "evidence/incident-cigarette.png",
+        "cameras/urban-vehicle.png",
     ],
 }
 

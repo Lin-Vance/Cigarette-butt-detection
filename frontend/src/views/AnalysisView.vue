@@ -9,15 +9,20 @@ import YzTable, { type YzColumn } from '@/components/ui/YzTable.vue'
 import YzStat from '@/components/ui/YzStat.vue'
 import YzFilter from '@/components/ui/YzFilter.vue'
 import YzPager from '@/components/ui/YzPager.vue'
-import { AREAS, buildAreaMetrics, buildHourly, fmtDate, rand } from '@/mock/pages'
+import { buildAreaMetrics, buildHourly, fmtDate, rand } from '@/mock/pages'
 
 const hourly = buildHourly()
-const areaMetrics = buildAreaMetrics(29)
+const ANALYSIS_AREAS = ['浉河区', '平桥区', '羊山新区', '高新区', '罗山县', '光山县', '潢川县', '固始县', '息县', '淮滨县', '商城县', '新县']
+const baseMetrics = buildAreaMetrics(29)
+const areaMetrics = ANALYSIS_AREAS.map((area, i) => {
+  const base = baseMetrics[i % baseMetrics.length]
+  return { ...base, area, total: base.total + (i >= baseMetrics.length ? 20 + i * 6 : 0) }
+})
 
 const filter = ref({ range: '', area: '' })
 const FIELDS = [
   { key: 'range', label: '时间范围', type: 'date' as const, width: '150px' },
-  { key: 'area', label: '选择区域', type: 'select' as const, placeholder: '全部区域', options: AREAS.map((a) => ({ label: a, value: a })), width: '150px' }
+  { key: 'area', label: '选择区域', type: 'select' as const, placeholder: '全部区域', options: ANALYSIS_AREAS.map((a) => ({ label: a, value: a })), width: '150px' }
 ]
 
 const kpis = computed(() => {
@@ -88,8 +93,8 @@ const detail = computed(() => {
   const r = rand(307)
   return Array.from({ length: 36 }, (_, i) => {
     const d = new Date()
-    d.setDate(d.getDate() - Math.floor(i / AREAS.length))
-    const area = AREAS[i % AREAS.length]
+    d.setDate(d.getDate() - Math.floor(i / ANALYSIS_AREAS.length))
+    const area = ANALYSIS_AREAS[i % ANALYSIS_AREAS.length]
     const total = 60 + Math.round(r() * 210)
     const high = Math.round(total * (0.18 + r() * 0.14))
     const handled = Math.round(total * (0.85 + r() * 0.13))

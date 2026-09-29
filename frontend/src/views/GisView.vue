@@ -9,11 +9,13 @@
  *   ④ 兴趣点（学校/医院/商圈/公园/公厕/站点）+ 千米网格 + 比例尺
  */
 import { computed, ref } from 'vue'
+import { ElMessage } from 'element-plus'
 import YzPanel from '@/components/ui/YzPanel.vue'
-import YzMapStage, {
-  type MapMarker,
-  type MapPoi,
-  type MapZone
+import GaodeTileMap, { type TileMarker } from '@/components/GaodeTileMap.vue'
+import type {
+  MapMarker,
+  MapPoi,
+  MapZone
 } from '@/components/ui/YzMapStage.vue'
 import { useDemoStore } from '@/stores/demo'
 import { buildTaskRows, eventNo, fmtDateTime, levelOf, projectToMap } from '@/mock/pages'
@@ -32,6 +34,7 @@ const layers = ref({
 })
 const picked = ref<{ kind: 'event' | 'camera'; id: string } | null>(null)
 const boxed = ref(false)
+const refreshedAt = ref(new Date())
 
 const LAYER_DEFS = [
   { key: 'zones', label: '行政区分区' },
@@ -232,6 +235,47 @@ const LEGEND = computed(() => {
   if (layers.value.facilities) out.push({ kind: 'done', label: '烟蒂投放设施' })
   return out
 })
+
+/** 信阳学院浉河校区周边演示点位（GCJ-02 近似坐标，不作为官方测绘数据）。 */
+const CAMPUS_CENTER: [number, number] = [114.0418, 32.1462]
+const campusMarkers = computed<TileMarker[]>(() => {
+  const base: TileMarker[] = [{ lng: 114.0418, lat: 32.1462, label: '你所在位置 · 信阳学院浉河校区', kind: 'self' }]
+  if (layers.value.devices) base.push(
+    { lng: 114.0399, lat: 32.1475, label: '设备 · 图书馆北门 CAM-061', kind: 'spot' },
+    { lng: 114.0403, lat: 32.1446, label: '设备 · 教学楼 A 座 CAM-018', kind: 'spot' },
+    { lng: 114.0448, lat: 32.1480, label: '设备 · 北区宿舍入口 CAM-037', kind: 'spot' },
+    { lng: 114.0377, lat: 32.1468, label: '设备 · 校园西门 CAM-052', kind: 'spot' }
+  )
+  if (layers.value.events) base.push(
+    { lng: 114.0441, lat: 32.1470, label: '事件 · 学生食堂东侧待复核（模拟）', kind: 'spot' },
+    { lng: 114.0392, lat: 32.1452, label: '事件 · 一教南侧烟蒂散落（模拟）', kind: 'spot' },
+    { lng: 114.0437, lat: 32.1439, label: '事件 · 南门步道环境线索（模拟）', kind: 'spot' }
+  )
+  if (layers.value.tasks) base.push(
+    { lng: 114.0432, lat: 32.1447, label: '任务 · 体育馆西广场处理中（模拟）', kind: 'spot' },
+    { lng: 114.0450, lat: 32.1460, label: '任务 · 实验楼东侧待接单（模拟）', kind: 'spot' }
+  )
+  if (layers.value.facilities) base.push(
+    { lng: 114.0385, lat: 32.1455, label: '设施 · 校园西门烟蒂投放点', kind: 'facility' },
+    { lng: 114.0453, lat: 32.1456, label: '设施 · 实验楼连廊投放点', kind: 'facility' },
+    { lng: 114.0421, lat: 32.1484, label: '设施 · 北区生活广场投放点', kind: 'facility' }
+  )
+  if (layers.value.pois) base.push(
+    { lng: 114.0412, lat: 32.1474, label: '兴趣点 · 图书馆', kind: 'facility' },
+    { lng: 114.0428, lat: 32.1468, label: '兴趣点 · 学生食堂', kind: 'facility' },
+    { lng: 114.0408, lat: 32.1437, label: '兴趣点 · 南门公交站', kind: 'facility' }
+  )
+  if (layers.value.heat) base.push(
+    { lng: 114.0440, lat: 32.1469, label: '热力高值 · 食堂东侧 86', kind: 'spot' },
+    { lng: 114.0393, lat: 32.1453, label: '热力中值 · 一教南侧 62', kind: 'spot' }
+  )
+  return base
+})
+
+function refreshMap() {
+  refreshedAt.value = new Date()
+  ElMessage.success(`地图点位已刷新 · ${refreshedAt.value.toLocaleTimeString('zh-CN', { hour12: false })}`)
+}
 </script>
 
 <template>
@@ -248,9 +292,10 @@ const LEGEND = computed(() => {
           <button class="ad-btn ad-btn--sm" type="button" @click="boxed = !boxed">
             {{ boxed ? '清除选择' : '框选统计' }}
           </button>
-          <button class="ad-btn ad-btn--sm" type="button">刷新地图</button>
+          <button class="ad-btn ad-btn--sm" type="button" @click="refreshMap">刷新地图</button>
         </div>
       </div>
+      <p class="layer-help">开关会立即显示或隐藏地图上的对应点位；关闭后该类标记会从下方地图消失。行政分区用于统计口径，风险热力以“热力高值/中值”标记呈现。</p>
     </YzPanel>
 
     <YzPanel title="全域治理 GIS 地图" grow>
@@ -261,55 +306,14 @@ const LEGEND = computed(() => {
       </template>
 
       <div class="map-box">
-        <YzMapStage
-          :markers="markers"
-          :heat="heat"
-          :zones="layers.zones ? zones : []"
-          :pois="layers.pois ? POIS : []"
-          :legend="LEGEND"
-          @pick="(id) => (picked = { kind: id.startsWith('D-') ? 'camera' : 'event', id })"
-        >
-          <template #overlay>
-            <svg v-if="boxed" class="box-sel" viewBox="0 0 1600 720" preserveAspectRatio="none">
-              <rect :x="BOX.x" :y="BOX.y" :width="BOX.w" :height="BOX.h" />
-            </svg>
-
-            <div v-if="boxed" class="box-card">
-              <p class="bc-title">框选区域统计</p>
-              <ul class="bc-list">
-                <li v-for="s in boxStats" :key="s.label">
-                  <span>{{ s.label }}</span><b class="yz-num">{{ s.value }}</b>
-                </li>
-              </ul>
-              <button class="ad-btn ad-btn--sm ad-btn--primary" type="button">查看区域详情</button>
-            </div>
-
-            <div v-if="pickedEvent" class="ev-card">
-              <div class="ec-head">
-                <b class="mono">{{ eventNo(pickedEvent) }}</b>
-                <span class="yz-tag yz-tag--danger">高风险</span>
-              </div>
-              <p class="ec-line">发生时间：{{ fmtDateTime(pickedEvent.event_timestamp) }}</p>
-              <p class="ec-line">设备：{{ pickedEvent.camera_name }}</p>
-              <p class="ec-line">置信度：{{ pickedEvent.confidence }}%</p>
-              <p class="ec-note">三段式证据链校验通过，建议派发清理工单。</p>
-              <button class="ad-btn ad-btn--sm ad-btn--primary" type="button" @click="picked = null">查看事件</button>
-            </div>
-
-            <div v-if="pickedCam" class="ev-card">
-              <div class="ec-head">
-                <b>{{ pickedCam.camera_id }}</b>
-                <span class="yz-tag" :class="pickedCam.status === 'online' ? 'yz-tag--success' : 'yz-tag--muted'">
-                  {{ pickedCam.status === 'online' ? '在线' : '离线' }}
-                </span>
-              </div>
-              <p class="ec-line">点位：{{ pickedCam.location_name }}</p>
-              <p class="ec-line">经纬度：{{ pickedCam.longitude.toFixed(4) }}, {{ pickedCam.latitude.toFixed(4) }}</p>
-              <p class="ec-line">帧率：{{ pickedCam.fps }} fps</p>
-              <button class="ad-btn ad-btn--sm" type="button" @click="picked = null">打开实时监控</button>
-            </div>
-          </template>
-        </YzMapStage>
+        <GaodeTileMap :center="CAMPUS_CENTER" :zoom="16" :markers="campusMarkers" height="100%" />
+        <div class="campus-map-badge"><b>当前位置：信阳学院浉河校区</b><span>校园道路与治理点位示意 · 当前显示 {{ campusMarkers.length }} 个标记</span></div>
+        <div v-if="layers.zones" class="zone-ribbon">校内治理分区：北区生活区 · 中心教学区 · 南区运动区</div>
+        <div v-if="boxed" class="box-card">
+          <p class="bc-title">当前校区统计</p>
+          <ul class="bc-list"><li v-for="s in boxStats" :key="s.label"><span>{{ s.label }}</span><b class="yz-num">{{ s.value }}</b></li></ul>
+          <button class="ad-btn ad-btn--sm ad-btn--primary" type="button">查看区域详情</button>
+        </div>
       </div>
     </YzPanel>
   </div>
@@ -380,6 +384,7 @@ const LEGEND = computed(() => {
   display: flex;
   gap: 8px;
 }
+.layer-help { margin: 10px 0 0; color: var(--yz-text-muted); font-size: 12px; font-weight: 500; }
 
 /* 顶栏概览 */
 .ov-item {
@@ -396,9 +401,16 @@ const LEGEND = computed(() => {
 }
 
 .map-box {
+  position: relative;
   height: 100%;
   min-height: 520px;
 }
+.map-box :deep(.gd-map) { border-radius: 10px; }
+.campus-map-badge { position:absolute;left:14px;top:14px;z-index:5;padding:10px 14px;border:1px solid #d9e7f2;border-radius:10px;background:rgba(255,255,255,.94);box-shadow:0 5px 16px rgba(41,83,116,.14); }
+.campus-map-badge b,.campus-map-badge span { display:block; }
+.campus-map-badge b { color:var(--yz-text-strong);font-size:13px; }
+.campus-map-badge span { margin-top:3px;color:var(--yz-text-muted);font-size:10px; }
+.zone-ribbon { position:absolute;left:14px;bottom:16px;z-index:5;padding:8px 12px;border-radius:8px;background:rgba(16,50,75,.86);color:#fff;font-size:12px;font-weight:600; }
 
 .box-sel {
   position: absolute;

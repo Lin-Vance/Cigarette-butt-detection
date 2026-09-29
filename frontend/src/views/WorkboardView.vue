@@ -1,6 +1,8 @@
 <script setup lang="ts">
 /** 页面 5 · 区域任务分布地图（工作看板） */
 import { computed, ref } from 'vue'
+import { useRouter } from 'vue-router'
+import { ElMessage } from 'element-plus'
 import type { EChartsOption } from 'echarts'
 import EChart from '@/components/EChart.vue'
 import YzPanel from '@/components/ui/YzPanel.vue'
@@ -18,6 +20,7 @@ import {
 } from '@/mock/pages'
 
 const demo = useDemoStore()
+const router = useRouter()
 demo.init()
 
 const pickedArea = ref<string | null>(null)
@@ -120,6 +123,20 @@ const TASK_COLS: YzColumn[] = [
 ]
 
 const taskRows = computed(() => tasks.value.slice(0, 7))
+
+function openTask(row: Record<string, any>) {
+  router.push({ name: 'dispatch-records', query: { order: row.orderNo } })
+}
+
+function reassign(row: Record<string, any>) {
+  ElMessage.info(`正在打开 ${row.orderNo} 的改派面板`)
+  router.push({ name: 'dispatch-pool', query: { order: row.orderNo, action: 'reassign' } })
+}
+
+function quickAction(name: string) {
+  const query = name === '快速派单' ? { action: 'create' } : name === '批量调度' ? { action: 'batch' } : { filter: 'pending' }
+  router.push({ name: 'dispatch-pool', query })
+}
 </script>
 
 <template>
@@ -184,16 +201,16 @@ const taskRows = computed(() => tasks.value.slice(0, 7))
               {{ row.remainMin > 0 ? `${row.remainMin} 分钟` : '已完成' }}
             </span>
           </template>
-          <template #cell-op>
-            <button class="ad-link" type="button">查看详情</button>
-            <button class="ad-link" type="button" style="margin-left: 8px">改派</button>
+          <template #cell-op="{ row }">
+            <button class="ad-link" type="button" @click="openTask(row)">查看详情</button>
+            <button class="ad-link" type="button" style="margin-left: 8px" @click="reassign(row)">改派</button>
           </template>
         </YzTable>
       </YzPanel>
 
       <YzPanel title="快捷操作" class="quick-panel">
         <div class="quick">
-          <button v-for="q in ['快速派单', '待处理任务提醒', '批量调度']" :key="q" class="q-btn" type="button">
+          <button v-for="q in ['快速派单', '待处理任务提醒', '批量调度']" :key="q" class="q-btn" type="button" @click="quickAction(q)">
             {{ q }}
           </button>
         </div>

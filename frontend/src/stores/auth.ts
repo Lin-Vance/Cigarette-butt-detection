@@ -14,7 +14,7 @@ export interface CurrentUser {
 }
 
 const STORAGE_KEY = 'yz.auth'
-const AVATAR = '/design-assets/2/supervisor_profile_avatar.png'
+const AVATAR = '/media/avatars/supervisor.png'
 
 /**
  * 登录态有效期，与后端 `expires_in = 7200`（2 小时）对齐（缺陷 D-17）。
@@ -195,6 +195,22 @@ export const useAuthStore = defineStore('auth', () => {
     return localLogin(username, password)
   }
 
+  async function loginByCode(username: string, code: string, role: 'worker' | 'admin'): Promise<{ ok: boolean; message: string }> {
+    if (!USE_API) return { ok: false, message: '验证码登录需要连接后端服务' }
+    try {
+      const res = await api.loginByCode(username.trim(), code, role)
+      token.value = res.access_token
+      user.value = { username: res.user.username, realName: res.user.real_name || res.user.username, role: res.user.role, avatar: AVATAR }
+      apiPages.value = res.user.allowed_pages
+      loginAt.value = Date.now()
+      setAdminToken(res.access_token)
+      persist()
+      return { ok: true, message: '验证码登录成功' }
+    } catch (err) {
+      return { ok: false, message: toFailure(err).message }
+    }
+  }
+
   function logout() {
     if (USE_API && token.value) {
       // 让后端留下退出审计；失败不阻塞前端登出
@@ -210,5 +226,5 @@ export const useAuthStore = defineStore('auth', () => {
 
   restore()
 
-  return { token, user, loginAt, apiPages, isLoggedIn, roleLabel, allowedPageNames, login, logout, restore }
+  return { token, user, loginAt, apiPages, isLoggedIn, roleLabel, allowedPageNames, login, loginByCode, logout, restore }
 })

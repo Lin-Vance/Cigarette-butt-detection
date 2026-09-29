@@ -13,6 +13,7 @@
  */
 import { computed, onMounted, onUnmounted, ref } from 'vue'
 import { useDemoStore } from '@/stores/demo'
+import { http, toFailure } from '@/api/client'
 
 const demo = useDemoStore()
 const root = ref<HTMLElement | null>(null)
@@ -23,12 +24,83 @@ function togglePhone() {
   phoneOn.value = !phoneOn.value
 }
 
+/** 第二屏公开体验：只做烟蒂垃圾环境判断，不采集、识别人脸或人员身份。 */
+const demoFileName = ref('')
+const demoPreview = ref('')
+const demoInput = ref<HTMLInputElement | null>(null)
+const demoAnalyzing = ref(false)
+const demoError = ref('')
+type DemoDetection = { label: string; label_zh?: string; confidence: number; box: number[] }
+type DemoResult = {
+  engine: string
+  detected: boolean
+  confidence: number
+  count: number
+  verdict_label: string
+  summary: string
+  detections: DemoDetection[]
+  timings: { infer_ms?: number; image_width?: number; image_height?: number }
+}
+const demoResult = ref<DemoResult | null>(null)
+
+const cigaretteDetections = computed(() =>
+  (demoResult.value?.detections ?? []).filter((item) => item.label === 'cigarette' && item.confidence >= 60)
+)
+
+function detectionStyle(item: DemoDetection) {
+  const width = demoResult.value?.timings.image_width ?? 0
+  const height = demoResult.value?.timings.image_height ?? 0
+  if (!width || !height || item.box.length !== 4) return { display: 'none' }
+  const [x1, y1, x2, y2] = item.box
+  return {
+    left: `${(x1 / width) * 100}%`,
+    top: `${(y1 / height) * 100}%`,
+    width: `${((x2 - x1) / width) * 100}%`,
+    height: `${((y2 - y1) / height) * 100}%`
+  }
+}
+
+function retryPublicDemo() {
+  demoFileName.value = ''
+  demoResult.value = null
+  demoError.value = ''
+  demoAnalyzing.value = false
+  if (demoPreview.value) URL.revokeObjectURL(demoPreview.value)
+  demoPreview.value = ''
+  if (demoInput.value) {
+    demoInput.value.value = ''
+    demoInput.value.click()
+  }
+}
+
+async function onPublicDemoFile(event: Event) {
+  const input = event.target as HTMLInputElement
+  const file = input.files?.[0]
+  if (!file) return
+  demoFileName.value = file.name
+  demoResult.value = null
+  demoError.value = ''
+  demoAnalyzing.value = true
+  if (demoPreview.value) URL.revokeObjectURL(demoPreview.value)
+  demoPreview.value = URL.createObjectURL(file)
+  try {
+    const form = new FormData()
+    form.append('file', file)
+    const { data } = await http.post<DemoResult>('/public/ai/inspect', form, { timeout: 150000 })
+    demoResult.value = data
+  } catch (error) {
+    demoError.value = toFailure(error).message
+  } finally {
+    demoAnalyzing.value = false
+  }
+}
+
 /* ------------------------------------------------------------------ 内容 */
 
 /** 五个章节，顶栏导航与编号共用 */
 const CHAPTERS = [
   { no: '01', id: 'c1', label: '主张' },
-  { no: '02', id: 'c2', label: '断点' },
+  { no: '02', id: 'c2', label: '环境检测' },
   { no: '03', id: 'c3', label: '机制' },
   { no: '04', id: 'c4', label: '证据' },
   { no: '05', id: 'c5', label: '边界' }
@@ -36,37 +108,9 @@ const CHAPTERS = [
 
 /** 第一屏的三段能力（原 Hero 的三个胶囊，保留） */
 const CAPS = [
-  { k: 'INPUT', v: '连续视频', note: '不是一张照片' },
-  { k: 'REVIEW', v: '人工复核', note: 'AI 只给候选' },
-  { k: 'OUTPUT', v: '治理闭环', note: '任务与回音' }
-]
-
-/** §02：断点对照 */
-const CONTRAST = [
-  {
-    tag: '只看到结果',
-    tone: 'dim',
-    title: '地上一枚烟头',
-    can: ['知道某处出现了烟头', '知道它大概在哪个位置'],
-    cant: [
-      '说不清是谁丢的',
-      '说不清发生在几点几分',
-      '说不清是随手一抛还是另有原因',
-      '无从追溯是否重复发生'
-    ]
-  },
-  {
-    tag: '还原过程',
-    tone: 'live',
-    title: '一段连续动作',
-    can: [
-      '起止时刻精确到帧',
-      '手部与烟头运动轨迹可回看',
-      '落地位置有坐标标记',
-      '同一位置可做重复发生统计'
-    ],
-    cant: ['不用于识别自然人身份', '不自动作出处罚决定']
-  }
+  { k: 'INPUT', v: '环境素材', note: '只拍垃圾与设施' },
+  { k: 'PRIVACY', v: '不识别人脸', note: '不跟踪、不定责' },
+  { k: 'OUTPUT', v: '清扫闭环', note: '任务与回音' }
 ]
 
 /** §03：五段闭环 */
@@ -120,19 +164,19 @@ const SCENES = [
 /** §04 证据：同一次事件的三个关键帧（截图取自设计稿素材，演示用） */
 const FRAMES = [
   {
-    src: '/design-assets/6/pedestrian_smoke_camera_thumbnail.png',
+    src: '/media/cameras/pedestrian-smoking.png',
     code: 'F-0288',
     ms: '2880 ms',
     alt: '持烟识别画面'
   },
   {
-    src: '/design-assets/6/sidewalk_pedestrian_camera_thumbnail.png',
+    src: '/media/cameras/sidewalk-pedestrian.png',
     code: 'F-0324',
     ms: '3240 ms',
     alt: '烟头释放画面'
   },
   {
-    src: '/design-assets/6/pedestrian_crosswalk_camera_thumbnail.png',
+    src: '/media/cameras/pedestrian-crosswalk.png',
     code: 'F-0372',
     ms: '3720 ms',
     alt: '落地判定画面'
@@ -247,6 +291,7 @@ onUnmounted(() => {
   root.value?.removeEventListener('scroll', onScroll)
   window.removeEventListener('resize', measure)
   ro?.disconnect()
+  if (demoPreview.value) URL.revokeObjectURL(demoPreview.value)
 })
 </script>
 
@@ -277,7 +322,7 @@ onUnmounted(() => {
       </nav>
 
       <div class="lp-acts">
-        <a class="lp-app" href="./citizen.html#/citizen?autologin=citizen&amp;app=1">市民 App</a>
+        <a class="lp-app" href="./citizen.html#/citizen?app=1">市民 App</a>
         <a class="lp-ghost" href="./auth.html">登录</a>
         <a class="lp-solid" href="./auth.html">注册</a>
       </div>
@@ -299,10 +344,10 @@ onUnmounted(() => {
 
       <div class="hero-inner">
         <p class="kicker">CIVIC FORENSICS · 烟踪智治</p>
-        <h1>我们识别的不是烟头，<br />是动作</h1>
+        <h1>我们识别的是垃圾，<br />不是人</h1>
         <p class="lead">
-          从连续视频中发现疑似抛掷过程，经人工复核转化为清理任务与治理线索。
-          每一步都留下可回看的证据，而不是一句结论。
+          照片或短视频只需对准地面烟蒂、散落垃圾与设施状态。
+          系统不识别人脸、不追踪人员，只把环境问题转化为清扫任务。
         </p>
 
         <div class="caps">
@@ -314,7 +359,7 @@ onUnmounted(() => {
         </div>
 
         <div class="hero-cta">
-          <a class="btn btn--solid" href="./citizen.html#/citizen?autologin=citizen&amp;app=1">打开市民端 App <i>→</i></a>
+          <a class="btn btn--solid" href="./citizen.html#/citizen?app=1">打开市民端 App <i>→</i></a>
           <a class="btn btn--ghost hero-login" href="./auth.html">登录 / 注册</a>
         </div>
         <p class="hero-note">演示原型 · 全部为演示数据 · 共 5 屏，向下滚动</p>
@@ -325,35 +370,62 @@ onUnmounted(() => {
       </button>
     </section>
 
-    <!-- ---------------- §02 断点 ---------------- -->
+    <!-- ---------------- §02 市民端技术公开体验 ---------------- -->
     <section class="ch ch--plain" data-ch="c2" data-reveal>
       <header class="sec-head">
-        <p class="sec-no">02 / 断点</p>
-        <h2>地上的一个烟头，<br />说不清任何事</h2>
+        <p class="sec-no">02 / 隐私优先的环境检测</p>
+        <h2>只拍烟蒂垃圾，<br />不拍人</h2>
         <p class="sec-lead">
-          治理卡住的地方往往不是「没发现」，而是发现了却无法回溯过程：
-          没有起止时刻、没有轨迹、没有落点依据，最后只剩一张无法说明来龙去脉的照片。
+          市民端已经移除面向人物的拍摄与身份判断。上传地面照片后，
+          系统只判断烟蒂垃圾、散落程度和设施满溢，并给出是否建议清扫的结果。
         </p>
       </header>
 
-      <div class="contrast">
-        <article v-for="c in CONTRAST" :key="c.tag" class="cs" :class="`cs--${c.tone}`">
-          <p class="cs-tag">{{ c.tag }}</p>
-          <h3>{{ c.title }}</h3>
-          <div class="cs-lists">
-            <div>
-              <p class="cs-h">能说明</p>
-              <ul>
-                <li v-for="x in c.can" :key="x">{{ x }}</li>
-              </ul>
-            </div>
-            <div>
-              <p class="cs-h">{{ c.tone === 'live' ? '仍然不做' : '说明不了' }}</p>
-              <ul>
-                <li v-for="x in c.cant" :key="x">{{ x }}</li>
-              </ul>
-            </div>
+      <div class="privacy-demo">
+        <article class="demo-upload">
+          <span class="demo-eyebrow">PUBLIC MODEL · REAL INFERENCE</span>
+          <h3>上传一张现场照片</h3>
+          <p>模型会检测烟头目标并返回实际候选框和置信度；单张照片不用于判断抛掷动作。</p>
+          <label class="demo-drop">
+            <input ref="demoInput" type="file" accept="image/jpeg,image/png,image/webp,image/bmp" @change="onPublicDemoFile" />
+            <i>{{ demoAnalyzing ? '…' : demoFileName ? '✓' : '＋' }}</i>
+            <b>{{ demoFileName || '选择一张现场照片' }}</b>
+            <small>JPG / PNG / WEBP / BMP · 上限 20MB</small>
+          </label>
+          <div class="privacy-row">
+            <span>✓ 不识别人脸</span><span>✓ 不追踪人员</span><span>✓ 不自动定责</span>
           </div>
+        </article>
+
+        <article class="demo-report" :class="{ ready: demoResult }">
+          <header><span>AI 环境判断</span><em>{{ demoAnalyzing ? '模型推理中' : demoResult ? '已完成' : demoError ? '识别失败' : '等待素材' }}</em></header>
+          <div v-if="demoAnalyzing" class="demo-loading"><i></i><b>正在运行烟头检测模型并检查目标…</b></div>
+          <template v-else-if="demoResult">
+            <figure class="demo-detection" :class="{ clear: !demoResult.detected }">
+              <img :src="demoPreview" alt="上传图片及模型实际检测框" />
+              <span
+                v-for="(item, index) in cigaretteDetections"
+                :key="index"
+                class="detect-box target"
+                :style="detectionStyle(item)"
+              ><b>疑似烟头 {{ item.confidence }}%</b></span>
+              <figcaption><strong>{{ demoResult.detected ? '检测到候选目标：' : '未检出烟头：' }}</strong>{{ demoResult.detected ? '候选框来自模型输出，需人工复核。' : '当前图片不会生成错误行为结论。' }}</figcaption>
+            </figure>
+            <div class="demo-score"><strong>{{ demoResult.confidence > 0 ? `${demoResult.confidence}%` : '—' }}</strong><span>烟头目标最高置信度</span></div>
+            <h3>{{ demoResult.verdict_label }}</h3>
+            <p>{{ demoResult.summary }}</p>
+            <ul><li>烟头候选目标 · {{ demoResult.count }} 处</li><li>实际推理耗时 · {{ demoResult.timings.infer_ms ?? 0 }} ms</li><li>静态图片 · 不判断抛掷动作</li></ul>
+            <div class="demo-actions">
+              <button v-if="demoResult.detected" type="button">生成清扫候选线索</button>
+              <button class="retry" type="button" @click="retryPublicDemo">重新检测</button>
+            </div>
+          </template>
+          <template v-else-if="demoError">
+            <div class="demo-empty demo-failed"><b>模型识别失败</b><span>{{ demoError }}</span><small>请确认 Python 模型服务已启动后重试。</small><button class="retry" type="button" @click="retryPublicDemo">重新检测</button></div>
+          </template>
+          <template v-else>
+            <div class="demo-empty"><b>判断结果会显示在这里</b><span>烟蒂垃圾 · 散落程度 · 设施状态 · 清扫建议</span></div>
+          </template>
         </article>
       </div>
     </section>
@@ -420,7 +492,7 @@ onUnmounted(() => {
       <div class="evidence">
         <figure class="ev-main">
           <img
-            src="/design-assets/2/event_detection_evidence_photo.png"
+            src="/media/evidence/event-detection.png"
             alt="监控画面：红框标出烟头动作，绿框标出烟头落点，左上角为发生时刻（演示素材）"
           />
           <figcaption>
@@ -477,15 +549,15 @@ onUnmounted(() => {
           <h3>把「监督」装进口袋</h3>
           <p>
             手机版是市民端的主形态：底部五个入口，中间一颗放大的
-            <b>监督拍照</b> 按钮，抬起手机就能拍，拍完当场拿到 AI 检测报告。
+            <b>拍烟蒂垃圾</b> 按钮，镜头只需对准地面，拍完当场拿到环境检测报告。
           </p>
           <ul class="app-points">
-            <li><i>01</i><span><b>中间直接拍照</b>调起系统相机，拍完立刻做模型复检</span></li>
-            <li><i>02</i><span><b>当场出报告</b>检出目标、置信度与证据链口径一次说清</span></li>
+            <li><i>01</i><span><b>只拍地面垃圾</b>调起系统相机，不需要拍摄任何人</span></li>
+            <li><i>02</i><span><b>当场出报告</b>烟蒂垃圾、设施状态与清扫建议一次说清</span></li>
             <li><i>03</i><span><b>可以提异议</b>不同意 AI 判断就写理由，反馈直达管理端</span></li>
           </ul>
           <div class="app-acts">
-            <a class="btn btn--solid" href="./citizen.html#/citizen?autologin=citizen&amp;app=1">打开市民端 App <i>→</i></a>
+            <a class="btn btn--solid" href="./citizen.html#/citizen?app=1">打开市民端 App <i>→</i></a>
             <button class="btn btn--ghost" type="button" @click="togglePhone">
               {{ phoneOn ? '收起预览' : '切换预览' }}
             </button>
@@ -501,7 +573,7 @@ onUnmounted(() => {
             ></iframe>
             <div v-else class="phone-idle">点「切换预览」载入手机版界面</div>
           </div>
-          <small>真机视口 390 宽 · 预览高度 640 · 底部那颗放大的「监督拍照」就是 App 主入口</small>
+          <small>真机视口 390 宽 · 预览高度 640 · 底部「拍烟蒂垃圾」是 App 主入口</small>
         </div>
       </section>
 
@@ -970,6 +1042,70 @@ onUnmounted(() => {
 /* ============================================================
    §02 断点对照
    ============================================================ */
+.privacy-demo {
+  display: grid;
+  grid-template-columns: minmax(0, 1.08fr) minmax(340px, .92fr);
+  gap: 18px;
+  margin-top: 52px;
+}
+.demo-upload,
+.demo-report {
+  min-height: 410px;
+  padding: 30px;
+  border: 1px solid var(--line);
+  border-radius: 22px;
+  background: linear-gradient(155deg, rgba(255,255,255,.055), rgba(255,255,255,.012));
+}
+.demo-upload { border-color: rgba(69,207,224,.24); }
+.demo-detection{position:relative;height:170px;margin:14px 0 16px;overflow:hidden;border:1px solid rgba(87,211,224,.28);border-radius:10px;background:#07121e}.demo-detection img{width:100%;height:100%;object-fit:fill;filter:saturate(.9) brightness(.78)}.demo-detection.clear{border-color:rgba(87,211,160,.5)}.detect-box{position:absolute;box-sizing:border-box;min-width:38px;min-height:28px;border:2px solid #ffbe3f;border-radius:4px;background:rgba(8,17,28,.2);color:#fff;font-size:10px;line-height:1.35}.detect-box b{position:absolute;left:-2px;top:-20px;display:block;white-space:nowrap;padding:2px 5px;border-radius:3px 3px 0 0;background:#ffbe3f;color:#14202b;font-size:9px}.demo-detection figcaption{position:absolute;left:0;right:0;bottom:0;padding:7px 10px;background:rgba(3,12,20,.88);color:#dce9f1;font-size:10px}.demo-detection figcaption strong{color:#60ddb0}.demo-failed{border-color:rgba(255,104,104,.32)}.demo-failed b{color:#ff8a83}.demo-failed small{color:#718294;font-size:10px}
+.demo-eyebrow {
+  font: 700 10px/1.4 Consolas, monospace;
+  letter-spacing: .2em;
+  color: var(--cyan);
+}
+.demo-upload h3 { margin-top: 18px; font-size: 27px; }
+.demo-upload > p { margin-top: 12px; color: var(--muted); font-size: 13px; line-height: 1.8; }
+.demo-drop {
+  display: flex;
+  min-height: 170px;
+  margin-top: 26px;
+  border: 1px dashed rgba(69,207,224,.5);
+  border-radius: 16px;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  background: rgba(69,207,224,.055);
+  cursor: pointer;
+}
+.demo-drop input { position: absolute; width: 1px; height: 1px; opacity: 0; pointer-events: none; }
+.demo-drop i { color: var(--cyan); font: 300 34px/1 sans-serif; font-style: normal; }
+.demo-drop b { font-size: 15px; }
+.demo-drop small { color: var(--muted-2); font-size: 11px; }
+.privacy-row { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 18px; }
+.privacy-row span { padding: 6px 9px; border-radius: 999px; background: rgba(62,207,142,.09); color: #7ee4ba; font-size: 11px; }
+.demo-report { display: flex; flex-direction: column; }
+.demo-report.ready { border-color: rgba(62,207,142,.36); box-shadow: 0 24px 70px -45px rgba(62,207,142,.75); }
+.demo-report header { display: flex; align-items: center; justify-content: space-between; }
+.demo-report header span { font-weight: 700; }
+.demo-report header em { padding: 4px 9px; border-radius: 999px; background: rgba(255,255,255,.07); color: var(--muted); font-size: 10px; font-style: normal; }
+.demo-empty,
+.demo-loading { display: flex; flex: 1; flex-direction: column; align-items: center; justify-content: center; gap: 9px; text-align: center; }
+.demo-empty b { font-size: 18px; }
+.demo-empty span { color: var(--muted-2); font-size: 12px; }
+.demo-loading i { width: 36px; height: 36px; border: 2px solid rgba(69,207,224,.2); border-top-color: var(--cyan); border-radius: 50%; animation: spin .8s linear infinite; }
+.demo-loading b { color: var(--muted); font-size: 13px; }
+@keyframes spin { to { transform: rotate(360deg); } }
+.demo-score { display: flex; align-items: end; gap: 12px; margin-top: 42px; }
+.demo-score strong { color: var(--cyan); font: 700 46px/1 Consolas, monospace; }
+.demo-score span { padding-bottom: 5px; color: var(--muted-2); font-size: 11px; }
+.demo-report > h3 { margin-top: 22px; font-size: 22px; }
+.demo-report > p { margin-top: 9px; color: var(--muted); font-size: 12px; line-height: 1.75; }
+.demo-report ul { display: grid; gap: 8px; margin-top: 20px; list-style: none; }
+.demo-report li { padding: 8px 10px; border-radius: 8px; background: rgba(255,255,255,.045); color: rgba(238,243,248,.78); font-size: 12px; }
+.demo-report button { margin-top: auto; padding: 11px; border: 0; border-radius: 10px; background: linear-gradient(90deg, var(--moss), var(--cyan)); color: #07121a; font-weight: 800; cursor: pointer; }
+.demo-actions{display:grid;grid-template-columns:1fr auto;gap:10px;margin-top:auto}.demo-actions button{margin-top:0}.demo-report button.retry{min-width:112px;border:1px solid rgba(87,211,224,.42);background:rgba(87,211,224,.08);color:#7ce7ed}.demo-failed button.retry{margin-top:16px}
+
 .contrast {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -1513,6 +1649,8 @@ onUnmounted(() => {
 }
 
 @media (max-width: 760px) {
+  .privacy-demo { grid-template-columns: 1fr; }
+  .demo-upload, .demo-report { min-height: 360px; padding: 22px; }
   .lp-nav {
     display: none;
   }

@@ -107,7 +107,8 @@ watch(
   flex-direction: column;
   border: 1px solid #dce8f1;
   border-radius: 8px;
-  overflow: hidden;
+  overflow: auto;
+  min-height: 0;
   background: rgba(255, 255, 255, 0.6);
 }
 
@@ -127,7 +128,8 @@ watch(
   align-items: center;
   min-height: 38px;
   border-bottom: 1px solid #e8f0f6;
-  font-size: 12px;
+  font-size: 13px;
+  font-weight: 500;
   color: var(--yz-text-body);
 }
 
@@ -139,15 +141,18 @@ watch(
   min-height: 34px;
   background: #f4f9fd;
   color: var(--yz-text-muted);
-  font-weight: 700;
+  font-weight: 800;
+  position: sticky;
+  top: 0;
+  z-index: 2;
 }
 
 .dense .tr {
-  min-height: 32px;
+  min-height: 36px;
 }
 
 .dense .tr.th {
-  min-height: 30px;
+  min-height: 34px;
 }
 
 .tr.clickable {

@@ -1,11 +1,27 @@
-# ===== Python 字节码 / 缓存（重新生成即可，不入库）=====
+# Local configuration and secrets
+.env
+*.env.local
+
+# Runtime data and logs
+*.log
+backend/data/*.db*
+backend/storage/evidence/*
+!backend/storage/evidence/.gitkeep
+
+# Python
 __pycache__/
 *.py[cod]
+.venv/
+.pytest_cache/
 
-# ===== Vite 崩溃残留的临时配置 =====
-vite.config.ts.timestamp-*.mjs
+# Node / Vite
+node_modules/
+dist/
+coverage/
+*.timestamp-*.mjs
 
-# ===== 系统 / 编辑器 =====
+# Editors and OS
+.vscode/
+.idea/
 .DS_Store
 Thumbs.db
-Desktop.ini

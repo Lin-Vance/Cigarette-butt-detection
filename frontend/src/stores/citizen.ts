@@ -43,9 +43,9 @@ export const useCitizenStore = defineStore('citizen', () => {
     localStorage.setItem(STORAGE_KEY, JSON.stringify({ token: token.value, profile: profile.value }))
   }
 
-  function localLogin(phone: string, code: string) {
+  function localLogin(phone: string, credential: string, method: 'code' | 'password' = 'code') {
     if (!/^1\d{10}$/.test(phone)) return { ok: false, message: '请输入正确的11位手机号' }
-    if (code !== '123456') return { ok: false, message: '演示验证码为 123456' }
+    if (credential !== '123456') return { ok: false, message: method === 'password' ? '演示密码为 123456' : '演示验证码为 123456' }
     token.value = `citizen-demo-${Date.now()}`
     profile.value = {
       phone,
@@ -63,15 +63,15 @@ export const useCitizenStore = defineStore('citizen', () => {
    * - `VITE_USE_API=1`：POST /auth/citizen/login，拿真实令牌
    * - 后端不可达时**回退本地演示登录**，保证断网也能演示
    */
-  async function login(phone: string, code: string): Promise<{ ok: boolean; message: string }> {
+  async function login(phone: string, credential: string, method: 'code' | 'password' = 'code', mode: 'login' | 'register' = 'login', verificationCode = ''): Promise<{ ok: boolean; message: string }> {
     if (USE_API) {
       // 后端不可达时不要等 axios 超时，直接回退本地演示登录（D-22）
       if (!(await backendReachable())) {
         backendOnline.value = false
-        return localLogin(phone, code)
+        return localLogin(phone, credential, method)
       }
       try {
-        const res = await api.citizenLogin(phone, code)
+        const res = await api.citizenLogin(phone, credential, method, mode, verificationCode)
         token.value = res.access_token
         profile.value = res.profile
         setCitizenToken(res.access_token)
@@ -86,10 +86,10 @@ export const useCitizenStore = defineStore('citizen', () => {
         // 网络不可达 → 回退本地演示
         backendOnline.value = false
         lastError.value = failure.message
-        return localLogin(phone, code)
+        return localLogin(phone, credential, method)
       }
     }
-    return localLogin(phone, code)
+    return localLogin(phone, credential, method)
   }
 
   function logout() {
