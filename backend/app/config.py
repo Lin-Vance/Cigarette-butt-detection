@@ -59,6 +59,10 @@ class Settings(BaseSettings):
     #                而前端预检超时是 3.5 秒 → 会退回本地预检，看不到真实模型结果。
     #   AI_WARMUP=1  启动慢约 1 分钟，但之后每次上传都在 1 秒内返回真实检测结果。**演示建议保持 1**。
     ai_warmup: bool = True
+    # 固定摄像头地面目标跟踪：冷启动基线、遮挡续接和候选人员关联窗口。
+    ai_baseline_frames: int = 30
+    ai_max_missed_frames: int = 8
+    ai_person_window_ms: int = 3000
 
     cors_origins: list[str] = [
         "http://127.0.0.1:5180",

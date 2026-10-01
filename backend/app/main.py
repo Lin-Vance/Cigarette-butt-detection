@@ -22,7 +22,7 @@ from .generator import ensure_pool
 from .deps import require_roles
 from .models import User
 from .redis_client import close_redis, get_redis, init_redis
-from .routers import audit, auth, camera, decision, event, inference, report, stats, workorder
+from .routers import audit, auth, camera, decision, event, inference, report, stats, tracking, workorder
 from .routers import activity as activity_router
 from .routers import ws as ws_router
 from .seed import ensure_demo_citizen, seed_all
@@ -98,9 +98,9 @@ app = FastAPI(
     version=settings.version,
     description=(
         "烟踪智治后端服务 · FastAPI 单体。\n\n"
-        "**重要声明**：AI 行为识别管道（三段式状态机 / ByteTrack / 光流法 / 抛物线拟合）"
-        "尚未实现，本服务内置**合规事件生成器**产出演示事件，全部数据均标注为演示数据，"
-        "不代表真实识别结果。"
+        "**重要声明**：固定摄像头接口已实现地面 ROI 切片检测、IoU/中心距跨帧跟踪、"
+        "冷启动基线与最近人员候选关联；它只生成待人工复核的环境线索。"
+        "光流、抛物线动作恢复及自动责任认定尚未实现，演示事件仍明确标注为演示数据。"
     ),
     lifespan=lifespan,
     docs_url=None if settings.environment.lower() == "production" else "/docs",
@@ -179,6 +179,7 @@ app.include_router(decision.router, prefix=api)
 app.include_router(audit.router, prefix=api)
 app.include_router(activity_router.router, prefix=api)
 app.include_router(inference.router, prefix=api)
+app.include_router(tracking.router, prefix=api)
 app.include_router(ws_router.router)
 
 

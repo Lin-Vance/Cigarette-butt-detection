@@ -22,6 +22,25 @@ Copy-Item .env.example .env
 - `ENVIRONMENT=production`：关闭接口文档并启用生产密钥校验。
 - `EXPOSE_DEMO_CODES=false`：生产环境必须关闭验证码回显。
 - `AI_WARMUP=1`：启动后后台预热 `cigarette-detector.pt`。
+- `AI_BASELINE_FRAMES=30`：每路摄像头冷启动时用于登记历史遗留目标的帧数。
+- `AI_MAX_MISSED_FRAMES=8`：遮挡或漏检后允许续接原目标 ID 的帧数。
+- `AI_PERSON_WINDOW_MS=3000`：新地面目标与附近人员做候选关联的前后时间窗。
+
+## 固定摄像头地面目标跟踪
+
+`POST /api/v1/ai/ground-tracking/frame` 接收连续图片帧（multipart）：
+
+- `camera_id`：已登记摄像头编号；
+- `file`：当前图片帧；
+- `timestamp_ms`：采集时间戳；
+- `ground_roi`：可选的二维坐标 JSON。未传时使用摄像头档案 ROI，再缺省时取画面下方 55%。
+
+推理会把地面 ROI 划分成带重叠的 640px 切片，各自放大 2 倍后使用现有
+`cigarette-detector.pt` 检测，避免整帧缩放丢失 10–20px 小目标。返回目标的
+`target_id`、`first_seen_ms`、`last_confirmed_ms`、位置、新旧分类和人员候选关联。
+
+跟踪状态保存在进程内，因此摄像头帧必须按时间顺序提交，部署时使用单个 Uvicorn worker。
+服务重启后会按设计重新执行冷启动基线。人员关联只表示时间窗内距离最近，不构成责任认定。
 
 ## 安全边界
 
@@ -36,6 +55,7 @@ Copy-Item .env.example .env
 
 ```powershell
 python -m compileall -q app
+python -m unittest discover -s tests -p "test_ground_tracking.py" -v
 python tests\test_golden_path.py
 python -m pip check
 ```

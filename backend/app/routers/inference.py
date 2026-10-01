@@ -190,6 +190,177 @@ def _build_report(detections: list[dict], timings: dict) -> dict:
     }
 
 
+def _nms(detections: list[dict], iou_threshold: float = 0.45) -> list[dict]:
+    """合并相邻切片重叠区域里的重复框。"""
+    ordered = sorted(detections, key=lambda item: item["confidence"], reverse=True)
+    kept: list[dict] = []
+    for candidate in ordered:
+        ax1, ay1, ax2, ay2 = candidate["box"]
+        duplicate = False
+        for existing in kept:
+            bx1, by1, bx2, by2 = existing["box"]
+            left, top = max(ax1, bx1), max(ay1, by1)
+            right, bottom = min(ax2, bx2), min(ay2, by2)
+            inter = max(0.0, right - left) * max(0.0, bottom - top)
+            area_a = max(0.0, ax2 - ax1) * max(0.0, ay2 - ay1)
+            area_b = max(0.0, bx2 - bx1) * max(0.0, by2 - by1)
+            iou = inter / max(area_a + area_b - inter, 1e-6)
+            if iou >= iou_threshold:
+                duplicate = True
+                break
+        if not duplicate:
+            kept.append(candidate)
+    return kept
+
+
+def _normalize_roi(
+    roi_polygon: list[list[float]] | None, width: int, height: int
+) -> list[list[int]]:
+    """把归一化/像素 ROI 统一为原图像素；缺省使用画面下方 55%。"""
+    if not roi_polygon or len(roi_polygon) < 3:
+        top = int(height * 0.45)
+        return [[0, top], [width - 1, top], [width - 1, height - 1], [0, height - 1]]
+    normalized = all(
+        isinstance(point, (list, tuple))
+        and len(point) >= 2
+        and 0 <= float(point[0]) <= 1
+        and 0 <= float(point[1]) <= 1
+        for point in roi_polygon
+    )
+    result: list[list[int]] = []
+    for point in roi_polygon:
+        if not isinstance(point, (list, tuple)) or len(point) < 2:
+            continue
+        x = float(point[0]) * width if normalized else float(point[0])
+        y = float(point[1]) * height if normalized else float(point[1])
+        result.append([max(0, min(width - 1, round(x))), max(0, min(height - 1, round(y)))])
+    if len(result) < 3:
+        raise ApiError("AI_ROI_INVALID", "地面 ROI 至少需要三个有效坐标点", 422)
+    return result
+
+
+def _extract_detections(result, labels: set[str], *, offset=(0, 0), scale=1.0) -> list[dict]:
+    names = result.names or {}
+    detections: list[dict] = []
+    if result.boxes is None:
+        return detections
+    boxes = result.boxes.xyxy.tolist() if result.boxes.xyxy is not None else []
+    for index, (cls_id, confidence) in enumerate(zip(result.boxes.cls.tolist(), result.boxes.conf.tolist())):
+        label = str(names.get(int(cls_id), int(cls_id)))
+        if label not in labels or index >= len(boxes):
+            continue
+        x1, y1, x2, y2 = boxes[index]
+        mapped = [
+            float(x1) / scale + offset[0],
+            float(y1) / scale + offset[1],
+            float(x2) / scale + offset[0],
+            float(y2) / scale + offset[1],
+        ]
+        detections.append(
+            {
+                "label": label,
+                "label_zh": LABEL_ZH.get(label, label),
+                "confidence": round(float(confidence) * 100, 1),
+                "box": [round(value, 1) for value in mapped],
+            }
+        )
+    return detections
+
+
+async def infer_camera_frame(data: bytes, roi_polygon: list[list[float]] | None) -> dict:
+    """地面 ROI 切片放大检测烟头，同时在整帧检测人员/手部。
+
+    地面区域按 640px 切片并保留 20% 重叠，每片放大 2 倍后以 1280 输入模型。
+    因此不会把整张 1080p/4K 帧先压成 640，10–20px 小目标仍保留细节。
+    """
+    model = get_model()
+    device = _pick_device()
+
+    def _infer_sync() -> dict:
+        import cv2
+        import numpy as np
+
+        started = time.perf_counter()
+        frame = cv2.imdecode(np.frombuffer(data, dtype=np.uint8), cv2.IMREAD_COLOR)
+        if frame is None:
+            raise ApiError("AI_IMAGE_INVALID", "无法解码摄像头帧", 422)
+        height, width = frame.shape[:2]
+        roi = _normalize_roi(roi_polygon, width, height)
+        polygon = np.asarray(roi, dtype=np.int32)
+        x, y, w, h = cv2.boundingRect(polygon)
+        if w < 32 or h < 32:
+            raise ApiError("AI_ROI_INVALID", "地面 ROI 范围过小", 422)
+        mask = np.zeros((height, width), dtype=np.uint8)
+        cv2.fillPoly(mask, [polygon], 255)
+
+        names = model.names if hasattr(model, "names") else {}
+        name_to_id = {str(name): int(class_id) for class_id, name in names.items()}
+        cigarette_ids = [name_to_id["cigarette"]] if "cigarette" in name_to_id else None
+        people_ids = [name_to_id[name] for name in ("person", "hand") if name in name_to_id] or None
+
+        cigarettes: list[dict] = []
+        tile_size, stride, scale = 640, 512, 2.0
+        x_starts = list(range(x, max(x + 1, x + w - tile_size + 1), stride))
+        y_starts = list(range(y, max(y + 1, y + h - tile_size + 1), stride))
+        last_x, last_y = max(x, x + w - tile_size), max(y, y + h - tile_size)
+        if not x_starts or x_starts[-1] != last_x:
+            x_starts.append(last_x)
+        if not y_starts or y_starts[-1] != last_y:
+            y_starts.append(last_y)
+        x_starts, y_starts = sorted(set(x_starts)), sorted(set(y_starts))
+
+        for tile_y in y_starts:
+            for tile_x in x_starts:
+                tile_x2, tile_y2 = min(width, tile_x + tile_size), min(height, tile_y + tile_size)
+                tile = frame[tile_y:tile_y2, tile_x:tile_x2]
+                tile_mask = mask[tile_y:tile_y2, tile_x:tile_x2]
+                if tile.size == 0 or cv2.countNonZero(tile_mask) < tile_mask.size * 0.05:
+                    continue
+                masked = cv2.bitwise_and(tile, tile, mask=tile_mask)
+                enlarged = cv2.resize(masked, None, fx=scale, fy=scale, interpolation=cv2.INTER_CUBIC)
+                result = model.predict(
+                    source=enlarged,
+                    conf=0.10,
+                    device=device,
+                    imgsz=1280,
+                    classes=cigarette_ids,
+                    verbose=False,
+                )[0]
+                cigarettes.extend(
+                    _extract_detections(result, {"cigarette"}, offset=(tile_x, tile_y), scale=scale)
+                )
+
+        scene = model.predict(
+            source=frame,
+            conf=0.15,
+            device=device,
+            imgsz=1280,
+            classes=people_ids,
+            verbose=False,
+        )[0]
+        people = _extract_detections(scene, {"person"})
+        hands = _extract_detections(scene, {"hand"})
+        elapsed_ms = int((time.perf_counter() - started) * 1000)
+        return {
+            "image_width": width,
+            "image_height": height,
+            "roi": {"polygon": roi, "source": "camera" if roi_polygon else "default_bottom_55_percent"},
+            "cigarettes": _nms(cigarettes),
+            "people": people,
+            "hands": hands,
+            "timings": {
+                "total_ms": elapsed_ms,
+                "device": device,
+                "ground_tiles": len(x_starts) * len(y_starts),
+                "tile_size": tile_size,
+                "tile_scale": scale,
+            },
+        }
+
+    async with _inference_gate:
+        return await run_in_threadpool(_infer_sync)
+
+
 @router.post("/inspect")
 async def inspect_material(file: UploadFile = File(...)) -> dict:
     """市民上传素材 → 当场返回 AI 报告。
