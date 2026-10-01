@@ -1,5 +1,6 @@
 """摄像头与 AI 控制：/cameras、/ai/config、/ai/preprocess/toggle、/ai/metrics。"""
 
+import json
 import random
 
 from fastapi import APIRouter, Depends, Request
@@ -10,17 +11,13 @@ from ..db import get_session
 from ..deps import CurrentUser, require_pages, require_roles
 from ..errors import camera_duplicate, camera_not_found, not_found
 from ..models import Camera, User
+from ..redis_client import get_redis, redis_key
 from ..schemas import AiConfigRequest, CameraCreate, CameraUpdate, PreprocessToggle
 from ..services import client_ip, paged, write_audit
 from ..timeutil import iso, now_cn
 
 router = APIRouter(prefix="/cameras", tags=["camera"])
 ai_router = APIRouter(prefix="/ai", tags=["camera"])
-
-# AI 参数的进程内存储（修订基线：无 Redis，进程内字典）
-_AI_CONFIG: dict[str, dict] = {}
-_PREPROCESS: dict[str, dict] = {}
-
 
 def camera_dict(cam: Camera) -> dict:
     return {
@@ -154,12 +151,16 @@ async def apply_ai_config(
         raise camera_not_found(payload.camera_id)
 
     updated_at = iso(now_cn())
-    _AI_CONFIG[payload.camera_id] = {
+    ai_config = {
         "confidence_threshold": payload.confidence_threshold,
         "state_machine_params": payload.state_machine_params,
         "roi": payload.roi,
         "updated_at": updated_at,
     }
+    await get_redis().set(
+        redis_key("ai", "config", payload.camera_id),
+        json.dumps(ai_config, ensure_ascii=False),
+    )
     if payload.roi and payload.roi.get("polygon"):
         cam.roi_polygon = payload.roi["polygon"]
 
@@ -198,12 +199,16 @@ async def toggle_preprocess(
     cam.preprocess_enabled = payload.enabled
     cam.preprocess_algorithm = payload.algorithm
     updated_at = iso(now_cn())
-    _PREPROCESS[payload.camera_id] = {
+    preprocess_config = {
         "enabled": payload.enabled,
         "algorithm": payload.algorithm,
         "auto_mode": payload.auto_mode,
         "updated_at": updated_at,
     }
+    await get_redis().set(
+        redis_key("ai", "preprocess", payload.camera_id),
+        json.dumps(preprocess_config, ensure_ascii=False),
+    )
     await write_audit(
         session,
         "AI_PREPROCESS_TOGGLE",

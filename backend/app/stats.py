@@ -1,8 +1,6 @@
 """统计聚合。
 
-刻意在 Python 层聚合而非写 `date_trunc` SQL：
-SQLite 与 PostgreSQL 的日期函数不通用，试点量级（数百行）下 Python 聚合无性能问题，
-换来的是「零改配置就能在两种库上跑」。
+试点量级数据在 Python 层聚合，避免统计接口与数据库特定日期函数耦合。
 """
 
 from collections import Counter, defaultdict

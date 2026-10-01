@@ -17,10 +17,11 @@ from fastapi.staticfiles import StaticFiles
 from starlette.exceptions import HTTPException as StarletteHTTPException
 
 from .config import BACKEND_DIR, get_settings
-from .db import get_session_factory, init_db
+from .db import check_database, close_database, get_session_factory, init_db
 from .generator import ensure_pool
 from .deps import require_roles
 from .models import User
+from .redis_client import close_redis, get_redis, init_redis
 from .routers import audit, auth, camera, decision, event, inference, report, stats, workorder
 from .routers import activity as activity_router
 from .routers import ws as ws_router
@@ -39,7 +40,11 @@ async def lifespan(app: FastAPI):
         or len(settings.jwt_secret) < 32
     ):
         raise RuntimeError("生产环境必须配置至少 32 位的随机 JWT_SECRET")
+    if settings.environment.lower() == "production" and "yanzong-dev-only" in settings.database_url:
+        raise RuntimeError("生产环境禁止使用默认 MySQL 演示密码")
     await init_db()
+    await init_redis()
+    await ws_router.manager.start()
     ensure_pool()
     if settings.seed_on_startup:
         async with get_session_factory()() as session:
@@ -83,6 +88,9 @@ async def lifespan(app: FastAPI):
     finally:
         if warm_task is not None and not warm_task.done():
             warm_task.cancel()
+        await ws_router.manager.stop()
+        await close_redis()
+        await close_database()
 
 
 app = FastAPI(
@@ -188,7 +196,13 @@ async def root() -> dict:
 
 @app.get("/healthz", tags=["meta"])
 async def healthz() -> dict:
-    return {"status": "ok"}
+    await check_database()
+    redis_ok = bool(await get_redis().ping())
+    return {
+        "status": "ok" if redis_ok else "degraded",
+        "database": "mysql",
+        "redis": "ok" if redis_ok else "error",
+    }
 
 
 @app.post(api + "/admin/reseed", tags=["meta"])

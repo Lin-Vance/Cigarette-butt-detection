@@ -5,8 +5,8 @@ REM  This env already has: fastapi / uvicorn / sqlalchemy /
 REM  torch 2.9.1+cu128 (GPU) / ultralytics 8.4.159
 REM  -> does NOT re-download the 2.7GB torch wheel.
 REM
-REM  Note: run ONE instance only. Two instances share the same
-REM  SQLite file and will lock each other ("database is locked").
+REM  MySQL stores business data and Redis coordinates transient state,
+REM  so multiple backend instances can run behind a reverse proxy.
 REM ============================================================
 setlocal
 cd /d "%~dp0"
@@ -25,7 +25,7 @@ echo.
 echo  Starting backend  http://127.0.0.1:8000    docs: /docs
 echo  First start warms up cigarette-detector.pt (about 10-40s).
 echo  Ready when you see: "AI ... cigarette-detector.pt ... device=0"
-echo  Keep only ONE instance running.
+echo  Requires running MySQL and Redis services.
 echo.
 
 "%YZ_PY%" -m uvicorn app.main:app --host 127.0.0.1 --port 8000

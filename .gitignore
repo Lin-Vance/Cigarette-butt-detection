@@ -5,6 +5,8 @@
 # Runtime data and logs
 *.log
 backend/data/*.db*
+backend/backups/*.sql
+backend/backups/*.db
 backend/storage/evidence/*
 !backend/storage/evidence/.gitkeep
 

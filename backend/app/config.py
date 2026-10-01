@@ -20,9 +20,10 @@ class Settings(BaseSettings):
     version: str = "0.1.0"
     environment: str = "development"
 
-    # 默认 SQLite：零外部依赖即可启动（交付要求「可本地启动」）。
-    # 切 PostgreSQL：postgresql+asyncpg://yanzong:pwd@127.0.0.1:5432/yanzong
-    database_url: str = f"sqlite+aiosqlite:///{(BACKEND_DIR / 'data' / 'yanzong.db').as_posix()}"
+    # 正式运行统一使用 MySQL；SQLite 只作为迁移前的只读历史备份。
+    database_url: str = "mysql+aiomysql://yanzong:yanzong-dev-only@127.0.0.1:3306/yanzong?charset=utf8mb4"
+    redis_url: str = "redis://127.0.0.1:6379/0"
+    redis_key_prefix: str = "yanzong"
 
     # JWT（演示用固定密钥，生产必须换）
     jwt_secret: str = "yanzong-development-only-secret-change-before-production-2026"

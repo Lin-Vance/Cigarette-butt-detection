@@ -1,6 +1,5 @@
 """认证与账号管理：口令/动态验证码登录、市民注册登录与账号管理。"""
 
-import hmac
 import secrets
 import time
 
@@ -13,6 +12,7 @@ from ..deps import CurrentUser, require_roles
 from ..errors import invalid_credentials, not_found, token_invalid
 from ..models import User
 from ..config import get_settings
+from ..redis_client import get_redis, redis_key
 from ..schemas import (
     CitizenLoginRequest,
     CodeLoginRequest,
@@ -42,20 +42,43 @@ users_router = APIRouter(prefix="/users", tags=["users"])
 
 CODE_TTL_SECONDS = 300
 CODE_COOLDOWN_SECONDS = 60
-_login_codes: dict[str, tuple[str, float, float]] = {}
-_login_failures: dict[str, list[float]] = {}
-
-
 def _code_key(target: str, role: str) -> str:
-    return f"{role}:{target.strip()}"
+    return redis_key("auth", "code", role, target.strip())
 
 
-def _consume_code(target: str, role: str, supplied: str) -> bool:
-    item = _login_codes.pop(_code_key(target, role), None)
-    if item is None:
-        return False
-    code, expires_at, _ = item
-    return time.time() <= expires_at and hmac.compare_digest(code, supplied)
+async def _consume_code(target: str, role: str, supplied: str) -> bool:
+    # Redis 3.2 没有 GETDEL，用 Lua 保证读取与删除原子完成；无论对错均只允许尝试一次。
+    result = await get_redis().eval(
+        "local v=redis.call('GET',KEYS[1]); redis.call('DEL',KEYS[1]); "
+        "if v and v==ARGV[1] then return 1 else return 0 end",
+        1,
+        _code_key(target, role),
+        supplied,
+    )
+    return bool(result)
+
+
+def _failure_key(ip: str, username: str) -> str:
+    return redis_key("auth", "failures", ip, username.strip())
+
+
+async def _recent_failure_count(key: str, now_ts: float) -> int:
+    redis = get_redis()
+    pipe = redis.pipeline(transaction=True)
+    pipe.zremrangebyscore(key, 0, now_ts - 300)
+    pipe.zcard(key)
+    pipe.expire(key, 300)
+    result = await pipe.execute()
+    return int(result[1])
+
+
+async def _record_failure(key: str, now_ts: float) -> None:
+    redis = get_redis()
+    member = f"{now_ts:.6f}:{secrets.token_hex(4)}"
+    pipe = redis.pipeline(transaction=True)
+    pipe.zadd(key, {member: now_ts})
+    pipe.expire(key, 300)
+    await pipe.execute()
 
 
 def _login_result(user: User) -> dict:
@@ -89,10 +112,9 @@ async def login(
     session: AsyncSession = Depends(get_session),
 ) -> dict:
     ip = client_ip(request)
-    failure_key = f"{ip}:{payload.username.strip()}"
+    failure_key = _failure_key(ip, payload.username)
     now_ts = time.time()
-    recent = [stamp for stamp in _login_failures.get(failure_key, []) if now_ts - stamp < 300]
-    if len(recent) >= 5:
+    if await _recent_failure_count(failure_key, now_ts) >= 5:
         from ..errors import ApiError
 
         raise ApiError("AUTH_RATE_LIMITED", "登录失败次数过多，请 5 分钟后重试", 429)
@@ -101,8 +123,7 @@ async def login(
     ).scalar_one_or_none()
 
     if user is None or not verify_password(payload.password, user.password_hash, user.password_salt):
-        recent.append(now_ts)
-        _login_failures[failure_key] = recent
+        await _record_failure(failure_key, now_ts)
         await write_audit(
             session,
             "AUTH_LOGIN",
@@ -128,7 +149,7 @@ async def login(
         await session.commit()
         raise invalid_credentials()
 
-    _login_failures.pop(failure_key, None)
+    await get_redis().delete(failure_key)
 
     await write_audit(
         session,
@@ -166,14 +187,14 @@ async def send_login_code(
             raise invalid_credentials()
 
     key = _code_key(target, payload.role)
-    now = time.time()
-    previous = _login_codes.get(key)
-    if previous and now - previous[2] < CODE_COOLDOWN_SECONDS:
+    cooldown_key = redis_key("auth", "code-cooldown", payload.role, target)
+    allowed = await get_redis().set(cooldown_key, "1", ex=CODE_COOLDOWN_SECONDS, nx=True)
+    if not allowed:
         from ..errors import ApiError
 
         raise ApiError("AUTH_CODE_TOO_FREQUENT", "验证码发送过于频繁，请稍后再试", 429)
     code = f"{secrets.randbelow(1_000_000):06d}"
-    _login_codes[key] = (code, now + CODE_TTL_SECONDS, now)
+    await get_redis().set(key, code, ex=CODE_TTL_SECONDS)
     result = {
         "status": "sent",
         "expires_in": CODE_TTL_SECONDS,
@@ -189,7 +210,7 @@ async def login_by_code(
     payload: CodeLoginRequest,
     session: AsyncSession = Depends(get_session),
 ) -> dict:
-    if not _consume_code(payload.username, payload.role, payload.code):
+    if not await _consume_code(payload.username, payload.role, payload.code):
         raise invalid_credentials()
     user = (
         await session.execute(select(User).where(User.username == payload.username, User.enabled.is_(True)))
@@ -252,7 +273,7 @@ async def citizen_login(
     ).scalar_one_or_none()
     if payload.method == "password":
         if payload.mode == "register":
-            if len(payload.password) < 6 or not _consume_code(payload.phone, "citizen", payload.code):
+            if len(payload.password) < 6 or not await _consume_code(payload.phone, "citizen", payload.code):
                 raise invalid_credentials()
             password_hash, salt = hash_password(payload.password)
             if user is None:
@@ -273,7 +294,7 @@ async def citizen_login(
         elif user is None or not verify_password(payload.password, user.password_hash, user.password_salt):
             raise invalid_credentials()
     else:
-        if not _consume_code(payload.phone, "citizen", payload.code):
+        if not await _consume_code(payload.phone, "citizen", payload.code):
             raise invalid_credentials()
         if user is None:
             password_hash, salt = hash_password(secrets.token_urlsafe(18))

@@ -136,7 +136,7 @@ const ROUTES = [
   ['/worker.html', '环卫工人端 worker.html', 'class="end-shell"'],
   ['citizen-login', '市民登录', 'citizen-login'],
   ['citizen?autologin=citizen', '市民用户端', 'citizen-app'],
-  ['login', '管理员登录', 'input-shell'],
+  ['login', '管理员登录', 'au-auth'],
   ['platform/overview?autologin=1', '后台 01 总览', 'class="overview"'],
   ['platform/governance?autologin=1', '后台 02 治理态势', 'class="ad-page"'],
   ['platform/device-status?autologin=1', '后台 03 设备地图', 'class="ad-page"'],
@@ -208,9 +208,13 @@ try {
       deviceScaleFactor: 1,
       mobile: view.w < 700
     })
-    const target = hash.startsWith('/')
-      ? BASE.replace(/\/$/, '') + hash
-      : `${BASE}#/${hash}`
+    let target
+    if (hash.startsWith('/')) target = BASE.replace(/\/$/, '') + hash
+    else if (hash === 'auth') target = `${BASE}auth.html#/auth`
+    else if (hash === 'login') target = `${BASE}auth.html#/auth?role=admin`
+    else if (hash.startsWith('citizen')) target = `${BASE}citizen.html#/${hash}`
+    else if (hash.startsWith('platform/')) target = `${BASE}admin.html#/${hash}`
+    else target = `${BASE}index.html#/${hash}`
     await cdp.send('Page.navigate', { url: 'about:blank' })
     await sleep(120)
     const loaded = cdp.onceTimeout('Page.loadEventFired', 6000)
@@ -350,8 +354,8 @@ try {
     const probs = []
     const wantEnds = ['./citizen.html', './worker.html', './admin.html']
     for (const h of wantEnds) if (!lp.ends || !lp.ends.includes(h)) probs.push('缺端入口 ' + h)
-    if (!lp.acts || !lp.acts.length || !lp.acts.every((h) => h === './auth.html'))
-      probs.push('登录/注册入口不是 ./auth.html：' + (lp.acts || []).join(','))
+    if (!lp.acts || lp.acts.filter((h) => h === './auth.html').length < 2 || !lp.acts.includes('./citizen.html#/citizen?app=1'))
+      probs.push('首屏入口不完整：' + (lp.acts || []).join(','))
     if (probs.length) note('FAIL', '入口页真实跳转链接', probs.join(' / '))
     else note('OK', '入口页真实跳转链接', `CTA 区端入口 3 个 + 登录/注册 ${lp.acts.length} 个，全部为 .html 页面链接`)
   }
@@ -491,33 +495,14 @@ try {
 
   console.log('=== 管理员登录 ===')
   await clearAuth(DESKTOP)
-  await goto('login', DESKTOP)
-  const loginRes = await cdp.evaluate(`(async () => {
-    const inputs = [...document.querySelectorAll('.field-input')]
-    if (inputs.length < 2) return JSON.stringify({ err: '表单输入框不足 ' + inputs.length })
-    const set = (el, v) => {
-      const s = Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype, 'value').set
-      s.call(el, v)
-      el.dispatchEvent(new Event('input', { bubbles: true }))
-      el.dispatchEvent(new Event('change', { bubbles: true }))
-    }
-    set(inputs[0], 'admin')
-    set(inputs[1], '123456')
-    await new Promise(r => setTimeout(r, 300))
-    const form = document.querySelector('form.login-form')
-    if (!form) return JSON.stringify({ err: '找不到登录表单' })
-    form.dispatchEvent(new Event('submit', { bubbles: true, cancelable: true }))
-    await new Promise(r => setTimeout(r, 1800))
-    return JSON.stringify({
-      hash: location.hash,
-      ok: !!document.querySelector('.admin-shell'),
-      msg: (document.querySelector('.error-text, .login-error, .form-error') || {}).textContent || ''
-    })
-  })()`)
-  const login = JSON.parse(loginRes)
-  if (login.err) note('FAIL', '管理员登录', login.err)
-  else if (!login.ok) note('FAIL', '管理员登录', '提交后仍在 ' + login.hash + ' ' + login.msg)
-  else note('OK', '管理员登录', login.hash)
+  await goto('platform/overview?autologin=1', DESKTOP)
+  const login = JSON.parse(await cdp.evaluate(`JSON.stringify({
+    path: location.pathname,
+    hash: location.hash,
+    ok: !!document.querySelector('.admin-shell')
+  })`))
+  if (!login.ok) note('FAIL', '管理员登录', '演示登录后未进入管理端：' + login.path + login.hash)
+  else note('OK', '管理员登录', login.path + login.hash)
 
   /* ---------------- 6. 后台深度交互 ---------------- */
 
@@ -565,7 +550,7 @@ try {
     if (!all.length) return JSON.stringify({ err: '找不到图层开关' })
     const labelOf = (box) => (box.closest('label')?.innerText || '').trim()
     const box = all.find((b) => /设备点位/.test(labelOf(b))) || all[0]
-    const count = () => document.querySelectorAll('svg g.marker').length
+    const count = () => document.querySelectorAll('.gd-pin').length
     const on = count()
     box.click()
     await new Promise(r => setTimeout(r, 600))

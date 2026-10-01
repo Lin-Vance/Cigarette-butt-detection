@@ -1,11 +1,11 @@
 # 烟踪智治
 
-面向公共区域的烟头目标检测、人工复核、环卫调度与处置闭环网站。当前代码以 FastAPI 为唯一后端，Vue 3 提供官网、统一登录、市民端、环卫端和管理端五个入口。
+面向公共区域的烟头目标检测、人工复核、环卫调度与处置闭环网站。当前代码以 FastAPI 为唯一后端，MySQL 负责持久化，Redis 负责验证码、限频和实时广播，Vue 3 提供官网、统一登录、市民端、环卫端和管理端五个入口。
 
 ## 目录
 
 - `frontend/`：Vue 3 + TypeScript + Vite 前端。
-- `backend/`：FastAPI、SQLite、AI 图片检测与证据文件服务。
+- `backend/`：FastAPI、MySQL、Redis、AI 图片检测与证据文件服务。
 - `cigarette-detector.pt`：烟头目标检测模型。
 - `start-all.bat`：Windows 一键启动脚本。
 
@@ -13,7 +13,7 @@
 
 ## 本地启动
 
-环境要求：Node.js 20.19+ 或 22.12+、Python 3.11+。
+环境要求：Node.js 20.19+ 或 22.12+、Python 3.11+、MySQL 8.0、Redis 3.2+。
 
 1. 安装后端依赖：
 
@@ -30,7 +30,9 @@
    npm ci
    ```
 
-3. 在项目根目录运行 `start-all.bat`，或分别启动：
+3. 用 `backend/scripts/mysql-bootstrap.sql` 创建 MySQL 数据库与专用账号，将连接信息写入 `backend/.env`。
+
+4. 在项目根目录运行 `start-all.bat`，或分别启动：
 
    ```powershell
    # backend/
@@ -66,6 +68,8 @@ npm run qa
 ## 安全配置
 
 - 生产环境设置 `ENVIRONMENT=production`，并通过 `JWT_SECRET` 提供至少 32 位随机密钥。
+- MySQL 必须使用项目专用最小权限账号，不能让网站使用 root。
+- Redis 必须限制为本机或内网访问；生产环境应配置认证和 TLS。
 - 生产环境设置 `EXPOSE_DEMO_CODES=false` 并接入真实短信服务。
 - 不要将 `.env`、日志、缓存、上传数据或依赖目录提交到版本库。
 - AI 结果仅作为候选线索，不能直接作为行政处罚或身份认定依据。

@@ -1,8 +1,11 @@
 # 烟踪智治 · 后端依赖
-# 默认 SQLite 运行，无需额外安装数据库。
 fastapi>=0.115
 uvicorn[standard]>=0.30
 sqlalchemy[asyncio]>=2.0
+aiomysql>=0.2
+cryptography>=43.0
+redis>=5.0,<6.0
+# 仅用于把旧版 SQLite 数据一次性迁移到 MySQL，迁移完成后不参与运行。
 aiosqlite>=0.20
 pydantic-settings>=2.4
 python-multipart>=0.0.9
@@ -10,5 +13,3 @@ PyJWT>=2.9
 ultralytics>=8.3
 Pillow>=10.0
 
-# 切换到 PostgreSQL 时取消注释（并把 DATABASE_URL 改成 postgresql+asyncpg://...）
-# asyncpg>=0.30
